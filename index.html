@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip </title>
+    <title>Japan 2026</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,7 +20,7 @@
         body {
             font-family: "Noto Serif JP", serif;
             color: var(--text-color);
-            /* 全域字體大小 (用於標題、列表等) */
+            /* 全域字體大小 */
             font-size: 17px; 
             line-height: 1.75;
             -webkit-tap-highlight-color: transparent;
@@ -60,17 +60,17 @@
         .dot.transport { background-color: #5D7C9D; } .dot.food { background-color: #D68F4D; } .dot.sightseeing { background-color: #6D8C6F; } .dot.hotel { background-color: #8A6B9E; }
         h3.event-title { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.05em; } p.event-desc { font-size: 0.95rem; color: #555; font-weight: 400; line-height: 1.8; }
 
-        /* === Modal & Inputs (修正重點) === */
-        /* 將 Modal 內的輸入框字體改小，並調整 padding */
-        .modal-content input, 
-        .modal-content select, 
-        .modal-content textarea {
-            width: 100%; padding: 12px; margin-bottom: 12px; /* 縮小 padding 和 margin */
+        /* === 修正核心：統一輸入框樣式 (包含記帳與編輯視窗) === */
+        /* 針對 Modal 內 和 #app-content (記帳區) 內的 input 進行優化 */
+        .modal-content input, .modal-content select, .modal-content textarea,
+        #app-content input, #app-content select {
+            width: 100%; padding: 12px; margin-bottom: 12px;
             background: #FDFDFD; border: 1px solid #ddd;
             font-family: "Noto Serif JP", serif; 
-            font-size: 15px; /* 字體縮小至 15px */
+            font-size: 15px; /* 統一修正為 15px */
             border-radius: 4px;
         }
+
         .btn-primary { background-color: var(--primary-color); color: white; border: none; padding: 16px; width: 100%; font-family: 'Zen Old Mincho', serif; letter-spacing: 0.2em; font-weight: 700; border-radius: 4px; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(5px); } .modal-overlay.active { display: flex; }
         .modal-content { background: white; width: 90%; max-width: 450px; padding: 32px; box-shadow: 0 25px 80px rgba(0,0,0,0.12); max-height: 90vh; overflow-y: auto; border-radius: 12px; }
@@ -83,7 +83,7 @@
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; } .slide-in-right { animation: slideInRight 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* 返回按鈕 (修正重點：只留箭頭) */
+        /* 返回按鈕 */
         .back-btn { display: inline-flex; align-items: center; color: var(--primary-color); font-size: 1.2rem; margin-bottom: 24px; cursor: pointer; opacity: 0.8; padding: 8px; }
     </style>
 </head>
@@ -161,7 +161,7 @@
         document.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, false);
         function handleSwipe() { if (scheduleViewMode !== 'detail') return; if (touchStartX < 60 && touchEndX > touchStartX + 80) { goBackToList(); } }
 
-        // === i18n (已移除返回文字) ===
+        // === i18n ===
         const i18n = {
             'zh-TW': {
                 navSched:'行程', navInfo:'資訊', navBudget:'記帳', day:'Day', navBtn:'導航',
@@ -222,17 +222,17 @@
 
         // === Init & Storage ===
         function loadAllData() {
-            const sTitle = localStorage.getItem('v11_config'); if(sTitle) appConfig = JSON.parse(sTitle);
-            const sSched = localStorage.getItem('v11_sched'); itinerary = sSched ? JSON.parse(sSched) : JSON.parse(JSON.stringify(defaultItinerary));
-            const sBudget = localStorage.getItem('v11_budget'); budgetList = sBudget ? JSON.parse(sBudget) : [];
-            const sLang = localStorage.getItem('v11_lang'); if(sLang) currentLang = sLang;
-            const sBg = localStorage.getItem('v11_bg'); 
+            const sTitle = localStorage.getItem('v12_config'); if(sTitle) appConfig = JSON.parse(sTitle);
+            const sSched = localStorage.getItem('v12_sched'); itinerary = sSched ? JSON.parse(sSched) : JSON.parse(JSON.stringify(defaultItinerary));
+            const sBudget = localStorage.getItem('v12_budget'); budgetList = sBudget ? JSON.parse(sBudget) : [];
+            const sLang = localStorage.getItem('v12_lang'); if(sLang) currentLang = sLang;
+            const sBg = localStorage.getItem('v12_bg'); 
             if(sBg) { document.body.style.backgroundImage = `url(${sBg})`; document.body.classList.remove('default-bg'); document.body.classList.add('has-custom-bg'); }
             updateHeader(); updateLangUI();
         }
         function saveAllData() {
-            localStorage.setItem('v11_config', JSON.stringify(appConfig)); localStorage.setItem('v11_sched', JSON.stringify(itinerary));
-            localStorage.setItem('v11_budget', JSON.stringify(budgetList)); localStorage.setItem('v11_lang', currentLang);
+            localStorage.setItem('v12_config', JSON.stringify(appConfig)); localStorage.setItem('v12_sched', JSON.stringify(itinerary));
+            localStorage.setItem('v12_budget', JSON.stringify(budgetList)); localStorage.setItem('v12_lang', currentLang);
         }
         function resetAllData() { if(confirm("Reset All Data?")) { localStorage.clear(); location.reload(); } }
         
@@ -250,7 +250,7 @@
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
                     document.body.style.backgroundImage = `url(${dataUrl})`;
                     document.body.classList.remove('default-bg'); document.body.classList.add('has-custom-bg');
-                    localStorage.setItem('v11_bg', dataUrl);
+                    localStorage.setItem('v12_bg', dataUrl);
                 }
                 img.src = evt.target.result;
             }
@@ -311,7 +311,6 @@
                 c.innerHTML = html + "</div>";
             } else {
                 const day = itinerary[activeDayIndex];
-                // 修正重點：只保留箭頭
                 let html = `<div class="slide-in-right"><div onclick="goBackToList()" class="back-btn"><i class="fas fa-arrow-left"></i></div>
                     <div class="flex items-end justify-between mb-8 border-l-[6px] border-[#2E4B71] pl-6 py-4 bg-white/50 backdrop-blur-sm rounded-r-xl shadow-sm"><div><h2 class="text-5xl text-[#2E4B71] jp-font font-black leading-none mb-2">${t.day} ${day.day}</h2><p class="text-base text-gray-500 tracking-widest font-bold">${day.date}</p></div><div class="text-2xl font-bold text-[#333] jp-font">${day.location}</div></div>`;
                 day.events.forEach((evt, eIdx) => {
@@ -333,10 +332,12 @@
             staticInfo.hotels.forEach(h => { html += `<div class="bg-white/90 backdrop-blur p-6 shadow-sm border-l-4 border-[#8A6B9E] rounded-r-lg"><div class="font-bold text-xl jp-font text-[#333]">${h.name}</div><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.map)}" target="_blank" class="text-xs text-[#2E4B71] mt-3 block underline font-bold tracking-wider">OPEN MAP</a></div>`; });
             document.getElementById('app-content').innerHTML = html + "</div>";
         }
+        
+        // === Budget (修正：移除 class="text-base" 改用 CSS 控制) ===
         function renderBudget() {
             const t = i18n[currentLang];
             let total = budgetList.reduce((a,c)=>a+c.amount,0);
-            let html = `<div class="space-y-6 fade-in"><div class="text-center py-8 bg-white/60 backdrop-blur rounded-xl border border-gray-200 shadow-sm"><div class="text-xs text-gray-500 mb-3 tracking-[0.25em] uppercase font-bold">${t.totalSpent}</div><div class="text-5xl font-black text-[#2E4B71] jp-font">¥${total.toLocaleString()}</div></div><div class="bg-white/90 backdrop-blur p-8 shadow-md border border-gray-100 rounded-xl"><h3 class="font-bold text-base mb-6 tracking-widest text-[#2E4B71]">${t.splitBill}</h3><input id="spItem" placeholder="${t.item}" class="text-base bg-gray-50"><div class="flex gap-3"><input id="spAmt" type="number" placeholder="${t.amount}" class="text-base bg-gray-50"><input id="spPpl" type="number" value="2" class="text-base w-20 text-center bg-gray-50"></div><button onclick="calculateSplit()" class="btn-primary text-sm mt-4 shadow-md">${t.calc}</button><div class="mt-6 text-center"><div id="spRes" class="text-3xl font-bold text-[#C85554] jp-font">¥0</div><button id="addSpBtn" style="display:none" class="w-full mt-4 text-xs border border-[#2E4B71] text-[#2E4B71] py-3 hover:bg-[#2E4B71] hover:text-white transition tracking-widest font-bold rounded">${t.addList}</button></div></div><div class="space-y-4">${budgetList.slice().reverse().map(b=>`<div class="bg-white/90 backdrop-blur p-5 border-l-4 border-[#2E4B71] shadow-sm flex justify-between items-center rounded-r-lg"><div><div class="font-bold text-lg text-[#333] jp-font">${b.item}</div><div class="text-xs text-gray-400 mt-1 font-bold">${b.note}</div></div><div class="flex items-center gap-4"><span class="font-bold text-xl text-[#2E4B71]">¥${b.amount.toLocaleString()}</span><i onclick="delExp(${b.id})" class="fas fa-times text-gray-300 hover:text-red-400 cursor-pointer text-lg"></i></div></div>`).join('')}</div></div>`;
+            let html = `<div class="space-y-6 fade-in"><div class="text-center py-8 bg-white/60 backdrop-blur rounded-xl border border-gray-200 shadow-sm"><div class="text-xs text-gray-500 mb-3 tracking-[0.25em] uppercase font-bold">${t.totalSpent}</div><div class="text-5xl font-black text-[#2E4B71] jp-font">¥${total.toLocaleString()}</div></div><div class="bg-white/90 backdrop-blur p-8 shadow-md border border-gray-100 rounded-xl"><h3 class="font-bold text-base mb-6 tracking-widest text-[#2E4B71]">${t.splitBill}</h3><input id="spItem" placeholder="${t.item}" class="bg-gray-50"><div class="flex gap-3"><input id="spAmt" type="number" placeholder="${t.amount}" class="bg-gray-50"><input id="spPpl" type="number" value="2" class="w-20 text-center bg-gray-50"></div><button onclick="calculateSplit()" class="btn-primary text-sm mt-4 shadow-md">${t.calc}</button><div class="mt-6 text-center"><div id="spRes" class="text-3xl font-bold text-[#C85554] jp-font">¥0</div><button id="addSpBtn" style="display:none" class="w-full mt-4 text-xs border border-[#2E4B71] text-[#2E4B71] py-3 hover:bg-[#2E4B71] hover:text-white transition tracking-widest font-bold rounded">${t.addList}</button></div></div><div class="space-y-4">${budgetList.slice().reverse().map(b=>`<div class="bg-white/90 backdrop-blur p-5 border-l-4 border-[#2E4B71] shadow-sm flex justify-between items-center rounded-r-lg"><div><div class="font-bold text-lg text-[#333] jp-font">${b.item}</div><div class="text-xs text-gray-400 mt-1 font-bold">${b.note}</div></div><div class="flex items-center gap-4"><span class="font-bold text-xl text-[#2E4B71]">¥${b.amount.toLocaleString()}</span><i onclick="delExp(${b.id})" class="fas fa-times text-gray-300 hover:text-red-400 cursor-pointer text-lg"></i></div></div>`).join('')}</div></div>`;
             document.getElementById('app-content').innerHTML = html;
         }
 
