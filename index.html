@@ -186,17 +186,31 @@
     <script>
         let data = { config: { title: "JAPAN", subtitle: "2026.02.19 - 02.24", lang: "zh-TW", darkMode: false, bg: null, rate: 0.22 }, itinerary: [], budget: [], shopping: [] };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list' };
+        
+        // 修正重點：預設行程包含航班代號與飯店，以便 Info 頁面抓取
         const defItin = [
-            {day:1, date:"02/19 (四)", loc:"東京・淺草", events:[{id:1, time:"22:00", title:"抵達 NRT", type:"transport", desc:"Skyliner 直奔淺草", map:"Narita Airport"}, {id:2, time:"23:30", title:"Check-in", type:"hotel", desc:"御宿野乃淺草", map:"Onyado Nono Asakusa"}]},
+            {day:1, date:"02/19 (四)", loc:"東京・淺草", events:[
+                {id:1, time:"22:00", title:"抵達 NRT (CI 104)", type:"transport", desc:"Skyliner 直奔淺草", map:"Narita Airport"},
+                {id:2, time:"23:30", title:"Check-in: 御宿野乃淺草", type:"hotel", desc:"免費宵夜拉麵", map:"Onyado Nono Asakusa"}
+            ]},
             {day:2, date:"02/20 (五)", loc:"舞濱", events:[{id:3, time:"ALL DAY", title:"迪士尼樂園", type:"sightseeing", desc:"全日遊玩", map:"Tokyo Disney Resort"}]},
             {day:3, date:"02/21 (六)", loc:"東京", events:[{id:4, time:"09:00", title:"築地市場", type:"food", desc:"海鮮丼", map:"Tsukiji"}, {id:5, time:"13:00", title:"秋葉原", type:"sightseeing", desc:"購物", map:"Akihabara"}, {id:6, time:"17:00", title:"東京鐵塔", type:"sightseeing", desc:"夜景", map:"Tokyo Tower"}]},
-            {day:4, date:"02/22 (日)", loc:"新宿", events:[{id:7, time:"10:00", title:"搬家", type:"transport", desc:"往新宿", map:"Shinjuku"}, {id:8, time:"14:00", title:"Shibuya Sky", type:"sightseeing", desc:"觀景台", map:"SHIBUYA SKY"}]},
-            {day:5, date:"02/23 (一)", loc:"河口湖", events:[{id:9, time:"07:30", title:"河口湖一日遊", type:"transport", desc:"巴士", map:"Busta Shinjuku"}, {id:10, time:"10:30", title:"大石公園", type:"sightseeing", desc:"富士山", map:"Oishi Park"}]},
-            {day:6, date:"02/24 (二)", loc:"返國", events:[{id:11, time:"11:00", title:"原宿", type:"sightseeing", desc:"購物", map:"Harajuku"}, {id:12, time:"18:00", title:"前往機場", type:"transport", desc:"返台", map:"Narita Airport"}]}
+            {day:4, date:"02/22 (日)", loc:"新宿", events:[
+                {id:7, time:"10:00", title:"搬家", type:"transport", desc:"前往新宿飯店 (待定)", map:"Shinjuku"},
+                {id:8, time:"14:00", title:"Shibuya Sky", type:"sightseeing", desc:"觀景台", map:"SHIBUYA SKY"}
+            ]},
+            {day:5, date:"02/23 (一)", loc:"河口湖", events:[
+                {id:9, time:"07:30", title:"河口湖一日遊", type:"transport", desc:"巴士", map:"Busta Shinjuku"},
+                {id:10, time:"10:30", title:"大石公園", type:"sightseeing", desc:"富士山", map:"Oishi Park"}
+            ]},
+            {day:6, date:"02/24 (二)", loc:"返國", events:[
+                {id:11, time:"11:00", title:"原宿", type:"sightseeing", desc:"購物", map:"Harajuku"},
+                {id:12, time:"18:00", title:"前往機場 (CI 105)", type:"transport", desc:"返台", map:"Narita Airport"}
+            ]}
         ];
 
-        function init() { const saved = localStorage.getItem('trip_v17'); if(saved) data = JSON.parse(saved); else data.itinerary = JSON.parse(JSON.stringify(defItin)); applySettings(); render(); updateNavLang(); }
-        function save() { localStorage.setItem('trip_v17', JSON.stringify(data)); }
+        function init() { const saved = localStorage.getItem('trip_v18'); if(saved) data = JSON.parse(saved); else data.itinerary = JSON.parse(JSON.stringify(defItin)); applySettings(); render(); updateNavLang(); }
+        function save() { localStorage.setItem('trip_v18', JSON.stringify(data)); }
         function applySettings() {
             document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg);
             if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = "";
@@ -224,7 +238,7 @@
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("備份已下載 (Backup Downloaded)"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateNavLang(); alert("還原成功 (Restored)"); } catch(err) { alert("檔案錯誤 (Error)"); } }; reader.readAsText(e.target.files[0]); };
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v17'); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v18'); location.reload(); } }
         function switchTab(t) { viewState.tab = t; if(t !== 'schedule') viewState.mode = 'list'; document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); render(); window.scrollTo(0,0); }
         function render() { const box = document.getElementById('app-content'); box.innerHTML = ''; box.classList.remove('page-transition'); void box.offsetWidth; box.classList.add('page-transition'); if(viewState.tab === 'schedule') renderSchedule(box); else if(viewState.tab === 'shopping') renderShopping(box); else if(viewState.tab === 'budget') renderBudget(box); else renderInfo(box); }
 
@@ -292,7 +306,7 @@
         function addBudget() { const item = document.getElementById('bItem').value; const amt = parseInt(document.getElementById('bAmt').value); const ppl = document.getElementById('bPpl').value; if(item && amt) { const per = Math.ceil(amt/ppl); data.budget.push({id:Date.now(), item, amt, note:`(${ppl}人: ¥${per}/人)`}); save(); render(); } }
         function delBudget(id) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); }
 
-        // --- Info (Smart & Dynamic V17) ---
+        // --- Info (Smart & Dynamic V18) ---
         function renderInfo(box) {
             const isEn = data.config.lang === 'en';
             let html = `<div class="space-y-6">`;
@@ -311,9 +325,10 @@
                     infoEvents.forEach(e => {
                         // Smart Icon Logic
                         let icon = 'fa-plane';
+                        const t = e.title.toLowerCase();
                         if (e.type === 'hotel') icon = 'fa-bed';
-                        else if (e.title.includes('高鐵') || e.title.includes('Rail') || e.title.includes('Train') || e.title.includes('Shinkansen')) icon = 'fa-train';
-                        else if (e.title.includes('巴士') || e.title.includes('Bus')) icon = 'fa-bus';
+                        else if (t.includes('高鐵') || t.includes('rail') || t.includes('train') || t.includes('shinkansen') || t.includes('skyliner') || t.includes('nex')) icon = 'fa-train';
+                        else if (t.includes('巴士') || t.includes('bus')) icon = 'fa-bus';
                         
                         const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i> ${isEn?'Map':'地圖'}</a>` : '';
                         
@@ -334,7 +349,7 @@
                 html += `<div class="text-center text-gray-400 py-10 glass-card">${isEn ? 'No transport/hotel info found in itinerary.' : '行程中未找到 交通/住宿 資訊。'}</div>`;
             }
 
-            html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V17.0</div></div>`;
+            html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V18.0</div></div>`;
             box.innerHTML = html;
         }
 
