@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip </title>
+    <title>Japan Trip 2026</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -16,59 +16,113 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
 
     <style>
-        :root { --primary: #2E4B71; --accent: #C85554; --text-main: #333333; --text-sub: #666666; --bg-body: #F9F8F6; --bg-card: rgba(255, 255, 255, 0.92); --bg-nav: rgba(46, 75, 113, 0.95); --nav-text: #94a3b8; --nav-active: #ffffff; --border: rgba(46, 75, 113, 0.1); --modal-bg: #ffffff; --input-bg: #FDFDFD; }
-        body.dark-mode { --primary: #8faecf; --accent: #ff8a80; --text-main: #e0e0e0; --text-sub: #aaaaaa; --bg-body: #121212; --bg-card: rgba(30, 30, 40, 0.85); --bg-nav: rgba(20, 20, 30, 0.95); --nav-text: #555555; --nav-active: #8faecf; --border: rgba(255, 255, 255, 0.1); --modal-bg: #1e1e24; --input-bg: #2b2b36; }
-        body { font-family: "Noto Serif JP", serif; color: var(--text-main); background-color: var(--bg-body); font-size: 17px; line-height: 1.75; letter-spacing: 0.06em; -webkit-tap-highlight-color: transparent; padding-bottom: 140px; min-height: 100vh; overflow-x: hidden; transition: background-color 0.5s, color 0.5s; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+        :root {
+            --primary: #2E4B71;
+            --accent: #C85554;
+            --text-main: #333333;
+            --text-sub: #666666;
+            --bg-body: #F9F8F6;
+            --bg-card: rgba(255, 255, 255, 0.92);
+            --bg-nav: rgba(46, 75, 113, 0.95);
+            --nav-text: #94a3b8;
+            --nav-active: #ffffff;
+            --border: rgba(46, 75, 113, 0.1);
+            --modal-bg: #ffffff;
+            --input-bg: #FDFDFD;
+        }
+
+        body.dark-mode {
+            --primary: #8faecf;
+            --accent: #ff8a80;
+            --text-main: #e0e0e0;
+            --text-sub: #aaaaaa;
+            --bg-body: #121212;
+            --bg-card: rgba(30, 30, 40, 0.85);
+            --bg-nav: rgba(20, 20, 30, 0.95);
+            --nav-text: #555555;
+            --nav-active: #8faecf;
+            --border: rgba(255, 255, 255, 0.1);
+            --modal-bg: #1e1e24;
+            --input-bg: #2b2b36;
+        }
+
+        body {
+            font-family: "Noto Serif JP", serif;
+            color: var(--text-main);
+            background-color: var(--bg-body);
+            font-size: 17px; line-height: 1.75; letter-spacing: 0.06em;
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 140px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.5s, color 0.5s;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
         body.has-custom-bg { background-image: none; background-size: cover; background-position: center; background-attachment: fixed; }
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); z-index: -1; pointer-events: none; transition: 0.3s; }
         body.dark-mode .bg-overlay { background: rgba(0,0,0,0.8); }
         body.default-bg .bg-overlay { opacity: 0; } body.has-custom-bg .bg-overlay { opacity: 1; }
+
         .jp-font { font-family: 'Zen Old Mincho', serif; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
+
         .glass-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: 0.3s; }
+
         .bottom-nav { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; background: var(--bg-nav); backdrop-filter: blur(16px); border-radius: 60px; display: flex; justify-content: space-around; padding: 14px 0; z-index: 50; box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
         .nav-item { text-align: center; color: var(--nav-text); transition: 0.3s; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--nav-active); transform: translateY(-3px); }
         .nav-text { font-size: 0.65rem; display: block; font-weight: bold; margin-top: 3px; font-family: sans-serif; }
         .nav-icon { font-size: 1.2rem; }
-        
-        /* 輸入框樣式 */
-        input, select, textarea { width: 100%; padding: 14px 20px !important; margin-bottom: 20px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); font-family: "Noto Serif JP", serif; font-size: 16px !important; border-radius: 12px; letter-spacing: 0.05em; line-height: 1.6; transition: 0.2s; }
+
+        input, select, textarea { 
+            width: 100%; padding: 14px 20px !important; margin-bottom: 20px; 
+            background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); 
+            font-family: "Noto Serif JP", serif; font-size: 16px !important; border-radius: 12px;
+            letter-spacing: 0.05em; line-height: 1.6; transition: 0.2s;
+        }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 75, 113, 0.1); }
+        
         .converter-input { padding: 4px 8px !important; margin-bottom: 0 !important; height: 32px !important; font-size: 14px !important; border-radius: 6px !important; width: auto !important; }
         .jpy-input { padding: 8px 12px !important; margin-bottom: 0 !important; height: 44px !important; font-size: 18px !important; font-weight: bold !important; text-align: center !important; }
-        
+
         .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; }
         .btn-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: var(--primary); border: 1px solid var(--border); transition: 0.2s; }
         .btn-circle:active { transform: scale(0.9); background: var(--primary); color: #fff; }
+
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
         .modal-content { background: var(--modal-bg); width: 92%; max-width: 420px; padding: 30px; border-radius: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); color: var(--text-main); }
+
         .list-item-card { display: flex; align-items: center; justify-content: space-between; padding: 20px; margin-bottom: 15px; cursor: pointer; }
         .list-item-card:active { transform: scale(0.98); }
         .img-box { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; display: none; }
         .img-box.show { display: block; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .page-transition { animation: fadeIn 0.4s ease; }
+
         .settings-menu { position: absolute; top: 70px; right: 20px; width: 220px; background: var(--modal-bg); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 10px; display: none; z-index: 90; border: 1px solid var(--border); }
         .settings-menu.show { display: block; animation: fadeIn 0.2s; }
         .settings-item { padding: 12px; display: flex; align-items: center; gap: 10px; color: var(--text-main); font-size: 15px; border-radius: 8px; cursor: pointer; }
         .settings-item:hover { background: rgba(0,0,0,0.05); }
         .settings-item i { width: 20px; text-align: center; color: var(--primary); }
+
         .custom-checkbox { width: 24px; height: 24px; border: 2px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: transparent; }
         .checked .custom-checkbox { background: var(--primary); color: white; }
         .checked .item-name { text-decoration: line-through; opacity: 0.5; }
+
         .map-route-btn { background: #e0f2fe; color: #0284c7; padding: 10px; border-radius: 8px; text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         body.dark-mode .map-route-btn { background: #1e3a8a; color: #bae6fd; }
+
         .view-btn { display: inline-block; width: 80px; text-align: center; border: 1px solid #d1d5db; padding: 4px 0; border-radius: 9999px; font-size: 11px; color: #9ca3af; font-weight: bold; }
         body.dark-mode .view-btn { border-color: #4b5563; color: #6b7280; }
+
         .type-selector { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 24px; }
         .type-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0; border: 1px solid var(--border); border-radius: 12px; color: #999; cursor: pointer; transition: 0.2s; background: var(--input-bg); }
         .type-btn i { font-size: 1.4rem; margin-bottom: 6px; }
         .type-btn span { font-size: 0.75rem; font-weight: bold; }
         .type-btn.active { background-color: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(46, 75, 113, 0.25); transform: translateY(-2px); }
         
-        /* 狀態指示燈 */
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; margin-left: 8px; transition: 0.3s; }
         .status-dot.online { background: #4ade80; box-shadow: 0 0 5px #4ade80; }
         .status-dot.error { background: #ef4444; }
@@ -153,7 +207,7 @@
     </div>
 
     <script>
-        // === 您的 Firebase 設定 ===
+        // === USER FIREBASE CONFIG ===
         const firebaseConfig = {
           apiKey: "AIzaSyCZ6-Io1jzxTLz4gzNW_Nf9er5As217erk",
           authDomain: "japan-fb8df.firebaseapp.com",
@@ -166,12 +220,8 @@
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        // 初始化 Firestore
         const db = firebase.firestore();
-        // 初始化 Analytics (選用)
         const analytics = firebase.analytics();
-        
-        // 固定的文件 ID (讓兩台手機連到同一個資料)
         const TRIP_DOC_ID = "trip_data_2026"; 
 
         const i18n = {
@@ -201,82 +251,89 @@
             }
         };
 
-        // Default Data
+        // --- Custom Itinerary from User ---
         const defItin = [
-            {day:1, date:"02/19 (四)", loc:"東京・淺草", events:[{id:1, time:"22:00", title:"抵達 NRT (CI 104)", type:"transport", desc:"Skyliner", map:"Narita"}, {id:2, time:"23:30", title:"Check-in: 御宿野乃", type:"hotel", desc:"拉麵", map:"Onyado"}]},
-            {day:2, date:"02/20 (五)", loc:"舞濱", events:[{id:3, time:"ALL DAY", title:"迪士尼", type:"sightseeing", desc:"玩", map:"Disney"}]},
-            {day:3, date:"02/21 (六)", loc:"東京", events:[{id:4, time:"09:00", title:"築地", type:"food", desc:"海鮮", map:"Tsukiji"}, {id:5, time:"13:00", title:"秋葉原", type:"sightseeing", desc:"購", map:"Akihabara"}, {id:6, time:"17:00", title:"鐵塔", type:"sightseeing", desc:"夜", map:"Tokyo Tower"}]},
-            {day:4, date:"02/22 (日)", loc:"新宿", events:[{id:7, time:"10:00", title:"搬家", type:"transport", desc:"宿", map:"Shinjuku"}, {id:8, time:"14:00", title:"Shibuya Sky", type:"sightseeing", desc:"景", map:"SHIBUYA SKY"}]},
-            {day:5, date:"02/23 (一)", loc:"河口湖", events:[{id:9, time:"07:30", title:"河口湖", type:"transport", desc:"巴", map:"Busta"}, {id:10, time:"10:30", title:"大石", type:"sightseeing", desc:"山", map:"Oishi"}]},
-            {day:6, date:"02/24 (二)", loc:"返國", events:[{id:11, time:"11:00", title:"原宿", type:"sightseeing", desc:"購", map:"Harajuku"}, {id:12, time:"18:00", title:"機場 (CI 105)", type:"transport", desc:"返", map:"Narita"}]}
+            {
+                day: 1, date: "02/19 (四)", loc: "東京・淺草",
+                events: [
+                    { id: 1, time: "22:00", title: "抵達 NRT (CI 104)", type: "transport", desc: "Skyliner 直奔淺草", map: "Narita Airport" },
+                    { id: 2, time: "23:30", title: "Check-in: 御宿 野乃淺草", type: "hotel", desc: "放置行李，享用免費宵夜拉麵", map: "Onyado Nono Asakusa" },
+                    { id: 3, time: "24:00", title: "深夜補給", type: "food", desc: "驚安殿堂 唐吉訶德", map: "Don Quijote Asakusa" }
+                ]
+            },
+            {
+                day: 2, date: "02/20 (五)", loc: "舞濱・迪士尼",
+                events: [
+                    { id: 4, time: "07:30", title: "出發", type: "transport", desc: "淺草 -> 東京(京葉線) -> 舞濱", map: "Maihama Station" },
+                    { id: 5, time: "ALL DAY", title: "迪士尼樂園/海洋", type: "sightseeing", desc: "下載官方App，搶 Priority Pass", map: "Tokyo Disney Resort" }
+                ]
+            },
+            {
+                day: 3, date: "02/21 (六)", loc: "築地・秋葉原",
+                events: [
+                    { id: 6, time: "09:00", title: "築地場外市場", type: "food", desc: "海鮮丼、玉子燒", map: "Tsukiji Outer Market" },
+                    { id: 7, time: "13:00", title: "秋葉原購物", type: "sightseeing", desc: "Bic Camera, 扭蛋會館", map: "Akihabara" },
+                    { id: 8, time: "17:00", title: "東京鐵塔夜景", type: "sightseeing", desc: "拍攝點：豆腐屋Ukai前", map: "Tokyo Tower" },
+                    { id: 9, time: "22:00", title: "打包行李", type: "hotel", desc: "明日搬家，請整理行李", map: "" }
+                ]
+            },
+            {
+                day: 4, date: "02/22 (日)", loc: "新宿・澀谷",
+                events: [
+                    { id: 10, time: "10:00", title: "退房搬家", type: "transport", desc: "前往新宿飯店寄放行李", map: "Shinjuku Station" },
+                    { id: 11, time: "14:00", title: "澀谷巡禮", type: "sightseeing", desc: "Shibuya Sky (需預約)、十字路口", map: "SHIBUYA SKY" },
+                    { id: 12, time: "19:00", title: "晚餐", type: "food", desc: "Number Sugar 或 Otako", map: "Otako Shinjuku" },
+                    { id: 13, time: "21:00", title: "Check-in", type: "hotel", desc: "新宿/澀谷地區飯店", map: "" }
+                ]
+            },
+            {
+                day: 5, date: "02/23 (一)", loc: "河口湖",
+                events: [
+                    { id: 14, time: "07:30", title: "河口湖一日遊", type: "transport", desc: "新宿巴士總站出發 (務必訂票)", map: "Busta Shinjuku" },
+                    { id: 15, time: "10:30", title: "河口湖遊玩", type: "sightseeing", desc: "大石公園、天上山公園", map: "Oishi Park" },
+                    { id: 16, time: "13:00", title: "午餐: Hoto", type: "food", desc: "ほうとう 鄉土料理", map: "Hoto Fudou" },
+                    { id: 17, time: "17:00", title: "返回新宿", type: "transport", desc: "搭乘巴士返回", map: "Shinjuku Station" }
+                ]
+            },
+            {
+                day: 6, date: "02/24 (二)", loc: "原宿・返國",
+                events: [
+                    { id: 18, time: "10:00", title: "退房", type: "hotel", desc: "寄放行李", map: "" },
+                    { id: 19, time: "11:00", title: "原宿/表參道", type: "sightseeing", desc: "明治神宮、Path 鬆餅、最後補貨", map: "Meiji Jingu" },
+                    { id: 20, time: "18:30", title: "前往機場", type: "transport", desc: "N'EX 或 利木津巴士 -> NRT", map: "Narita Airport" },
+                    { id: 21, time: "22:00", title: "飛回台灣 (CI 105)", type: "transport", desc: "平安返家", map: "" }
+                ]
+            }
         ];
 
         let data = { config: { title: "JAPAN", subtitle: "2026.02.19 - 02.24", lang: "zh-TW", darkMode: false, bg: null, rate: 0.22 }, itinerary: JSON.parse(JSON.stringify(defItin)), budget: [], shopping: [] };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list' };
         
-        // === Init with Firebase ===
         function init() {
-            // 1. Try loading from LocalStorage for speed
-            const localSaved = localStorage.getItem('trip_v24_cloud');
+            const localSaved = localStorage.getItem('trip_v25_cloud');
             if(localSaved) {
                 data = JSON.parse(localSaved);
-                applySettings();
-                render();
-                updateLangUI();
+                applySettings(); render(); updateLangUI();
             }
-
-            // 2. Listen to Cloud Updates (Realtime)
             db.collection("trips").doc(TRIP_DOC_ID)
                 .onSnapshot((doc) => {
                     const statusDot = document.getElementById('dbStatus');
                     if (doc.exists) {
                         const cloudData = doc.data();
-                        // Only update if different
                         if (JSON.stringify(cloudData) !== JSON.stringify(data)) {
                             console.log("Cloud update received!");
                             data = cloudData;
-                            saveLocal(); // Sync to local
-                            applySettings();
-                            render();
-                            updateLangUI();
+                            saveLocal(); applySettings(); render(); updateLangUI();
                         }
-                        statusDot.classList.add('online');
-                        statusDot.classList.remove('error');
-                    } else {
-                        // First time run: Create the doc in cloud
-                        console.log("Initializing cloud data...");
-                        saveToCloud(); 
-                    }
-                }, (error) => {
-                    console.error("Sync error:", error);
-                    document.getElementById('dbStatus').classList.add('error');
-                });
+                        statusDot.classList.add('online'); statusDot.classList.remove('error');
+                    } else { saveToCloud(); }
+                }, (error) => { console.error(error); document.getElementById('dbStatus').classList.add('error'); });
         }
 
-        // Save Mechanism
-        function save() {
-            saveLocal();
-            saveToCloud();
-        }
+        function save() { saveLocal(); saveToCloud(); }
+        function saveLocal() { localStorage.setItem('trip_v25_cloud', JSON.stringify(data)); }
+        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).then(() => { document.getElementById('dbStatus').classList.add('online'); }).catch(() => { document.getElementById('dbStatus').classList.add('error'); }); }
 
-        function saveLocal() {
-            localStorage.setItem('trip_v24_cloud', JSON.stringify(data));
-        }
-
-        function saveToCloud() {
-            // Debounce could be added here for optimization, but direct save is fine for this scale
-            db.collection("trips").doc(TRIP_DOC_ID).set(data)
-                .then(() => {
-                    console.log("Cloud saved.");
-                    document.getElementById('dbStatus').classList.add('online');
-                })
-                .catch((error) => {
-                    console.error("Cloud save failed:", error);
-                    document.getElementById('dbStatus').classList.add('error');
-                });
-        }
-
-        // --- UI Functions ---
         function applySettings() {
             document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg);
             if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = "";
@@ -298,7 +355,7 @@
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
         function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 1024 / img.width; cvs.width = 1024; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.7)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        function resetAllData() { if(confirm("Clear All (Local & Cloud)?")) { localStorage.removeItem('trip_v24_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All (Local & Cloud)?")) { localStorage.removeItem('trip_v25_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function switchTab(t) { viewState.tab = t; if(t !== 'schedule') viewState.mode = 'list'; document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); render(); window.scrollTo(0,0); }
         function render() { const box = document.getElementById('app-content'); box.innerHTML = ''; box.classList.remove('page-transition'); void box.offsetWidth; box.classList.add('page-transition'); if(viewState.tab === 'schedule') renderSchedule(box); else if(viewState.tab === 'shopping') renderShopping(box); else if(viewState.tab === 'budget') renderBudget(box); else renderInfo(box); }
         
@@ -339,8 +396,7 @@
         function renderBudget(box) {
             const t = i18n[data.config.lang]; const total = data.budget.reduce((a,c)=>a+c.amt,0); const rate = data.config.rate;
             let html = `
-            <div class="glass-card p-6 text-center mb-6"><div class="text-xs text-gray-500 mb-2 font-bold tracking-widest uppercase">${t.totalSpent}</div>
-                <div class="text-4xl font-black jp-font text-[var(--primary)]">¥${total.toLocaleString()}</div></div>
+            <div class="glass-card p-6 text-center mb-6"><div class="text-xs text-gray-500 mb-2 font-bold tracking-widest uppercase">${t.totalSpent}</div><div class="text-4xl font-black jp-font text-[var(--primary)]">¥${total.toLocaleString()}</div></div>
             <div class="glass-card p-4 mb-6 bg-blue-50/50"><div class="flex justify-between items-center mb-2"><h3 class="text-sm font-bold text-[var(--primary)]"><i class="fas fa-exchange-alt"></i> ${t.converter}</h3><input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center text-xs p-1 h-6 mb-0" title="Rate"></div><div class="flex gap-2 items-center"><input type="number" id="convJpy" placeholder="JPY" oninput="calcTwd(this.value)" class="jpy-input mb-0 text-center font-bold"><span class="text-gray-400">=</span><div id="convTwd" class="flex-1 text-center font-bold text-xl text-[var(--accent)] jp-font">NT$ 0</div></div></div>
             <div class="glass-card p-5 mb-4"><h3 class="font-bold text-sm mb-3 tracking-widest">${t.newExp}</h3><input id="bItem" placeholder="${t.phItem}"><input type="number" id="bAmt" placeholder="${t.phAmt}"><button onclick="addBudget()" class="btn-primary py-2 text-sm">${t.btnAddExp}</button></div>
             <div class="space-y-3">${data.budget.slice().reverse().map((b,i) => `<div class="glass-card p-4 flex justify-between items-center border-l-4 border-[var(--primary)]"><div><div class="font-bold jp-font">${b.item}</div><div class="text-xs text-gray-500">${b.note}</div></div><div class="flex items-center gap-3"><span class="font-bold text-lg jp-font">¥${b.amt.toLocaleString()}</span><i class="fas fa-times text-gray-300 cursor-pointer" onclick="delBudget(${b.id})"></i></div></div>`).join('')}</div>`;
@@ -353,8 +409,28 @@
 
         function renderInfo(box) {
             const t = i18n[data.config.lang];
-            let html = `<div class="space-y-6">`; let hasInfo = false; data.itinerary.forEach(day => { const infoEvents = day.events.filter(e => e.type === 'transport' || e.type === 'hotel'); if (infoEvents.length > 0) { hasInfo = true; html += `<div class="glass-card p-5 border-l-4 border-[var(--primary)]"><h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">${t.day} ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3><div class="space-y-2">`; infoEvents.forEach(e => { let icon = 'fa-plane'; const title = e.title.toLowerCase(); if (e.type === 'hotel') icon = 'fa-bed'; else if (title.includes('高鐵') || title.includes('rail') || title.includes('train') || title.includes('shinkansen') || title.includes('skyliner') || title.includes('nex')) icon = 'fa-train'; else if (title.includes('巴士') || title.includes('bus')) icon = 'fa-bus'; const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i></a>` : ''; html += `<div class="flex items-center gap-3 py-1"><div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div><div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div></div>`; }); html += `</div></div>`; } }); if (!hasInfo) { html += `<div class="text-center text-gray-400 py-10 glass-card">${t.noInfo}</div>`; } html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V24.1 (Cloud)</div></div>`; box.innerHTML = html; }
-        
+            let html = `<div class="space-y-6">`; let hasInfo = false;
+            data.itinerary.forEach(day => {
+                const infoEvents = day.events.filter(e => e.type === 'transport' || e.type === 'hotel');
+                if (infoEvents.length > 0) {
+                    hasInfo = true;
+                    html += `<div class="glass-card p-5 border-l-4 border-[var(--primary)]"><h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">${t.day} ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3><div class="space-y-2">`;
+                    infoEvents.forEach(e => {
+                        let icon = 'fa-plane'; const title = e.title.toLowerCase();
+                        if (e.type === 'hotel') icon = 'fa-bed';
+                        else if (title.includes('高鐵') || title.includes('rail') || title.includes('train') || title.includes('shinkansen') || title.includes('skyliner') || title.includes('nex')) icon = 'fa-train';
+                        else if (title.includes('巴士') || title.includes('bus')) icon = 'fa-bus';
+                        const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i></a>` : '';
+                        html += `<div class="flex items-center gap-3 py-1"><div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div><div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div></div>`;
+                    });
+                    html += `</div></div>`;
+                }
+            });
+            if (!hasInfo) { html += `<div class="text-center text-gray-400 py-10 glass-card">${t.noInfo}</div>`; }
+            html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V25.0 (Cloud)</div></div>`;
+            box.innerHTML = html;
+        }
+
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         let tx=0; document.addEventListener('touchstart',e=>tx=e.changedTouches[0].clientX); document.addEventListener('touchend',e=>{if(viewState.mode==='detail' && tx<60 && e.changedTouches[0].clientX>tx+80) {viewState.mode='list'; render();}});
         init();
