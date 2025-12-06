@@ -36,67 +36,49 @@
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); z-index: -1; pointer-events: none; transition: 0.3s; }
         body.dark-mode .bg-overlay { background: rgba(0,0,0,0.8); }
         body.default-bg .bg-overlay { opacity: 0; } body.has-custom-bg .bg-overlay { opacity: 1; }
-
         .jp-font { font-family: 'Zen Old Mincho', serif; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-
         .glass-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: 0.3s; }
-
         .bottom-nav { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; background: var(--bg-nav); backdrop-filter: blur(16px); border-radius: 60px; display: flex; justify-content: space-around; padding: 14px 0; z-index: 50; box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
         .nav-item { text-align: center; color: var(--nav-text); transition: 0.3s; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--nav-active); transform: translateY(-3px); }
         .nav-text { font-size: 0.65rem; display: block; font-weight: bold; margin-top: 3px; font-family: sans-serif; }
         .nav-icon { font-size: 1.2rem; }
-
-        input, select, textarea { 
-            width: 100%; padding: 14px 20px !important; margin-bottom: 20px; 
-            background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); 
-            font-family: "Noto Serif JP", serif; font-size: 16px !important; border-radius: 12px;
-            letter-spacing: 0.05em; line-height: 1.6; transition: 0.2s;
-        }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 75, 113, 0.1); }
         
+        input, select, textarea { width: 100%; padding: 14px 20px !important; margin-bottom: 20px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); font-family: "Noto Serif JP", serif; font-size: 16px !important; border-radius: 12px; letter-spacing: 0.05em; line-height: 1.6; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 75, 113, 0.1); }
         .converter-input { padding: 4px 8px !important; margin-bottom: 0 !important; height: 32px !important; font-size: 14px !important; border-radius: 6px !important; width: auto !important; }
         .jpy-input { padding: 8px 12px !important; margin-bottom: 0 !important; height: 44px !important; font-size: 18px !important; font-weight: bold !important; text-align: center !important; }
-
+        
         .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; }
         .btn-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: var(--primary); border: 1px solid var(--border); transition: 0.2s; }
         .btn-circle:active { transform: scale(0.9); background: var(--primary); color: #fff; }
-
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
         .modal-content { background: var(--modal-bg); width: 92%; max-width: 420px; padding: 30px; border-radius: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); color: var(--text-main); }
-
         .list-item-card { display: flex; align-items: center; justify-content: space-between; padding: 20px; margin-bottom: 15px; cursor: pointer; }
         .list-item-card:active { transform: scale(0.98); }
         .img-box { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; display: none; }
         .img-box.show { display: block; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .page-transition { animation: fadeIn 0.4s ease; }
-
         .settings-menu { position: absolute; top: 70px; right: 20px; width: 220px; background: var(--modal-bg); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 10px; display: none; z-index: 90; border: 1px solid var(--border); }
         .settings-menu.show { display: block; animation: fadeIn 0.2s; }
         .settings-item { padding: 12px; display: flex; align-items: center; gap: 10px; color: var(--text-main); font-size: 15px; border-radius: 8px; cursor: pointer; }
         .settings-item:hover { background: rgba(0,0,0,0.05); }
         .settings-item i { width: 20px; text-align: center; color: var(--primary); }
-
         .custom-checkbox { width: 24px; height: 24px; border: 2px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: transparent; cursor: pointer; }
         .checked .custom-checkbox { background: var(--primary); color: white; }
         .checked .item-name { text-decoration: line-through; opacity: 0.5; }
-
         .map-route-btn { background: #e0f2fe; color: #0284c7; padding: 10px; border-radius: 8px; text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         body.dark-mode .map-route-btn { background: #1e3a8a; color: #bae6fd; }
-
         .view-btn { display: inline-block; width: 80px; text-align: center; border: 1px solid #d1d5db; padding: 4px 0; border-radius: 9999px; font-size: 11px; color: #9ca3af; font-weight: bold; }
         body.dark-mode .view-btn { border-color: #4b5563; color: #6b7280; }
-
         .type-selector { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 24px; }
         .type-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0; border: 1px solid var(--border); border-radius: 12px; color: #999; cursor: pointer; transition: 0.2s; background: var(--input-bg); }
         .type-btn i { font-size: 1.4rem; margin-bottom: 6px; }
         .type-btn span { font-size: 0.75rem; font-weight: bold; }
         .type-btn.active { background-color: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(46, 75, 113, 0.25); transform: translateY(-2px); }
-        
         .shop-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
         .shop-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: 0.2s; font-family: "Zen Old Mincho", serif; }
         .shop-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
@@ -111,32 +93,50 @@
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(46, 75, 113, 0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* 連線狀態條 */
-        #conn-status-bar {
-            position: fixed; top: 0; left: 0; width: 100%; padding: 4px; text-align: center;
-            font-size: 12px; color: white; font-weight: bold; z-index: 300;
-            display: none;
+        #error-log { margin-top: 20px; padding: 15px; background: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; border-radius: 8px; font-size: 12px; max-width: 80%; display: none; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        /* === 修正重點：Header 背景模糊與不透明度 (解決文字重疊) === */
+        header {
+            /* 使用背景色變數，並加上高透明度遮罩，解決重疊 */
+            background-color: var(--bg-body); 
+            /* 為了讓背景稍微透一點點但看不清文字，我們用 rgba 或是 css filter */
+            /* 這裡使用一個技巧：背景色 + 透明度，如果 var 是 hex 需要轉換，最簡單是用 backdrop-filter */
+            backdrop-filter: blur(12px);
+            /* 確保在不同模式下背景色正確 (稍微透一點) */
+            background: linear-gradient(to bottom, var(--bg-body) 80%, rgba(255,255,255,0)); 
+            /* 實際上，為了完全遮擋，直接用不透明背景最穩 */
+             background-color: var(--bg-body); 
+             border-bottom: 1px solid var(--border);
         }
-        .status-ok { background: #10b981; }
-        .status-err { background: #ef4444; }
+        
+        /* 綠燈動畫 */
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; margin-left: 8px; transition: 0.3s; position: relative; }
+        .status-dot.online { background: #4ade80; box-shadow: 0 0 0 rgba(74, 222, 128, 0.7); animation: pulse-green 2s infinite; }
+        .status-dot.error { background: #ef4444; }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+        }
     </style>
 </head>
 <body class="default-bg">
     <div id="loadingScreen">
         <div class="spinner mb-4"></div>
-        <div class="text-sm tracking-widest font-bold text-gray-400">SYNCING CLOUD...</div>
+        <div class="text-sm tracking-widest font-bold text-gray-400">CONNECTING...</div>
+        <div id="error-log"></div>
     </div>
-    
-    <div id="conn-status-bar"></div>
 
     <div class="bg-overlay"></div>
     <input type="file" id="bgInput" accept="image/*" hidden>
-    <input type="file" id="importInput" accept=".json" hidden>
 
     <header class="p-6 pt-12 sticky top-0 z-40 flex justify-between items-start transition-all">
         <div onclick="editTitle()">
             <h1 id="appTitleMain" class="text-3xl font-black tracking-widest jp-font cursor-pointer" style="color:var(--primary)">JAPAN</h1>
-            <p id="appSubtitle" class="text-xs mt-2 tracking-[0.2em] uppercase font-sans font-bold" style="color:var(--text-sub)">2026.02.19 - 02.24</p>
+            <div class="flex items-center mt-2">
+                <p id="appSubtitle" class="text-xs tracking-[0.2em] uppercase font-sans font-bold" style="color:var(--text-sub)">2026.02.19 - 02.24</p>
+                <div id="dbStatus" class="status-dot" title="Cloud Status"></div>
+            </div>
         </div>
         <div>
             <button onclick="toggleSettings()" class="btn-circle"><i class="fas fa-cog"></i></button>
@@ -144,8 +144,6 @@
                 <div class="settings-item" onclick="toggleDarkMode()"><i class="fas fa-moon"></i> <span id="txt-dark">深色模式</span></div>
                 <div class="settings-item" onclick="triggerBgUpload()"><i class="fas fa-image"></i> <span id="txt-bg">更換背景</span></div>
                 <div class="settings-item" onclick="toggleLang()"><i class="fas fa-globe"></i> <span id="txt-lang">語言: 中文</span></div>
-                <div class="settings-item" onclick="exportData()"><i class="fas fa-file-export"></i> <span id="txt-export">備份資料</span></div>
-                <div class="settings-item" onclick="importData()"><i class="fas fa-file-import"></i> <span id="txt-import">還原資料</span></div>
                 <div class="border-t border-gray-200 my-1"></div>
                 <div class="settings-item text-red-400" onclick="resetAllData()"><i class="fas fa-trash"></i> <span id="txt-reset">重置所有</span></div>
             </div>
@@ -214,7 +212,7 @@
     </div>
 
     <script>
-        // === V31 修正：使用 Compat 寫法，並填入您的 Config ===
+        // === YOUR FIREBASE CONFIG (Injected) ===
         const firebaseConfig = {
           apiKey: "AIzaSyCZ6-Io1jzxTLz4gzNW_Nf9er5As217erk",
           authDomain: "japan-fb8df.firebaseapp.com",
@@ -225,7 +223,6 @@
           measurementId: "G-F1Y2PGN2R5"
         };
 
-        // Initialize Firebase (Compat Mode)
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const TRIP_DOC_ID = "trip_data_2026"; 
@@ -270,51 +267,47 @@
 
         let data = { config: { title: "JAPAN", subtitle: "2026.02.19 - 02.24", lang: "zh-TW", darkMode: false, bg: null, rate: 0.22 }, itinerary: JSON.parse(JSON.stringify(defItin)), budget: [], shopping: [] };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list', shopTab: 'tobuy' };
-        
-        // === Init & Connection Logic ===
-        function init() {
-            // Load Local first for instant UI
-            const localSaved = localStorage.getItem('trip_v31_cloud');
-            if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
+        let loaded = false;
 
-            const bar = document.getElementById('conn-status-bar');
-            
-            // Listen to Cloud
+        // === Init ===
+        function init() {
+            setTimeout(() => {
+                if (!loaded) {
+                    console.warn("Cloud timeout. Force loading local.");
+                    document.getElementById('error-msg').style.display = 'block';
+                }
+            }, 5000);
+
+            // Listen to Cloud Updates
             db.collection("trips").doc(TRIP_DOC_ID)
                 .onSnapshot((doc) => {
+                    loaded = true;
                     hideLoading();
-                    bar.style.display = 'block';
-                    bar.className = 'status-ok';
-                    bar.innerText = "☁️ 連線成功 (Connected)";
-                    setTimeout(() => bar.style.display='none', 3000); // Hide after 3s
-
+                    const statusDot = document.getElementById('dbStatus');
                     if (doc.exists) {
                         const cloudData = doc.data();
                         if (JSON.stringify(cloudData) !== JSON.stringify(data)) {
-                            console.log("Cloud sync"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
+                            console.log("Sync update"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
                         }
+                        statusDot.classList.add('online'); statusDot.classList.remove('error');
                     } else { saveToCloud(); }
                 }, (error) => { 
-                    console.error("Firebase Error:", error);
+                    console.error(error); 
+                    document.getElementById('dbStatus').classList.add('error');
+                    document.getElementById('error-log').innerText = "連線失敗：" + error.code;
+                    document.getElementById('error-log').style.display = 'block';
                     hideLoading();
-                    bar.style.display = 'block';
-                    bar.className = 'status-err';
-                    if(error.code === 'permission-denied') {
-                        bar.innerText = "⚠️ 權限不足：請檢查 Firestore Rules (allow read, write: if true;)";
-                    } else {
-                        bar.innerText = "⚠️ 連線失敗：" + error.code;
-                    }
                 });
         }
 
         function hideLoading() { const ls = document.getElementById('loadingScreen'); if(ls) { ls.style.opacity = '0'; setTimeout(()=>ls.style.display='none', 500); } }
         function save() { saveLocal(); saveToCloud(); }
-        function saveLocal() { localStorage.setItem('trip_v31_cloud', JSON.stringify(data)); }
-        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch((err)=>console.error(err)); }
+        function saveLocal() { localStorage.setItem('trip_v32_local', JSON.stringify(data)); }
+        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).then(()=>{document.getElementById('dbStatus').classList.add('online')}).catch((err)=>{document.getElementById('dbStatus').classList.add('error'); console.error(err);}); }
 
-        // ... [Rest of UI Functions: Same as V26, ensure no import syntax] ...
+        // UI Functions same as before...
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
-        function updateLangUI() { const t = i18n[data.config.lang]; document.getElementById('txt-nav-schedule').innerText = t.navSched; document.getElementById('txt-nav-shopping').innerText = t.navShop; document.getElementById('txt-nav-budget').innerText = t.navBudget; document.getElementById('txt-nav-info').innerText = t.navInfo; document.getElementById('txt-dark').innerText = t.dark; document.getElementById('txt-bg').innerText = t.bg; document.getElementById('txt-lang').innerText = t.lang; document.getElementById('txt-reset').innerText = t.reset; document.getElementById('txt-modal-edit-title').innerText = t.editTitle; document.getElementById('txt-upload-label').innerText = t.upload; document.getElementById('txt-type-sightseeing').innerText = t.tSight; document.getElementById('txt-type-food').innerText = t.tFood; document.getElementById('txt-type-transport').innerText = t.tTrans; document.getElementById('txt-type-hotel').innerText = t.tHotel; document.getElementById('btn-delete').innerText = t.btnDel; document.getElementById('btn-save').innerText = t.btnSave; document.getElementById('btn-cancel-edit').innerText = t.btnCancel; document.getElementById('eTime').placeholder = t.phTime; document.getElementById('eTitle').placeholder = t.phTitle; document.getElementById('eDesc').placeholder = t.phDesc; document.getElementById('eMap').placeholder = t.phMap; document.getElementById('txt-modal-shop-title').innerText = t.shopTitle; document.getElementById('txt-shop-upload-label').innerText = t.shopUpload; document.getElementById('sName').placeholder = t.phShopName; document.getElementById('sNote').placeholder = t.phShopNote; document.getElementById('btn-add-shop').innerText = t.btnAddShop; document.getElementById('btn-cancel-shop').innerText = t.btnCancel; document.getElementById('txt-shop-drug').innerText = t.sDrug; document.getElementById('txt-shop-snack').innerText = t.sSnack; document.getElementById('txt-shop-wear').innerText = t.sWear; document.getElementById('txt-shop-gift').innerText = t.sGift; document.getElementById('txt-export').innerText = t.export; document.getElementById('txt-import').innerText = t.import; }
+        function updateLangUI() { const t = i18n[data.config.lang]; document.getElementById('txt-nav-schedule').innerText = t.navSched; document.getElementById('txt-nav-shopping').innerText = t.navShop; document.getElementById('txt-nav-budget').innerText = t.navBudget; document.getElementById('txt-nav-info').innerText = t.navInfo; document.getElementById('txt-dark').innerText = t.dark; document.getElementById('txt-bg').innerText = t.bg; document.getElementById('txt-lang').innerText = t.lang; document.getElementById('txt-reset').innerText = t.reset; document.getElementById('txt-modal-edit-title').innerText = t.editTitle; document.getElementById('txt-upload-label').innerText = t.upload; document.getElementById('txt-type-sightseeing').innerText = t.tSight; document.getElementById('txt-type-food').innerText = t.tFood; document.getElementById('txt-type-transport').innerText = t.tTrans; document.getElementById('txt-type-hotel').innerText = t.tHotel; document.getElementById('btn-delete').innerText = t.btnDel; document.getElementById('btn-save').innerText = t.btnSave; document.getElementById('btn-cancel-edit').innerText = t.btnCancel; document.getElementById('eTime').placeholder = t.phTime; document.getElementById('eTitle').placeholder = t.phTitle; document.getElementById('eDesc').placeholder = t.phDesc; document.getElementById('eMap').placeholder = t.phMap; document.getElementById('txt-modal-shop-title').innerText = t.shopTitle; document.getElementById('txt-shop-upload-label').innerText = t.shopUpload; document.getElementById('sName').placeholder = t.phShopName; document.getElementById('sNote').placeholder = t.phShopNote; document.getElementById('btn-add-shop').innerText = t.btnAddShop; document.getElementById('btn-cancel-shop').innerText = t.btnCancel; document.getElementById('txt-shop-drug').innerText = t.sDrug; document.getElementById('txt-shop-snack').innerText = t.sSnack; document.getElementById('txt-shop-wear').innerText = t.sWear; document.getElementById('txt-shop-gift').innerText = t.sGift; }
         function toggleSettings() { document.getElementById('settingsMenu').classList.toggle('show'); }
         document.addEventListener('click', (e) => { if(!e.target.closest('.btn-circle') && !e.target.closest('.settings-menu')) document.getElementById('settingsMenu').classList.remove('show'); });
         function toggleDarkMode() { data.config.darkMode = !data.config.darkMode; save(); applySettings(); }
@@ -323,7 +316,7 @@
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
         function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 1024 / img.width; cvs.width = 1024; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.7)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        function resetAllData() { if(confirm("Clear All (Local & Cloud)?")) { localStorage.removeItem('trip_v31_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v29_local'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -379,8 +372,31 @@
         function calcTwd(jpy) { document.getElementById('convTwd').innerText = "NT$ " + Math.round(jpy * data.config.rate).toLocaleString(); }
         function addBudget() { const item = document.getElementById('bItem').value; const amt = parseInt(document.getElementById('bAmt').value); if(item && amt) { const per = Math.ceil(amt/2); data.budget.push({id:Date.now(), item, amt, note:`${i18n[data.config.lang].phSplit}${per}${i18n[data.config.lang].currency}`}); save(); render(); } }
         function delBudget(id) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); }
-        function renderInfo(box) { const t = i18n[data.config.lang]; let html = `<div class="space-y-6">`; let hasInfo = false; data.itinerary.forEach(day => { const infoEvents = day.events.filter(e => e.type === 'transport' || e.type === 'hotel'); if (infoEvents.length > 0) { hasInfo = true; html += `<div class="glass-card p-5 border-l-4 border-[var(--primary)]"><h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">${t.day} ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3><div class="space-y-2">`; infoEvents.forEach(e => { let icon = 'fa-plane'; const title = e.title.toLowerCase(); if (e.type === 'hotel') icon = 'fa-bed'; else if (title.includes('高鐵') || title.includes('rail') || title.includes('train') || title.includes('shinkansen') || title.includes('skyliner') || title.includes('nex')) icon = 'fa-train'; else if (title.includes('巴士') || title.includes('bus')) icon = 'fa-bus'; const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i></a>` : ''; html += `<div class="flex items-center gap-3 py-1"><div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div><div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div></div>`; }); html += `</div></div>`; } }); if (!hasInfo) { html += `<div class="text-center text-gray-400 py-10 glass-card">${t.noInfo}</div>`; } html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V31.0 (Debug)</div></div>`; box.innerHTML = html; }
-        
+
+        function renderInfo(box) {
+            const t = i18n[data.config.lang];
+            let html = `<div class="space-y-6">`; let hasInfo = false;
+            data.itinerary.forEach(day => {
+                const infoEvents = day.events.filter(e => e.type === 'transport' || e.type === 'hotel');
+                if (infoEvents.length > 0) {
+                    hasInfo = true;
+                    html += `<div class="glass-card p-5 border-l-4 border-[var(--primary)]"><h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">${t.day} ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3><div class="space-y-2">`;
+                    infoEvents.forEach(e => {
+                        let icon = 'fa-plane'; const title = e.title.toLowerCase();
+                        if (e.type === 'hotel') icon = 'fa-bed';
+                        else if (title.includes('高鐵') || title.includes('rail') || title.includes('train') || title.includes('shinkansen') || title.includes('skyliner') || title.includes('nex')) icon = 'fa-train';
+                        else if (title.includes('巴士') || title.includes('bus')) icon = 'fa-bus';
+                        const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i></a>` : '';
+                        html += `<div class="flex items-center gap-3 py-1"><div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div><div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div></div>`;
+                    });
+                    html += `</div></div>`;
+                }
+            });
+            if (!hasInfo) { html += `<div class="text-center text-gray-400 py-10 glass-card">${t.noInfo}</div>`; }
+            html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V32.0 (Cloud)</div></div>`;
+            box.innerHTML = html;
+        }
+
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         let tx=0; document.addEventListener('touchstart',e=>tx=e.changedTouches[0].clientX); document.addEventListener('touchend',e=>{if(viewState.mode==='detail' && tx<60 && e.changedTouches[0].clientX>tx+80) {viewState.mode='list'; render();}});
         init();
