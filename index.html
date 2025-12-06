@@ -13,6 +13,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
 
     <style>
         :root {
@@ -29,103 +30,113 @@
             font-family: "Noto Serif JP", serif; color: var(--text-main); background-color: var(--bg-body);
             font-size: 17px; line-height: 1.75; letter-spacing: 0.06em; -webkit-tap-highlight-color: transparent;
             padding-bottom: 140px; min-height: 100vh; overflow-x: hidden; transition: background-color 0.5s, color 0.5s;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         body.has-custom-bg { background-image: none; background-size: cover; background-position: center; background-attachment: fixed; }
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); z-index: -1; pointer-events: none; transition: 0.3s; }
         body.dark-mode .bg-overlay { background: rgba(0,0,0,0.8); }
         body.default-bg .bg-overlay { opacity: 0; } body.has-custom-bg .bg-overlay { opacity: 1; }
+
         .jp-font { font-family: 'Zen Old Mincho', serif; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
+
         .glass-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: 0.3s; }
+
         .bottom-nav { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; background: var(--bg-nav); backdrop-filter: blur(16px); border-radius: 60px; display: flex; justify-content: space-around; padding: 14px 0; z-index: 50; box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
         .nav-item { text-align: center; color: var(--nav-text); transition: 0.3s; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--nav-active); transform: translateY(-3px); }
         .nav-text { font-size: 0.65rem; display: block; font-weight: bold; margin-top: 3px; font-family: sans-serif; }
         .nav-icon { font-size: 1.2rem; }
-        
-        /* 輸入框樣式 */
-        input, select, textarea { width: 100%; padding: 14px 20px !important; margin-bottom: 20px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); font-family: "Noto Serif JP", serif; font-size: 16px !important; border-radius: 12px; letter-spacing: 0.05em; line-height: 1.6; transition: 0.2s; }
+
+        input, select, textarea { 
+            width: 100%; padding: 14px 20px !important; margin-bottom: 20px; 
+            background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); 
+            font-family: "Noto Serif JP", serif; font-size: 16px !important; border-radius: 12px;
+            letter-spacing: 0.05em; line-height: 1.6; transition: 0.2s;
+        }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 75, 113, 0.1); }
+        
         .converter-input { padding: 4px 8px !important; margin-bottom: 0 !important; height: 32px !important; font-size: 14px !important; border-radius: 6px !important; width: auto !important; }
         .jpy-input { padding: 8px 12px !important; margin-bottom: 0 !important; height: 44px !important; font-size: 18px !important; font-weight: bold !important; text-align: center !important; }
-        
+
         .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; }
         .btn-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: var(--primary); border: 1px solid var(--border); transition: 0.2s; }
         .btn-circle:active { transform: scale(0.9); background: var(--primary); color: #fff; }
+
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
         .modal-content { background: var(--modal-bg); width: 92%; max-width: 420px; padding: 30px; border-radius: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); color: var(--text-main); }
+
         .list-item-card { display: flex; align-items: center; justify-content: space-between; padding: 20px; margin-bottom: 15px; cursor: pointer; }
         .list-item-card:active { transform: scale(0.98); }
         .img-box { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; display: none; }
         .img-box.show { display: block; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .page-transition { animation: fadeIn 0.4s ease; }
+
         .settings-menu { position: absolute; top: 70px; right: 20px; width: 220px; background: var(--modal-bg); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 10px; display: none; z-index: 90; border: 1px solid var(--border); }
         .settings-menu.show { display: block; animation: fadeIn 0.2s; }
         .settings-item { padding: 12px; display: flex; align-items: center; gap: 10px; color: var(--text-main); font-size: 15px; border-radius: 8px; cursor: pointer; }
         .settings-item:hover { background: rgba(0,0,0,0.05); }
         .settings-item i { width: 20px; text-align: center; color: var(--primary); }
+
         .custom-checkbox { width: 24px; height: 24px; border: 2px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: transparent; cursor: pointer; }
         .checked .custom-checkbox { background: var(--primary); color: white; }
         .checked .item-name { text-decoration: line-through; opacity: 0.5; }
+
         .map-route-btn { background: #e0f2fe; color: #0284c7; padding: 10px; border-radius: 8px; text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         body.dark-mode .map-route-btn { background: #1e3a8a; color: #bae6fd; }
+
         .view-btn { display: inline-block; width: 80px; text-align: center; border: 1px solid #d1d5db; padding: 4px 0; border-radius: 9999px; font-size: 11px; color: #9ca3af; font-weight: bold; }
         body.dark-mode .view-btn { border-color: #4b5563; color: #6b7280; }
+
         .type-selector { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 24px; }
         .type-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0; border: 1px solid var(--border); border-radius: 12px; color: #999; cursor: pointer; transition: 0.2s; background: var(--input-bg); }
         .type-btn i { font-size: 1.4rem; margin-bottom: 6px; }
         .type-btn span { font-size: 0.75rem; font-weight: bold; }
         .type-btn.active { background-color: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(46, 75, 113, 0.25); transform: translateY(-2px); }
         
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; margin-left: 8px; transition: 0.3s; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .status-dot.online { background: #4ade80; box-shadow: 0 0 8px #4ade80; }
-        .status-dot.error { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
         .shop-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
         .shop-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: 0.2s; font-family: "Zen Old Mincho", serif; }
         .shop-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         
-        /* 載入畫面與錯誤提示 */
+        /* 載入畫面 */
         #loadingScreen { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--bg-body); z-index: 200; 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.5s;
         }
-        .spinner {
-            width: 40px; height: 40px; border: 4px solid rgba(46, 75, 113, 0.1); 
-            border-top: 4px solid var(--primary); border-radius: 50%; 
-            animation: spin 1s linear infinite;
-        }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(46, 75, 113, 0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        #error-log {
-            margin-top: 20px; padding: 15px; 
-            background: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; 
-            border-radius: 8px; font-size: 12px; max-width: 80%; display: none;
-            text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        /* 連線狀態條 */
+        #conn-status-bar {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 4px; text-align: center;
+            font-size: 12px; color: white; font-weight: bold; z-index: 300;
+            display: none;
         }
+        .status-ok { background: #10b981; }
+        .status-err { background: #ef4444; }
     </style>
 </head>
 <body class="default-bg">
     <div id="loadingScreen">
         <div class="spinner mb-4"></div>
         <div class="text-sm tracking-widest font-bold text-gray-400">SYNCING CLOUD...</div>
-        <div id="error-log"></div>
     </div>
+    
+    <div id="conn-status-bar"></div>
 
     <div class="bg-overlay"></div>
     <input type="file" id="bgInput" accept="image/*" hidden>
+    <input type="file" id="importInput" accept=".json" hidden>
 
     <header class="p-6 pt-12 sticky top-0 z-40 flex justify-between items-start transition-all">
         <div onclick="editTitle()">
             <h1 id="appTitleMain" class="text-3xl font-black tracking-widest jp-font cursor-pointer" style="color:var(--primary)">JAPAN</h1>
-            <div class="flex items-center mt-2">
-                <p id="appSubtitle" class="text-xs tracking-[0.2em] uppercase font-sans font-bold" style="color:var(--text-sub)">2026.02.19 - 02.24</p>
-                <div id="dbStatus" class="status-dot" title="Cloud Status"></div>
-            </div>
+            <p id="appSubtitle" class="text-xs mt-2 tracking-[0.2em] uppercase font-sans font-bold" style="color:var(--text-sub)">2026.02.19 - 02.24</p>
         </div>
         <div>
             <button onclick="toggleSettings()" class="btn-circle"><i class="fas fa-cog"></i></button>
@@ -133,6 +144,8 @@
                 <div class="settings-item" onclick="toggleDarkMode()"><i class="fas fa-moon"></i> <span id="txt-dark">深色模式</span></div>
                 <div class="settings-item" onclick="triggerBgUpload()"><i class="fas fa-image"></i> <span id="txt-bg">更換背景</span></div>
                 <div class="settings-item" onclick="toggleLang()"><i class="fas fa-globe"></i> <span id="txt-lang">語言: 中文</span></div>
+                <div class="settings-item" onclick="exportData()"><i class="fas fa-file-export"></i> <span id="txt-export">備份資料</span></div>
+                <div class="settings-item" onclick="importData()"><i class="fas fa-file-import"></i> <span id="txt-import">還原資料</span></div>
                 <div class="border-t border-gray-200 my-1"></div>
                 <div class="settings-item text-red-400" onclick="resetAllData()"><i class="fas fa-trash"></i> <span id="txt-reset">重置所有</span></div>
             </div>
@@ -201,7 +214,7 @@
     </div>
 
     <script>
-        // === YOUR FIREBASE CONFIG (Injected) ===
+        // === V31 修正：使用 Compat 寫法，並填入您的 Config ===
         const firebaseConfig = {
           apiKey: "AIzaSyCZ6-Io1jzxTLz4gzNW_Nf9er5As217erk",
           authDomain: "japan-fb8df.firebaseapp.com",
@@ -212,11 +225,9 @@
           measurementId: "G-F1Y2PGN2R5"
         };
 
+        // Initialize Firebase (Compat Mode)
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        // Enable Offline Persistence for Speed
-        db.enablePersistence().catch(err => console.log("Persistence:", err.code));
-        
         const TRIP_DOC_ID = "trip_data_2026"; 
 
         const i18n = {
@@ -260,47 +271,50 @@
         let data = { config: { title: "JAPAN", subtitle: "2026.02.19 - 02.24", lang: "zh-TW", darkMode: false, bg: null, rate: 0.22 }, itinerary: JSON.parse(JSON.stringify(defItin)), budget: [], shopping: [] };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list', shopTab: 'tobuy' };
         
-        // === Init Logic ===
+        // === Init & Connection Logic ===
         function init() {
             // Load Local first for instant UI
-            const localSaved = localStorage.getItem('trip_v30_cloud');
+            const localSaved = localStorage.getItem('trip_v31_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
 
+            const bar = document.getElementById('conn-status-bar');
+            
             // Listen to Cloud
             db.collection("trips").doc(TRIP_DOC_ID)
                 .onSnapshot((doc) => {
                     hideLoading();
-                    const statusDot = document.getElementById('dbStatus');
+                    bar.style.display = 'block';
+                    bar.className = 'status-ok';
+                    bar.innerText = "☁️ 連線成功 (Connected)";
+                    setTimeout(() => bar.style.display='none', 3000); // Hide after 3s
+
                     if (doc.exists) {
                         const cloudData = doc.data();
                         if (JSON.stringify(cloudData) !== JSON.stringify(data)) {
                             console.log("Cloud sync"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
                         }
-                        statusDot.classList.add('online'); statusDot.classList.remove('error');
                     } else { saveToCloud(); }
                 }, (error) => { 
-                    console.error("Firebase Error:", error); 
-                    document.getElementById('dbStatus').classList.add('error');
-                    
-                    // Show Error Info
-                    const msgDiv = document.getElementById('error-log');
-                    msgDiv.style.display = 'block';
-                    if (error.code === 'permission-denied') {
-                        msgDiv.innerHTML = "⚠️ 連線被拒絕 (Permission Denied)<br>請去 Firebase Console > Firestore > Rules<br>將 allow read, write 改為 <b>true</b>";
-                    } else {
-                        msgDiv.innerText = "Error: " + error.code;
-                    }
+                    console.error("Firebase Error:", error);
                     hideLoading();
+                    bar.style.display = 'block';
+                    bar.className = 'status-err';
+                    if(error.code === 'permission-denied') {
+                        bar.innerText = "⚠️ 權限不足：請檢查 Firestore Rules (allow read, write: if true;)";
+                    } else {
+                        bar.innerText = "⚠️ 連線失敗：" + error.code;
+                    }
                 });
         }
 
         function hideLoading() { const ls = document.getElementById('loadingScreen'); if(ls) { ls.style.opacity = '0'; setTimeout(()=>ls.style.display='none', 500); } }
         function save() { saveLocal(); saveToCloud(); }
-        function saveLocal() { localStorage.setItem('trip_v30_cloud', JSON.stringify(data)); }
-        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).then(()=>{document.getElementById('dbStatus').classList.add('online')}).catch((err)=>{document.getElementById('dbStatus').classList.add('error'); console.error(err);}); }
+        function saveLocal() { localStorage.setItem('trip_v31_cloud', JSON.stringify(data)); }
+        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch((err)=>console.error(err)); }
 
+        // ... [Rest of UI Functions: Same as V26, ensure no import syntax] ...
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
-        function updateLangUI() { const t = i18n[data.config.lang]; document.getElementById('txt-nav-schedule').innerText = t.navSched; document.getElementById('txt-nav-shopping').innerText = t.navShop; document.getElementById('txt-nav-budget').innerText = t.navBudget; document.getElementById('txt-nav-info').innerText = t.navInfo; document.getElementById('txt-dark').innerText = t.dark; document.getElementById('txt-bg').innerText = t.bg; document.getElementById('txt-lang').innerText = t.lang; document.getElementById('txt-reset').innerText = t.reset; document.getElementById('txt-modal-edit-title').innerText = t.editTitle; document.getElementById('txt-upload-label').innerText = t.upload; document.getElementById('txt-type-sightseeing').innerText = t.tSight; document.getElementById('txt-type-food').innerText = t.tFood; document.getElementById('txt-type-transport').innerText = t.tTrans; document.getElementById('txt-type-hotel').innerText = t.tHotel; document.getElementById('btn-delete').innerText = t.btnDel; document.getElementById('btn-save').innerText = t.btnSave; document.getElementById('btn-cancel-edit').innerText = t.btnCancel; document.getElementById('eTime').placeholder = t.phTime; document.getElementById('eTitle').placeholder = t.phTitle; document.getElementById('eDesc').placeholder = t.phDesc; document.getElementById('eMap').placeholder = t.phMap; document.getElementById('txt-modal-shop-title').innerText = t.shopTitle; document.getElementById('txt-shop-upload-label').innerText = t.shopUpload; document.getElementById('sName').placeholder = t.phShopName; document.getElementById('sNote').placeholder = t.phShopNote; document.getElementById('btn-add-shop').innerText = t.btnAddShop; document.getElementById('btn-cancel-shop').innerText = t.btnCancel; document.getElementById('txt-shop-drug').innerText = t.sDrug; document.getElementById('txt-shop-snack').innerText = t.sSnack; document.getElementById('txt-shop-wear').innerText = t.sWear; document.getElementById('txt-shop-gift').innerText = t.sGift; }
+        function updateLangUI() { const t = i18n[data.config.lang]; document.getElementById('txt-nav-schedule').innerText = t.navSched; document.getElementById('txt-nav-shopping').innerText = t.navShop; document.getElementById('txt-nav-budget').innerText = t.navBudget; document.getElementById('txt-nav-info').innerText = t.navInfo; document.getElementById('txt-dark').innerText = t.dark; document.getElementById('txt-bg').innerText = t.bg; document.getElementById('txt-lang').innerText = t.lang; document.getElementById('txt-reset').innerText = t.reset; document.getElementById('txt-modal-edit-title').innerText = t.editTitle; document.getElementById('txt-upload-label').innerText = t.upload; document.getElementById('txt-type-sightseeing').innerText = t.tSight; document.getElementById('txt-type-food').innerText = t.tFood; document.getElementById('txt-type-transport').innerText = t.tTrans; document.getElementById('txt-type-hotel').innerText = t.tHotel; document.getElementById('btn-delete').innerText = t.btnDel; document.getElementById('btn-save').innerText = t.btnSave; document.getElementById('btn-cancel-edit').innerText = t.btnCancel; document.getElementById('eTime').placeholder = t.phTime; document.getElementById('eTitle').placeholder = t.phTitle; document.getElementById('eDesc').placeholder = t.phDesc; document.getElementById('eMap').placeholder = t.phMap; document.getElementById('txt-modal-shop-title').innerText = t.shopTitle; document.getElementById('txt-shop-upload-label').innerText = t.shopUpload; document.getElementById('sName').placeholder = t.phShopName; document.getElementById('sNote').placeholder = t.phShopNote; document.getElementById('btn-add-shop').innerText = t.btnAddShop; document.getElementById('btn-cancel-shop').innerText = t.btnCancel; document.getElementById('txt-shop-drug').innerText = t.sDrug; document.getElementById('txt-shop-snack').innerText = t.sSnack; document.getElementById('txt-shop-wear').innerText = t.sWear; document.getElementById('txt-shop-gift').innerText = t.sGift; document.getElementById('txt-export').innerText = t.export; document.getElementById('txt-import').innerText = t.import; }
         function toggleSettings() { document.getElementById('settingsMenu').classList.toggle('show'); }
         document.addEventListener('click', (e) => { if(!e.target.closest('.btn-circle') && !e.target.closest('.settings-menu')) document.getElementById('settingsMenu').classList.remove('show'); });
         function toggleDarkMode() { data.config.darkMode = !data.config.darkMode; save(); applySettings(); }
@@ -309,7 +323,7 @@
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
         function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 1024 / img.width; cvs.width = 1024; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.7)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        function resetAllData() { if(confirm("Clear All (Local & Cloud)?")) { localStorage.removeItem('trip_v30_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All (Local & Cloud)?")) { localStorage.removeItem('trip_v31_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -365,7 +379,7 @@
         function calcTwd(jpy) { document.getElementById('convTwd').innerText = "NT$ " + Math.round(jpy * data.config.rate).toLocaleString(); }
         function addBudget() { const item = document.getElementById('bItem').value; const amt = parseInt(document.getElementById('bAmt').value); if(item && amt) { const per = Math.ceil(amt/2); data.budget.push({id:Date.now(), item, amt, note:`${i18n[data.config.lang].phSplit}${per}${i18n[data.config.lang].currency}`}); save(); render(); } }
         function delBudget(id) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); }
-        function renderInfo(box) { const t = i18n[data.config.lang]; let html = `<div class="space-y-6">`; let hasInfo = false; data.itinerary.forEach(day => { const infoEvents = day.events.filter(e => e.type === 'transport' || e.type === 'hotel'); if (infoEvents.length > 0) { hasInfo = true; html += `<div class="glass-card p-5 border-l-4 border-[var(--primary)]"><h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">${t.day} ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3><div class="space-y-2">`; infoEvents.forEach(e => { let icon = 'fa-plane'; const title = e.title.toLowerCase(); if (e.type === 'hotel') icon = 'fa-bed'; else if (title.includes('高鐵') || title.includes('rail') || title.includes('train') || title.includes('shinkansen') || title.includes('skyliner') || title.includes('nex')) icon = 'fa-train'; else if (title.includes('巴士') || title.includes('bus')) icon = 'fa-bus'; const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i></a>` : ''; html += `<div class="flex items-center gap-3 py-1"><div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div><div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div></div>`; }); html += `</div></div>`; } }); if (!hasInfo) { html += `<div class="text-center text-gray-400 py-10 glass-card">${t.noInfo}</div>`; } html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V30.0 (Cloud)</div></div>`; box.innerHTML = html; }
+        function renderInfo(box) { const t = i18n[data.config.lang]; let html = `<div class="space-y-6">`; let hasInfo = false; data.itinerary.forEach(day => { const infoEvents = day.events.filter(e => e.type === 'transport' || e.type === 'hotel'); if (infoEvents.length > 0) { hasInfo = true; html += `<div class="glass-card p-5 border-l-4 border-[var(--primary)]"><h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">${t.day} ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3><div class="space-y-2">`; infoEvents.forEach(e => { let icon = 'fa-plane'; const title = e.title.toLowerCase(); if (e.type === 'hotel') icon = 'fa-bed'; else if (title.includes('高鐵') || title.includes('rail') || title.includes('train') || title.includes('shinkansen') || title.includes('skyliner') || title.includes('nex')) icon = 'fa-train'; else if (title.includes('巴士') || title.includes('bus')) icon = 'fa-bus'; const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i></a>` : ''; html += `<div class="flex items-center gap-3 py-1"><div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div><div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div></div>`; }); html += `</div></div>`; } }); if (!hasInfo) { html += `<div class="text-center text-gray-400 py-10 glass-card">${t.noInfo}</div>`; } html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V31.0 (Debug)</div></div>`; box.innerHTML = html; }
         
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         let tx=0; document.addEventListener('touchstart',e=>tx=e.changedTouches[0].clientX); document.addEventListener('touchend',e=>{if(viewState.mode==='detail' && tx<60 && e.changedTouches[0].clientX>tx+80) {viewState.mode='list'; render();}});
