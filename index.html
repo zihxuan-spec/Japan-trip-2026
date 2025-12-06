@@ -70,6 +70,7 @@
         .nav-text { font-size: 0.65rem; display: block; font-weight: bold; margin-top: 3px; font-family: sans-serif; }
         .nav-icon { font-size: 1.2rem; }
 
+        /* 全域輸入框樣式 (針對編輯行程和一般記帳) */
         input, select, textarea { 
             width: 100%; padding: 14px 20px !important; margin-bottom: 20px; 
             background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); 
@@ -78,6 +79,26 @@
         }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 75, 113, 0.1); }
         
+        /* === 修正重點：匯率換算專用樣式 (覆蓋全域設定) === */
+        /* 為匯率的小格子還原成小尺寸，避免被全域的 padding 撐爆 */
+        .converter-input {
+            padding: 4px 8px !important;
+            margin-bottom: 0 !important;
+            height: 32px !important;
+            font-size: 14px !important;
+            border-radius: 6px !important;
+            width: auto !important;
+        }
+        /* JPY 輸入框樣式 */
+        .jpy-input {
+            padding: 8px 12px !important;
+            margin-bottom: 0 !important;
+            height: 44px !important;
+            font-size: 18px !important;
+            font-weight: bold !important;
+            text-align: center !important;
+        }
+
         .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; }
         .btn-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: var(--primary); border: 1px solid var(--border); transition: 0.2s; }
         .btn-circle:active { transform: scale(0.9); background: var(--primary); color: #fff; }
@@ -163,32 +184,18 @@
             </div>
 
             <div class="type-selector">
-                <div class="type-btn" onclick="setType('sightseeing')" id="btn-sightseeing">
-                    <i class="fas fa-camera"></i><span id="txt-type-sightseeing">觀光</span>
-                </div>
-                <div class="type-btn" onclick="setType('food')" id="btn-food">
-                    <i class="fas fa-utensils"></i><span id="txt-type-food">美食</span>
-                </div>
-                <div class="type-btn" onclick="setType('transport')" id="btn-transport">
-                    <i class="fas fa-train"></i><span id="txt-type-transport">交通</span>
-                </div>
-                <div class="type-btn" onclick="setType('hotel')" id="btn-hotel">
-                    <i class="fas fa-bed"></i><span id="txt-type-hotel">住宿</span>
-                </div>
+                <div class="type-btn" onclick="setType('sightseeing')" id="btn-sightseeing"><i class="fas fa-camera"></i><span id="txt-type-sightseeing">觀光</span></div>
+                <div class="type-btn" onclick="setType('food')" id="btn-food"><i class="fas fa-utensils"></i><span id="txt-type-food">美食</span></div>
+                <div class="type-btn" onclick="setType('transport')" id="btn-transport"><i class="fas fa-train"></i><span id="txt-type-transport">交通</span></div>
+                <div class="type-btn" onclick="setType('hotel')" id="btn-hotel"><i class="fas fa-bed"></i><span id="txt-type-hotel">住宿</span></div>
             </div>
             <input type="hidden" id="eType" value="sightseeing">
 
             <div class="grid grid-cols-3 gap-4">
-                <div class="col-span-1">
-                    <input id="eTime" placeholder="時間" class="text-center">
-                </div>
-                <div class="col-span-2">
-                    <input id="eTitle" placeholder="標題" class="font-bold">
-                </div>
+                <div class="col-span-1"><input id="eTime" placeholder="時間" class="text-center"></div>
+                <div class="col-span-2"><input id="eTitle" placeholder="標題" class="font-bold"></div>
             </div>
-            
             <textarea id="eDesc" rows="3" placeholder="備註..."></textarea>
-            
             <div class="relative">
                 <i class="fas fa-map-marker-alt absolute left-4 top-4 text-red-400 text-lg"></i>
                 <input id="eMap" placeholder="地圖連結" style="padding-left: 45px !important;">
@@ -220,52 +227,27 @@
     </div>
 
     <script>
-        // === Full i18n Dictionary ===
         const i18n = {
             'zh-TW': {
                 navSched: '行程', navShop: '購物', navBudget: '記帳', navInfo: '資訊',
-                // Main
-                day: 'Day', view: '查看', overview: '行程總覽', 
-                addEvent: '＋ 新增行程', 
-                back: '返回', viewMap: '查看當日路線地圖',
-                // Settings
+                day: 'Day', view: '查看', overview: '行程總覽', addEvent: '＋ 新增行程', back: '返回', viewMap: '查看當日路線地圖',
                 dark: '深色模式', bg: '更換背景', lang: '語言: EN', export: '備份資料', import: '還原資料', reset: '重置所有',
-                // Edit Modal
-                editTitle: '編輯行程', upload: '上傳照片',
-                tSight: '觀光', tFood: '美食', tTrans: '交通', tHotel: '住宿',
+                editTitle: '編輯行程', upload: '上傳照片', tSight: '觀光', tFood: '美食', tTrans: '交通', tHotel: '住宿',
                 phTime: '時間', phTitle: '行程標題 (必填)', phDesc: '備註 / 詳細說明...', phMap: '貼上 Google Maps 連結或地點',
                 btnDel: '刪除', btnSave: '儲存變更', btnCancel: '取消',
-                // Shopping Modal
-                shopTitle: '新增購物清單', shopUpload: '商品照片',
-                phShopName: '商品名稱 (如: 合力他命)', phShopNote: '備註 (規格、數量...)',
-                btnAddShop: '加入清單',
-                // Budget
-                totalSpent: '總花費', converter: '匯率換算', newExp: '新增支出',
-                phItem: '項目', phAmt: '¥ 金額', phPpl: '人數', btnAddExp: '記帳',
-                // Info
+                shopTitle: '新增購物清單', shopUpload: '商品照片', phShopName: '商品名稱 (如: 合力他命)', phShopNote: '備註 (規格、數量...)', btnAddShop: '加入清單',
+                totalSpent: '總花費', converter: '匯率換算', newExp: '新增支出', phItem: '項目', phAmt: '¥ 金額', phPpl: '人數', btnAddExp: '記帳',
                 flights: '航班資訊', hotels: '住宿資訊', noInfo: '行程中未找到資訊。'
             },
             'en': {
                 navSched: 'Schedule', navShop: 'Shopping', navBudget: 'Budget', navInfo: 'Info',
-                // Main
-                day: 'Day', view: 'View', overview: 'Overview', 
-                addEvent: '＋ Add Event', 
-                back: 'Back', viewMap: 'View Route Map',
-                // Settings
+                day: 'Day', view: 'View', overview: 'Overview', addEvent: '＋ Add Event', back: 'Back', viewMap: 'View Route Map',
                 dark: 'Dark Mode', bg: 'Change BG', lang: 'Lang: 中文', export: 'Backup Data', import: 'Restore Data', reset: 'Reset All',
-                // Edit Modal
-                editTitle: 'Edit Event', upload: 'Upload Photo',
-                tSight: 'Sightseeing', tFood: 'Food', tTrans: 'Transport', tHotel: 'Hotel',
+                editTitle: 'Edit Event', upload: 'Upload Photo', tSight: 'Sightseeing', tFood: 'Food', tTrans: 'Transport', tHotel: 'Hotel',
                 phTime: 'Time', phTitle: 'Title (Required)', phDesc: 'Notes / Description...', phMap: 'Google Maps Link or Location',
                 btnDel: 'Delete', btnSave: 'Save', btnCancel: 'Cancel',
-                // Shopping Modal
-                shopTitle: 'Add Shopping Item', shopUpload: 'Product Photo',
-                phShopName: 'Item Name', phShopNote: 'Notes (Qty, Size...)',
-                btnAddShop: 'Add to List',
-                // Budget
-                totalSpent: 'Total Spent', converter: 'Converter', newExp: 'New Expense',
-                phItem: 'Item', phAmt: '¥ Amount', phPpl: 'Ppl', btnAddExp: 'Add',
-                // Info
+                shopTitle: 'Add Shopping Item', shopUpload: 'Product Photo', phShopName: 'Item Name', phShopNote: 'Notes (Qty, Size...)', btnAddShop: 'Add to List',
+                totalSpent: 'Total Spent', converter: 'Converter', newExp: 'New Expense', phItem: 'Item', phAmt: '¥ Amount', phPpl: 'Ppl', btnAddExp: 'Add',
                 flights: 'Flights', hotels: 'Hotels', noInfo: 'No info found.'
             }
         };
@@ -274,28 +256,16 @@
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list' };
         
         const defItin = [
-            {day:1, date:"02/19 (四)", loc:"東京・淺草", events:[
-                {id:1, time:"22:00", title:"抵達 NRT (CI 104)", type:"transport", desc:"Skyliner 直奔淺草", map:"Narita Airport"},
-                {id:2, time:"23:30", title:"Check-in: 御宿野乃淺草", type:"hotel", desc:"免費宵夜拉麵", map:"Onyado Nono Asakusa"}
-            ]},
+            {day:1, date:"02/19 (四)", loc:"東京・淺草", events:[{id:1, time:"22:00", title:"抵達 NRT (CI 104)", type:"transport", desc:"Skyliner 直奔淺草", map:"Narita Airport"}, {id:2, time:"23:30", title:"Check-in: 御宿野乃淺草", type:"hotel", desc:"免費宵夜拉麵", map:"Onyado Nono Asakusa"}]},
             {day:2, date:"02/20 (五)", loc:"舞濱", events:[{id:3, time:"ALL DAY", title:"迪士尼樂園", type:"sightseeing", desc:"全日遊玩", map:"Tokyo Disney Resort"}]},
             {day:3, date:"02/21 (六)", loc:"東京", events:[{id:4, time:"09:00", title:"築地市場", type:"food", desc:"海鮮丼", map:"Tsukiji"}, {id:5, time:"13:00", title:"秋葉原", type:"sightseeing", desc:"購物", map:"Akihabara"}, {id:6, time:"17:00", title:"東京鐵塔", type:"sightseeing", desc:"夜景", map:"Tokyo Tower"}]},
-            {day:4, date:"02/22 (日)", loc:"新宿", events:[
-                {id:7, time:"10:00", title:"搬家", type:"transport", desc:"前往新宿飯店 (待定)", map:"Shinjuku"},
-                {id:8, time:"14:00", title:"Shibuya Sky", type:"sightseeing", desc:"觀景台", map:"SHIBUYA SKY"}
-            ]},
-            {day:5, date:"02/23 (一)", loc:"河口湖", events:[
-                {id:9, time:"07:30", title:"河口湖一日遊", type:"transport", desc:"巴士", map:"Busta Shinjuku"},
-                {id:10, time:"10:30", title:"大石公園", type:"sightseeing", desc:"富士山", map:"Oishi Park"}
-            ]},
-            {day:6, date:"02/24 (二)", loc:"返國", events:[
-                {id:11, time:"11:00", title:"原宿", type:"sightseeing", desc:"購物", map:"Harajuku"},
-                {id:12, time:"18:00", title:"前往機場 (CI 105)", type:"transport", desc:"返台", map:"Narita Airport"}
-            ]}
+            {day:4, date:"02/22 (日)", loc:"新宿", events:[{id:7, time:"10:00", title:"搬家", type:"transport", desc:"前往新宿飯店 (待定)", map:"Shinjuku"}, {id:8, time:"14:00", title:"Shibuya Sky", type:"sightseeing", desc:"觀景台", map:"SHIBUYA SKY"}]},
+            {day:5, date:"02/23 (一)", loc:"河口湖", events:[{id:9, time:"07:30", title:"河口湖一日遊", type:"transport", desc:"巴士", map:"Busta Shinjuku"}, {id:10, time:"10:30", title:"大石公園", type:"sightseeing", desc:"富士山", map:"Oishi Park"}]},
+            {day:6, date:"02/24 (二)", loc:"返國", events:[{id:11, time:"11:00", title:"原宿", type:"sightseeing", desc:"購物", map:"Harajuku"}, {id:12, time:"18:00", title:"前往機場 (CI 105)", type:"transport", desc:"返台", map:"Narita Airport"}]}
         ];
 
-        function init() { const saved = localStorage.getItem('trip_v21'); if(saved) data = JSON.parse(saved); else data.itinerary = JSON.parse(JSON.stringify(defItin)); applySettings(); render(); updateLangUI(); }
-        function save() { localStorage.setItem('trip_v21', JSON.stringify(data)); }
+        function init() { const saved = localStorage.getItem('trip_v22'); if(saved) data = JSON.parse(saved); else data.itinerary = JSON.parse(JSON.stringify(defItin)); applySettings(); render(); updateLangUI(); }
+        function save() { localStorage.setItem('trip_v22', JSON.stringify(data)); }
         
         function applySettings() {
             document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg);
@@ -303,48 +273,13 @@
             document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle;
         }
 
-        // === 核心語言更新函式 (包含所有彈出視窗) ===
         function updateLangUI() {
             const t = i18n[data.config.lang];
-            
-            // Nav
-            document.getElementById('txt-nav-schedule').innerText = t.navSched;
-            document.getElementById('txt-nav-shopping').innerText = t.navShop;
-            document.getElementById('txt-nav-budget').innerText = t.navBudget;
-            document.getElementById('txt-nav-info').innerText = t.navInfo;
-
-            // Settings Menu
-            document.getElementById('txt-dark').innerText = t.dark;
-            document.getElementById('txt-bg').innerText = t.bg;
-            document.getElementById('txt-lang').innerText = t.lang;
-            document.getElementById('txt-export').innerText = t.export;
-            document.getElementById('txt-import').innerText = t.import;
-            document.getElementById('txt-reset').innerText = t.reset;
-
-            // Edit Modal Text
-            document.getElementById('txt-modal-edit-title').innerText = t.editTitle;
-            document.getElementById('txt-upload-label').innerText = t.upload;
-            document.getElementById('txt-type-sightseeing').innerText = t.tSight;
-            document.getElementById('txt-type-food').innerText = t.tFood;
-            document.getElementById('txt-type-transport').innerText = t.tTrans;
-            document.getElementById('txt-type-hotel').innerText = t.tHotel;
-            document.getElementById('btn-delete').innerText = t.btnDel;
-            document.getElementById('btn-save').innerText = t.btnSave;
-            document.getElementById('btn-cancel-edit').innerText = t.btnCancel;
-
-            // Edit Modal Placeholders
-            document.getElementById('eTime').placeholder = t.phTime;
-            document.getElementById('eTitle').placeholder = t.phTitle;
-            document.getElementById('eDesc').placeholder = t.phDesc;
-            document.getElementById('eMap').placeholder = t.phMap;
-
-            // Shopping Modal
-            document.getElementById('txt-modal-shop-title').innerText = t.shopTitle;
-            document.getElementById('txt-shop-upload-label').innerText = t.shopUpload;
-            document.getElementById('sName').placeholder = t.phShopName;
-            document.getElementById('sNote').placeholder = t.phShopNote;
-            document.getElementById('btn-add-shop').innerText = t.btnAddShop;
-            document.getElementById('btn-cancel-shop').innerText = t.btnCancel;
+            document.getElementById('txt-nav-schedule').innerText = t.navSched; document.getElementById('txt-nav-shopping').innerText = t.navShop; document.getElementById('txt-nav-budget').innerText = t.navBudget; document.getElementById('txt-nav-info').innerText = t.navInfo;
+            document.getElementById('txt-dark').innerText = t.dark; document.getElementById('txt-bg').innerText = t.bg; document.getElementById('txt-lang').innerText = t.lang; document.getElementById('txt-export').innerText = t.export; document.getElementById('txt-import').innerText = t.import; document.getElementById('txt-reset').innerText = t.reset;
+            document.getElementById('txt-modal-edit-title').innerText = t.editTitle; document.getElementById('txt-upload-label').innerText = t.upload; document.getElementById('txt-type-sightseeing').innerText = t.tSight; document.getElementById('txt-type-food').innerText = t.tFood; document.getElementById('txt-type-transport').innerText = t.tTrans; document.getElementById('txt-type-hotel').innerText = t.tHotel; document.getElementById('btn-delete').innerText = t.btnDel; document.getElementById('btn-save').innerText = t.btnSave; document.getElementById('btn-cancel-edit').innerText = t.btnCancel;
+            document.getElementById('eTime').placeholder = t.phTime; document.getElementById('eTitle').placeholder = t.phTitle; document.getElementById('eDesc').placeholder = t.phDesc; document.getElementById('eMap').placeholder = t.phMap;
+            document.getElementById('txt-modal-shop-title').innerText = t.shopTitle; document.getElementById('txt-shop-upload-label').innerText = t.shopUpload; document.getElementById('sName').placeholder = t.phShopName; document.getElementById('sNote').placeholder = t.phShopNote; document.getElementById('btn-add-shop').innerText = t.btnAddShop; document.getElementById('btn-cancel-shop').innerText = t.btnCancel;
         }
 
         function toggleSettings() { document.getElementById('settingsMenu').classList.toggle('show'); }
@@ -358,7 +293,7 @@
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("備份已下載 (Backup Downloaded)"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("還原成功 (Restored)"); } catch(err) { alert("檔案錯誤 (Error)"); } }; reader.readAsText(e.target.files[0]); };
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v21'); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v22'); location.reload(); } }
         function switchTab(t) { viewState.tab = t; if(t !== 'schedule') viewState.mode = 'list'; document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); render(); window.scrollTo(0,0); }
         function render() { const box = document.getElementById('app-content'); box.innerHTML = ''; box.classList.remove('page-transition'); void box.offsetWidth; box.classList.add('page-transition'); if(viewState.tab === 'schedule') renderSchedule(box); else if(viewState.tab === 'shopping') renderShopping(box); else if(viewState.tab === 'budget') renderBudget(box); else renderInfo(box); }
 
@@ -369,14 +304,8 @@
                 data.itinerary.forEach((day, idx) => {
                     html += `
                     <div class="glass-card list-item-card" onclick="openDay(${idx})">
-                        <div>
-                            <div class="text-2xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</div>
-                            <div class="text-xs text-gray-500 font-bold tracking-wider">${day.date}</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-base font-bold jp-font mb-1 editable-location" onclick="event.stopPropagation(); editLoc(${idx})">${day.loc} <i class="fas fa-pen text-[10px] text-gray-300"></i></div>
-                            <div class="view-btn">${t.view} <i class="fas fa-chevron-right"></i></div>
-                        </div>
+                        <div><div class="text-2xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</div><div class="text-xs text-gray-500 font-bold tracking-wider">${day.date}</div></div>
+                        <div class="text-right"><div class="text-base font-bold jp-font mb-1 editable-location" onclick="event.stopPropagation(); editLoc(${idx})">${day.loc} <i class="fas fa-pen text-[10px] text-gray-300"></i></div><div class="view-btn">${t.view} <i class="fas fa-chevron-right"></i></div></div>
                     </div>`;
                 });
                 box.innerHTML = html;
@@ -402,20 +331,11 @@
         function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); }
         function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:""}); }
         function setType(type) { document.getElementById('eType').value = type; document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + type).classList.add('active'); }
-        function fillModal(id, obj) {
-            document.getElementById(id).classList.add('active');
-            if(id === 'editModal') {
-                document.getElementById('eTime').value = obj.time; document.getElementById('eTitle').value = obj.title;
-                document.getElementById('eDesc').value = obj.desc; document.getElementById('eMap').value = obj.map||"";
-                setType(obj.type || 'sightseeing');
-                const img = document.getElementById('previewImg'); if(obj.img) { img.src=obj.img; img.classList.add('show'); } else { img.src=''; img.classList.remove('show'); }
-            }
-        }
-        
+        function fillModal(id, obj) { document.getElementById(id).classList.add('active'); if(id === 'editModal') { document.getElementById('eTime').value = obj.time; document.getElementById('eTitle').value = obj.title; document.getElementById('eDesc').value = obj.desc; document.getElementById('eMap').value = obj.map||""; setType(obj.type || 'sightseeing'); const img = document.getElementById('previewImg'); if(obj.img) { img.src=obj.img; img.classList.add('show'); } else { img.src=''; img.classList.remove('show'); } } }
         document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); });
         function saveEvent() { const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; if(!evt.title) return; const events = data.itinerary[viewState.dayIdx].events; if(editIdx !== null) events[editIdx] = evt; else { events.push(evt); events.sort((a,b)=>a.time.localeCompare(b.time)); } save(); closeModal('editModal'); render(); }
         function delEvent() { if(editIdx!==null && confirm("Delete?")) { data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render(); } }
-        function renderShopping(box) { const t = i18n[data.config.lang]; let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold jp-font text-[var(--primary)]">${t.navShop}</h2><button onclick="openShopModal()" class="text-sm bg-[var(--primary)] text-white px-3 py-1 rounded shadow">＋ Add</button></div><div class="space-y-3">`; if(data.shopping.length === 0) html += `<div class="text-center text-gray-400 py-10">Empty List</div>`; data.shopping.forEach((item, idx) => { const checkClass = item.checked ? 'checked' : ''; const img = item.img ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="alert('View Image')">` : ''; html += `<div class="glass-card p-3 flex items-center ${checkClass}"><div class="custom-checkbox mr-3 flex-shrink-0" onclick="toggleShop(${idx})"><i class="fas fa-check text-xs"></i></div>${img}<div class="flex-1"><div class="font-bold item-name text-lg">${item.name}</div><div class="text-xs text-gray-500">${item.note}</div></div><i class="fas fa-times text-gray-300 p-2 cursor-pointer" onclick="delShop(${idx})"></i></div>`; }); box.innerHTML = html + "</div>"; }
+        function renderShopping(box) { const t = i18n[data.config.lang]; let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold jp-font text-[var(--primary)]">${t.navShop}</h2><button onclick="openShopModal()" class="text-sm bg-[var(--primary)] text-white px-3 py-1 rounded shadow">＋</button></div><div class="space-y-3">`; if(data.shopping.length === 0) html += `<div class="text-center text-gray-400 py-10">Empty List</div>`; data.shopping.forEach((item, idx) => { const checkClass = item.checked ? 'checked' : ''; const img = item.img ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="alert('View Image')">` : ''; html += `<div class="glass-card p-3 flex items-center ${checkClass}"><div class="custom-checkbox mr-3 flex-shrink-0" onclick="toggleShop(${idx})"><i class="fas fa-check text-xs"></i></div>${img}<div class="flex-1"><div class="font-bold item-name text-lg">${item.name}</div><div class="text-xs text-gray-500">${item.note}</div></div><i class="fas fa-times text-gray-300 p-2 cursor-pointer" onclick="delShop(${idx})"></i></div>`; }); box.innerHTML = html + "</div>"; }
         function openShopModal() { document.getElementById('shopModal').classList.add('active'); document.getElementById('sName').value=""; document.getElementById('sNote').value=""; document.getElementById('shopPreview').classList.remove('show'); }
         document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('shopPreview').src=url; document.getElementById('shopPreview').classList.add('show'); });
         function saveShopItem() { const item = { id: Date.now(), name: document.getElementById('sName').value, note: document.getElementById('sNote').value, checked: false, img: document.getElementById('shopPreview').classList.contains('show') ? document.getElementById('shopPreview').src : "" }; if(item.name) { data.shopping.push(item); save(); closeModal('shopModal'); render(); } }
@@ -427,7 +347,7 @@
             let html = `
             <div class="glass-card p-6 text-center mb-6"><div class="text-xs text-gray-500 mb-2 font-bold tracking-widest uppercase">${t.totalSpent}</div>
                 <div class="text-4xl font-black jp-font text-[var(--primary)]">¥${total.toLocaleString()}</div></div>
-            <div class="glass-card p-4 mb-6 bg-blue-50/50"><div class="flex justify-between items-center mb-2"><h3 class="text-sm font-bold text-[var(--primary)]"><i class="fas fa-exchange-alt"></i> ${t.converter}</h3><input type="number" value="${rate}" onchange="updateRate(this.value)" class="w-16 text-center text-xs p-1 h-6 mb-0" title="Rate"></div><div class="flex gap-2 items-center"><input type="number" id="convJpy" placeholder="JPY" oninput="calcTwd(this.value)" class="mb-0 text-center font-bold"><span class="text-gray-400">=</span><div id="convTwd" class="flex-1 text-center font-bold text-xl text-[var(--accent)] jp-font">NT$ 0</div></div></div>
+            <div class="glass-card p-4 mb-6 bg-blue-50/50"><div class="flex justify-between items-center mb-2"><h3 class="text-sm font-bold text-[var(--primary)]"><i class="fas fa-exchange-alt"></i> ${t.converter}</h3><input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center text-xs p-1 h-6 mb-0" title="Rate"></div><div class="flex gap-2 items-center"><input type="number" id="convJpy" placeholder="JPY" oninput="calcTwd(this.value)" class="jpy-input mb-0 text-center font-bold"><span class="text-gray-400">=</span><div id="convTwd" class="flex-1 text-center font-bold text-xl text-[var(--accent)] jp-font">NT$ 0</div></div></div>
             <div class="glass-card p-5 mb-4"><h3 class="font-bold text-sm mb-3 tracking-widest">${t.newExp}</h3><input id="bItem" placeholder="${t.phItem}"><div class="flex gap-2"><input type="number" id="bAmt" placeholder="${t.phAmt}"><input type="number" id="bPpl" placeholder="${t.phPpl}" value="2" class="w-20 text-center"></div><button onclick="addBudget()" class="btn-primary py-2 text-sm">${t.btnAddExp}</button></div>
             <div class="space-y-3">${data.budget.slice().reverse().map((b,i) => `<div class="glass-card p-4 flex justify-between items-center border-l-4 border-[var(--primary)]"><div><div class="font-bold jp-font">${b.item}</div><div class="text-xs text-gray-500">${b.note}</div></div><div class="flex items-center gap-3"><span class="font-bold text-lg jp-font">¥${b.amt.toLocaleString()}</span><i class="fas fa-times text-gray-300 cursor-pointer" onclick="delBudget(${b.id})"></i></div></div>`).join('')}</div>`;
             box.innerHTML = html;
@@ -458,7 +378,7 @@
                 }
             });
             if (!hasInfo) { html += `<div class="text-center text-gray-400 py-10 glass-card">${t.noInfo}</div>`; }
-            html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V21.0</div></div>`;
+            html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V22.0</div></div>`;
             box.innerHTML = html;
         }
 
