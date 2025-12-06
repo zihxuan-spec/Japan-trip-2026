@@ -70,25 +70,34 @@
         .nav-text { font-size: 0.65rem; display: block; font-weight: bold; margin-top: 3px; font-family: sans-serif; }
         .nav-icon { font-size: 1.2rem; }
 
+        /* === 輸入框全面優化 === */
         input, select, textarea { 
-            width: 100%; padding: 14px 20px !important; margin-bottom: 14px; 
-            background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); 
-            font-family: "Noto Serif JP", serif; font-size: 15px !important; border-radius: 10px;
-            letter-spacing: 0.05em; line-height: 1.6;
+            width: 100%; 
+            padding: 14px 20px !important; /* 寬敞內距 */
+            margin-bottom: 20px; /* 加大欄位間距 */
+            background: var(--input-bg); 
+            border: 1px solid var(--border); 
+            color: var(--text-main); 
+            font-family: "Noto Serif JP", serif; 
+            font-size: 16px !important; 
+            border-radius: 12px;
+            letter-spacing: 0.05em; 
+            line-height: 1.6;
+            transition: 0.2s;
         }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 75, 113, 0.1); }
         
-        .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 8px; font-weight: bold; letter-spacing: 0.1em; }
+        .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; }
         .btn-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: var(--primary); border: 1px solid var(--border); transition: 0.2s; }
         .btn-circle:active { transform: scale(0.9); background: var(--primary); color: #fff; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
-        .modal-content { background: var(--modal-bg); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); color: var(--text-main); }
+        .modal-content { background: var(--modal-bg); width: 92%; max-width: 420px; padding: 30px; border-radius: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); color: var(--text-main); }
 
         .list-item-card { display: flex; align-items: center; justify-content: space-between; padding: 20px; margin-bottom: 15px; cursor: pointer; }
         .list-item-card:active { transform: scale(0.98); }
-        .img-box { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; display: none; }
+        .img-box { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; display: none; }
         .img-box.show { display: block; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -109,6 +118,20 @@
 
         .view-btn { display: inline-block; width: 80px; text-align: center; border: 1px solid #d1d5db; padding: 4px 0; border-radius: 9999px; font-size: 11px; color: #9ca3af; font-weight: bold; }
         body.dark-mode .view-btn { border-color: #4b5563; color: #6b7280; }
+
+        /* === 新增：類別選擇器樣式 === */
+        .type-selector { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 24px; }
+        .type-btn {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 12px 0; border: 1px solid var(--border); border-radius: 12px; 
+            color: #999; cursor: pointer; transition: 0.2s; background: var(--input-bg);
+        }
+        .type-btn i { font-size: 1.4rem; margin-bottom: 6px; }
+        .type-btn span { font-size: 0.75rem; font-weight: bold; }
+        .type-btn.active { 
+            background-color: var(--primary); color: white; border-color: var(--primary); 
+            box-shadow: 0 4px 12px rgba(46, 75, 113, 0.25); transform: translateY(-2px);
+        }
     </style>
 </head>
 <body class="default-bg">
@@ -146,23 +169,53 @@
 
     <div id="editModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 class="text-xl font-bold text-center mb-4 jp-font">編輯行程</h3>
-            <div class="text-center mb-4">
-                <div onclick="document.getElementById('editImg').click()" class="border-2 border-dashed border-gray-300 rounded p-4 cursor-pointer text-gray-400 text-sm">
-                    <i class="fas fa-camera text-2xl mb-1"></i><br>上傳照片
+            <h3 class="text-2xl font-bold text-center mb-6 jp-font" style="color:var(--primary)">編輯行程</h3>
+            
+            <div class="text-center mb-6">
+                <div onclick="document.getElementById('editImg').click()" class="border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer text-gray-400 text-sm hover:bg-gray-50 transition">
+                    <i class="fas fa-camera text-3xl mb-2"></i><br>上傳照片 (Upload)
                 </div>
                 <input type="file" id="editImg" accept="image/*" hidden>
-                <img id="previewImg" class="img-box mt-2">
+                <img id="previewImg" class="img-box mt-4">
             </div>
-            <div class="grid grid-cols-2 gap-3">
-                <input id="eTime" placeholder="時間">
-                <select id="eType"><option value="sightseeing">觀光</option><option value="food">美食</option><option value="transport">交通</option><option value="hotel">住宿</option></select>
+
+            <div class="type-selector">
+                <div class="type-btn" onclick="setType('sightseeing')" id="btn-sightseeing">
+                    <i class="fas fa-camera"></i><span>觀光</span>
+                </div>
+                <div class="type-btn" onclick="setType('food')" id="btn-food">
+                    <i class="fas fa-utensils"></i><span>美食</span>
+                </div>
+                <div class="type-btn" onclick="setType('transport')" id="btn-transport">
+                    <i class="fas fa-train"></i><span>交通</span>
+                </div>
+                <div class="type-btn" onclick="setType('hotel')" id="btn-hotel">
+                    <i class="fas fa-bed"></i><span>住宿</span>
+                </div>
             </div>
-            <input id="eTitle" placeholder="標題" class="font-bold">
-            <textarea id="eDesc" rows="3" placeholder="備註..."></textarea>
-            <input id="eMap" placeholder="Google Maps 地點關鍵字">
-            <div class="flex gap-3 mt-4"><button onclick="delEvent()" class="flex-1 py-3 rounded border text-gray-400 text-sm">刪除</button><button onclick="saveEvent()" class="flex-[2] btn-primary">儲存</button></div>
-            <div class="text-center mt-3"><span onclick="closeModal('editModal')" class="text-xs text-gray-400 underline cursor-pointer">取消</span></div>
+            <input type="hidden" id="eType" value="sightseeing">
+
+            <div class="grid grid-cols-3 gap-4">
+                <div class="col-span-1">
+                    <input id="eTime" placeholder="時間" class="text-center">
+                </div>
+                <div class="col-span-2">
+                    <input id="eTitle" placeholder="行程標題 (必填)" class="font-bold">
+                </div>
+            </div>
+            
+            <textarea id="eDesc" rows="3" placeholder="備註 / 詳細說明..."></textarea>
+            
+            <div class="relative">
+                <i class="fas fa-map-marker-alt absolute left-4 top-4 text-red-400 text-lg"></i>
+                <input id="eMap" placeholder="貼上 Google Maps 連結或地點" style="padding-left: 45px !important;">
+            </div>
+
+            <div class="flex gap-4 mt-4">
+                <button onclick="delEvent()" class="flex-1 py-3 rounded-xl border border-red-200 text-red-400 font-bold hover:bg-red-50">刪除</button>
+                <button onclick="saveEvent()" class="flex-[2] btn-primary shadow-lg">儲存變更</button>
+            </div>
+            <div class="text-center mt-6"><span onclick="closeModal('editModal')" class="text-sm text-gray-400 font-bold cursor-pointer hover:text-gray-600">取消</span></div>
         </div>
     </div>
 
@@ -208,8 +261,8 @@
             ]}
         ];
 
-        function init() { const saved = localStorage.getItem('trip_v19'); if(saved) data = JSON.parse(saved); else data.itinerary = JSON.parse(JSON.stringify(defItin)); applySettings(); render(); updateNavLang(); }
-        function save() { localStorage.setItem('trip_v19', JSON.stringify(data)); }
+        function init() { const saved = localStorage.getItem('trip_v20'); if(saved) data = JSON.parse(saved); else data.itinerary = JSON.parse(JSON.stringify(defItin)); applySettings(); render(); updateNavLang(); }
+        function save() { localStorage.setItem('trip_v20', JSON.stringify(data)); }
         function applySettings() {
             document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg);
             if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = "";
@@ -237,7 +290,7 @@
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("備份已下載 (Backup Downloaded)"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateNavLang(); alert("還原成功 (Restored)"); } catch(err) { alert("檔案錯誤 (Error)"); } }; reader.readAsText(e.target.files[0]); };
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v19'); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v20'); location.reload(); } }
         function switchTab(t) { viewState.tab = t; if(t !== 'schedule') viewState.mode = 'list'; document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); render(); window.scrollTo(0,0); }
         function render() { const box = document.getElementById('app-content'); box.innerHTML = ''; box.classList.remove('page-transition'); void box.offsetWidth; box.classList.add('page-transition'); if(viewState.tab === 'schedule') renderSchedule(box); else if(viewState.tab === 'shopping') renderShopping(box); else if(viewState.tab === 'budget') renderBudget(box); else renderInfo(box); }
 
@@ -276,10 +329,31 @@
         function openDay(idx) { viewState.dayIdx = idx; viewState.mode = 'detail'; render(); }
         function editLoc(idx) { const n = prompt("Location:", data.itinerary[idx].loc); if(n) { data.itinerary[idx].loc = n; save(); render(); } }
         function getDotColor(t) { return t==='food'?'#D68F4D':t==='transport'?'#5D7C9D':t==='hotel'?'#8A6B9E':'#6D8C6F'; }
+        
+        // --- V20 Logic: New Icon Selector ---
         let editIdx = null;
         function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); }
         function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:""}); }
-        function fillModal(id, obj) { document.getElementById(id).classList.add('active'); if(id === 'editModal') { document.getElementById('eTime').value = obj.time; document.getElementById('eTitle').value = obj.title; document.getElementById('eDesc').value = obj.desc; document.getElementById('eMap').value = obj.map||""; document.getElementById('eType').value = obj.type || 'sightseeing'; const img = document.getElementById('previewImg'); if(obj.img) { img.src=obj.img; img.classList.add('show'); } else { img.src=''; img.classList.remove('show'); } } }
+        function setType(type) {
+            document.getElementById('eType').value = type;
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + type).classList.add('active');
+        }
+        function fillModal(id, obj) {
+            document.getElementById(id).classList.add('active');
+            if(id === 'editModal') {
+                document.getElementById('eTime').value = obj.time; document.getElementById('eTitle').value = obj.title;
+                document.getElementById('eDesc').value = obj.desc; document.getElementById('eMap').value = obj.map||"";
+                
+                // Initialize Icon State
+                const currentType = obj.type || 'sightseeing';
+                setType(currentType);
+
+                const img = document.getElementById('previewImg');
+                if(obj.img) { img.src=obj.img; img.classList.add('show'); } else { img.src=''; img.classList.remove('show'); }
+            }
+        }
+        
         document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); });
         function saveEvent() { const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; if(!evt.title) return; const events = data.itinerary[viewState.dayIdx].events; if(editIdx !== null) events[editIdx] = evt; else { events.push(evt); events.sort((a,b)=>a.time.localeCompare(b.time)); } save(); closeModal('editModal'); render(); }
         function delEvent() { if(editIdx!==null && confirm("Delete?")) { data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render(); } }
@@ -310,42 +384,21 @@
             const isEn = data.config.lang === 'en';
             let html = `<div class="space-y-6">`;
             let hasInfo = false;
-
-            // Iterate itinerary to find transport/hotel
             data.itinerary.forEach(day => {
                 const infoEvents = day.events.filter(e => e.type === 'transport' || e.type === 'hotel');
                 if (infoEvents.length > 0) {
                     hasInfo = true;
-                    html += `
-                    <div class="glass-card p-5 border-l-4 border-[var(--primary)]">
-                        <h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">Day ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3>
-                        <div class="space-y-2">`;
-                    
+                    html += `<div class="glass-card p-5 border-l-4 border-[var(--primary)]"><h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">Day ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3><div class="space-y-2">`;
                     infoEvents.forEach(e => {
-                        let icon = 'fa-plane';
-                        const t = e.title.toLowerCase();
-                        if (e.type === 'hotel') icon = 'fa-bed';
-                        else if (t.includes('高鐵') || t.includes('rail') || t.includes('train') || t.includes('shinkansen') || t.includes('skyliner') || t.includes('nex')) icon = 'fa-train';
-                        else if (t.includes('巴士') || t.includes('bus')) icon = 'fa-bus';
-                        
+                        let icon = 'fa-plane'; const t = e.title.toLowerCase(); if (e.type === 'hotel') icon = 'fa-bed'; else if (t.includes('高鐵') || t.includes('rail') || t.includes('train') || t.includes('shinkansen') || t.includes('skyliner') || t.includes('nex')) icon = 'fa-train'; else if (t.includes('巴士') || t.includes('bus')) icon = 'fa-bus';
                         const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i></a>` : '';
-                        
-                        // 修正重點：只顯示標題 (Title) 和地圖連結，移除時間與詳細說明
-                        html += `
-                        <div class="flex items-center gap-3 py-1">
-                            <div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div>
-                            <div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div>
-                        </div>`;
+                        html += `<div class="flex items-center gap-3 py-1"><div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div><div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div></div>`;
                     });
                     html += `</div></div>`;
                 }
             });
-
-            if (!hasInfo) {
-                html += `<div class="text-center text-gray-400 py-10 glass-card">${isEn ? 'No info found.' : '行程中未找到資訊。'}</div>`;
-            }
-
-            html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V19.0</div></div>`;
+            if (!hasInfo) { html += `<div class="text-center text-gray-400 py-10 glass-card">${isEn ? 'No info found.' : '行程中未找到資訊。'}</div>`; }
+            html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V20.0</div></div>`;
             box.innerHTML = html;
         }
 
