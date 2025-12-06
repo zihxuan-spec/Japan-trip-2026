@@ -29,7 +29,7 @@
             font-family: "Noto Serif JP", serif; color: var(--text-main); background-color: var(--bg-body);
             font-size: 17px; line-height: 1.75; letter-spacing: 0.06em; -webkit-tap-highlight-color: transparent;
             padding-bottom: 140px; min-height: 100vh; overflow-x: hidden; transition: background-color 0.5s, color 0.5s;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         body.has-custom-bg { background-image: none; background-size: cover; background-position: center; background-attachment: fixed; }
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); z-index: -1; pointer-events: none; transition: 0.3s; }
@@ -44,6 +44,7 @@
         .nav-text { font-size: 0.65rem; display: block; font-weight: bold; margin-top: 3px; font-family: sans-serif; }
         .nav-icon { font-size: 1.2rem; }
         
+        /* 輸入框樣式 */
         input, select, textarea { width: 100%; padding: 14px 20px !important; margin-bottom: 20px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); font-family: "Noto Serif JP", serif; font-size: 16px !important; border-radius: 12px; letter-spacing: 0.05em; line-height: 1.6; transition: 0.2s; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 75, 113, 0.1); }
         .converter-input { padding: 4px 8px !important; margin-bottom: 0 !important; height: 32px !important; font-size: 14px !important; border-radius: 6px !important; width: auto !important; }
@@ -86,6 +87,7 @@
         .shop-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: 0.2s; font-family: "Zen Old Mincho", serif; }
         .shop-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         
+        /* 載入畫面與錯誤提示 */
         #loadingScreen { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--bg-body); z-index: 200; 
@@ -99,14 +101,18 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Debug Log */
-        #error-log { display: none; margin-top: 20px; padding: 10px; background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; font-size: 12px; border-radius: 8px; max-width: 90%; word-break: break-all; }
+        #error-log {
+            margin-top: 20px; padding: 15px; 
+            background: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; 
+            border-radius: 8px; font-size: 12px; max-width: 80%; display: none;
+            text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
     </style>
 </head>
 <body class="default-bg">
     <div id="loadingScreen">
         <div class="spinner mb-4"></div>
-        <div class="text-sm tracking-widest font-bold text-gray-400">CONNECTING...</div>
+        <div class="text-sm tracking-widest font-bold text-gray-400">SYNCING CLOUD...</div>
         <div id="error-log"></div>
     </div>
 
@@ -195,7 +201,7 @@
     </div>
 
     <script>
-        // === YOUR FIREBASE CONFIG (V28.0) ===
+        // === YOUR FIREBASE CONFIG (Injected) ===
         const firebaseConfig = {
           apiKey: "AIzaSyCZ6-Io1jzxTLz4gzNW_Nf9er5As217erk",
           authDomain: "japan-fb8df.firebaseapp.com",
@@ -208,13 +214,16 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        // Enable Offline Persistence for Speed
+        db.enablePersistence().catch(err => console.log("Persistence:", err.code));
+        
         const TRIP_DOC_ID = "trip_data_2026"; 
 
         const i18n = {
             'zh-TW': {
                 navSched: '行程', navShop: '購物', navBudget: '記帳', navInfo: '資訊',
                 day: 'Day', view: '查看', overview: '行程總覽', addEvent: '＋ 新增行程', back: '返回', viewMap: '查看當日路線地圖',
-                dark: '深色模式', bg: '更換背景', lang: '語言: EN', reset: '重置所有', export: '備份資料 (AirDrop)', import: '還原資料',
+                dark: '深色模式', bg: '更換背景', lang: '語言: EN', reset: '重置所有', export: '備份資料', import: '還原資料',
                 editTitle: '編輯行程', upload: '上傳照片', tSight: '觀光', tFood: '美食', tTrans: '交通', tHotel: '住宿',
                 phTime: '時間', phTitle: '行程標題 (必填)', phDesc: '備註 / 詳細說明...', phMap: '貼上 Google Maps 連結或地點',
                 btnDel: '刪除', btnSave: '儲存變更', btnCancel: '取消',
@@ -227,7 +236,7 @@
             'en': {
                 navSched: 'Schedule', navShop: 'Shopping', navBudget: 'Budget', navInfo: 'Info',
                 day: 'Day', view: 'View', overview: 'Overview', addEvent: '＋ Add Event', back: 'Back', viewMap: 'View Route Map',
-                dark: 'Dark Mode', bg: 'Change BG', lang: 'Lang: 中文', reset: 'Reset All', export: 'Backup (Share)', import: 'Restore Data',
+                dark: 'Dark Mode', bg: 'Change BG', lang: 'Lang: 中文', reset: 'Reset All', export: 'Backup', import: 'Restore',
                 editTitle: 'Edit Event', upload: 'Upload Photo', tSight: 'Sightseeing', tFood: 'Food', tTrans: 'Transport', tHotel: 'Hotel',
                 phTime: 'Time', phTitle: 'Title (Required)', phDesc: 'Notes / Description...', phMap: 'Google Maps Link or Location',
                 btnDel: 'Delete', btnSave: 'Save', btnCancel: 'Cancel',
@@ -251,13 +260,13 @@
         let data = { config: { title: "JAPAN", subtitle: "2026.02.19 - 02.24", lang: "zh-TW", darkMode: false, bg: null, rate: 0.22 }, itinerary: JSON.parse(JSON.stringify(defItin)), budget: [], shopping: [] };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list', shopTab: 'tobuy' };
         
-        // === Init & Connection Check ===
+        // === Init Logic ===
         function init() {
-            // Load Local first
-            const localSaved = localStorage.getItem('trip_v28_cloud');
+            // Load Local first for instant UI
+            const localSaved = localStorage.getItem('trip_v30_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
 
-            // Connect Firebase
+            // Listen to Cloud
             db.collection("trips").doc(TRIP_DOC_ID)
                 .onSnapshot((doc) => {
                     hideLoading();
@@ -265,26 +274,31 @@
                     if (doc.exists) {
                         const cloudData = doc.data();
                         if (JSON.stringify(cloudData) !== JSON.stringify(data)) {
-                            console.log("Sync update"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
+                            console.log("Cloud sync"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
                         }
                         statusDot.classList.add('online'); statusDot.classList.remove('error');
                     } else { saveToCloud(); }
                 }, (error) => { 
-                    console.error(error); 
+                    console.error("Firebase Error:", error); 
                     document.getElementById('dbStatus').classList.add('error');
-                    document.getElementById('error-log').style.display = 'block';
-                    document.getElementById('error-log').innerText = "Conn Err: " + error.message + ". Check Firestore Rules.";
+                    
+                    // Show Error Info
+                    const msgDiv = document.getElementById('error-log');
+                    msgDiv.style.display = 'block';
+                    if (error.code === 'permission-denied') {
+                        msgDiv.innerHTML = "⚠️ 連線被拒絕 (Permission Denied)<br>請去 Firebase Console > Firestore > Rules<br>將 allow read, write 改為 <b>true</b>";
+                    } else {
+                        msgDiv.innerText = "Error: " + error.code;
+                    }
                     hideLoading();
                 });
         }
 
         function hideLoading() { const ls = document.getElementById('loadingScreen'); if(ls) { ls.style.opacity = '0'; setTimeout(()=>ls.style.display='none', 500); } }
         function save() { saveLocal(); saveToCloud(); }
-        function saveLocal() { localStorage.setItem('trip_v28_cloud', JSON.stringify(data)); }
+        function saveLocal() { localStorage.setItem('trip_v30_cloud', JSON.stringify(data)); }
         function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).then(()=>{document.getElementById('dbStatus').classList.add('online')}).catch((err)=>{document.getElementById('dbStatus').classList.add('error'); console.error(err);}); }
 
-        // ... [Rest of the functions same as V26.1] ...
-        // (省略重複的函式，功能與 V26 完全一致，僅確保變數名對應正確)
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
         function updateLangUI() { const t = i18n[data.config.lang]; document.getElementById('txt-nav-schedule').innerText = t.navSched; document.getElementById('txt-nav-shopping').innerText = t.navShop; document.getElementById('txt-nav-budget').innerText = t.navBudget; document.getElementById('txt-nav-info').innerText = t.navInfo; document.getElementById('txt-dark').innerText = t.dark; document.getElementById('txt-bg').innerText = t.bg; document.getElementById('txt-lang').innerText = t.lang; document.getElementById('txt-reset').innerText = t.reset; document.getElementById('txt-modal-edit-title').innerText = t.editTitle; document.getElementById('txt-upload-label').innerText = t.upload; document.getElementById('txt-type-sightseeing').innerText = t.tSight; document.getElementById('txt-type-food').innerText = t.tFood; document.getElementById('txt-type-transport').innerText = t.tTrans; document.getElementById('txt-type-hotel').innerText = t.tHotel; document.getElementById('btn-delete').innerText = t.btnDel; document.getElementById('btn-save').innerText = t.btnSave; document.getElementById('btn-cancel-edit').innerText = t.btnCancel; document.getElementById('eTime').placeholder = t.phTime; document.getElementById('eTitle').placeholder = t.phTitle; document.getElementById('eDesc').placeholder = t.phDesc; document.getElementById('eMap').placeholder = t.phMap; document.getElementById('txt-modal-shop-title').innerText = t.shopTitle; document.getElementById('txt-shop-upload-label').innerText = t.shopUpload; document.getElementById('sName').placeholder = t.phShopName; document.getElementById('sNote').placeholder = t.phShopNote; document.getElementById('btn-add-shop').innerText = t.btnAddShop; document.getElementById('btn-cancel-shop').innerText = t.btnCancel; document.getElementById('txt-shop-drug').innerText = t.sDrug; document.getElementById('txt-shop-snack').innerText = t.sSnack; document.getElementById('txt-shop-wear').innerText = t.sWear; document.getElementById('txt-shop-gift').innerText = t.sGift; }
         function toggleSettings() { document.getElementById('settingsMenu').classList.toggle('show'); }
@@ -295,7 +309,7 @@
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
         function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 1024 / img.width; cvs.width = 1024; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.7)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        function resetAllData() { if(confirm("Clear All (Local & Cloud)?")) { localStorage.removeItem('trip_v28_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All (Local & Cloud)?")) { localStorage.removeItem('trip_v30_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -345,12 +359,13 @@
         function saveShopItem() { const item = { id: Date.now(), name: document.getElementById('sName').value, note: document.getElementById('sNote').value, type: document.getElementById('sType').value, checked: false, img: document.getElementById('shopPreview').classList.contains('show') ? document.getElementById('shopPreview').src : "" }; if(item.name) { data.shopping.push(item); save(); closeModal('shopModal'); render(); } }
         function toggleShop(idx) { data.shopping[idx].checked = !data.shopping[idx].checked; save(); render(); }
         function delShop(idx) { if(confirm("Delete?")) { data.shopping.splice(idx,1); save(); render(); } }
+        
         function renderBudget(box) { const t = i18n[data.config.lang]; const total = data.budget.reduce((a,c)=>a+c.amt,0); const rate = data.config.rate; let html = `<div class="glass-card p-6 text-center mb-6"><div class="text-xs text-gray-500 mb-2 font-bold tracking-widest uppercase">${t.totalSpent}</div><div class="text-4xl font-black jp-font text-[var(--primary)]">¥${total.toLocaleString()}</div></div><div class="glass-card p-4 mb-6 bg-blue-50/50"><div class="flex justify-between items-center mb-2"><h3 class="text-sm font-bold text-[var(--primary)]"><i class="fas fa-exchange-alt"></i> ${t.converter}</h3><input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center text-xs p-1 h-6 mb-0" title="Rate"></div><div class="flex gap-2 items-center"><input type="number" id="convJpy" placeholder="JPY" oninput="calcTwd(this.value)" class="jpy-input mb-0 text-center font-bold"><span class="text-gray-400">=</span><div id="convTwd" class="flex-1 text-center font-bold text-xl text-[var(--accent)] jp-font">NT$ 0</div></div></div><div class="glass-card p-5 mb-4"><h3 class="font-bold text-sm mb-3 tracking-widest">${t.newExp}</h3><input id="bItem" placeholder="${t.phItem}"><input type="number" id="bAmt" placeholder="${t.phAmt}"><button onclick="addBudget()" class="btn-primary py-2 text-sm">${t.btnAddExp}</button></div><div class="space-y-3">${data.budget.slice().reverse().map((b,i) => `<div class="glass-card p-4 flex justify-between items-center border-l-4 border-[var(--primary)]"><div><div class="font-bold jp-font">${b.item}</div><div class="text-xs text-gray-500">${b.note}</div></div><div class="flex items-center gap-3"><span class="font-bold text-lg jp-font">¥${b.amt.toLocaleString()}</span><i class="fas fa-times text-gray-300 cursor-pointer" onclick="delBudget(${b.id})"></i></div></div>`).join('')}</div>`; box.innerHTML = html; }
         function updateRate(v) { data.config.rate = parseFloat(v); save(); }
         function calcTwd(jpy) { document.getElementById('convTwd').innerText = "NT$ " + Math.round(jpy * data.config.rate).toLocaleString(); }
         function addBudget() { const item = document.getElementById('bItem').value; const amt = parseInt(document.getElementById('bAmt').value); if(item && amt) { const per = Math.ceil(amt/2); data.budget.push({id:Date.now(), item, amt, note:`${i18n[data.config.lang].phSplit}${per}${i18n[data.config.lang].currency}`}); save(); render(); } }
         function delBudget(id) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); }
-        function renderInfo(box) { const t = i18n[data.config.lang]; let html = `<div class="space-y-6">`; let hasInfo = false; data.itinerary.forEach(day => { const infoEvents = day.events.filter(e => e.type === 'transport' || e.type === 'hotel'); if (infoEvents.length > 0) { hasInfo = true; html += `<div class="glass-card p-5 border-l-4 border-[var(--primary)]"><h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">${t.day} ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3><div class="space-y-2">`; infoEvents.forEach(e => { let icon = 'fa-plane'; const title = e.title.toLowerCase(); if (e.type === 'hotel') icon = 'fa-bed'; else if (title.includes('高鐵') || title.includes('rail') || title.includes('train') || title.includes('shinkansen') || title.includes('skyliner') || title.includes('nex')) icon = 'fa-train'; else if (title.includes('巴士') || title.includes('bus')) icon = 'fa-bus'; const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i></a>` : ''; html += `<div class="flex items-center gap-3 py-1"><div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div><div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div></div>`; }); html += `</div></div>`; } }); if (!hasInfo) { html += `<div class="text-center text-gray-400 py-10 glass-card">${t.noInfo}</div>`; } html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V28.0 (Cloud)</div></div>`; box.innerHTML = html; }
+        function renderInfo(box) { const t = i18n[data.config.lang]; let html = `<div class="space-y-6">`; let hasInfo = false; data.itinerary.forEach(day => { const infoEvents = day.events.filter(e => e.type === 'transport' || e.type === 'hotel'); if (infoEvents.length > 0) { hasInfo = true; html += `<div class="glass-card p-5 border-l-4 border-[var(--primary)]"><h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">${t.day} ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3><div class="space-y-2">`; infoEvents.forEach(e => { let icon = 'fa-plane'; const title = e.title.toLowerCase(); if (e.type === 'hotel') icon = 'fa-bed'; else if (title.includes('高鐵') || title.includes('rail') || title.includes('train') || title.includes('shinkansen') || title.includes('skyliner') || title.includes('nex')) icon = 'fa-train'; else if (title.includes('巴士') || title.includes('bus')) icon = 'fa-bus'; const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i></a>` : ''; html += `<div class="flex items-center gap-3 py-1"><div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div><div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div></div>`; }); html += `</div></div>`; } }); if (!hasInfo) { html += `<div class="text-center text-gray-400 py-10 glass-card">${t.noInfo}</div>`; } html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V30.0 (Cloud)</div></div>`; box.innerHTML = html; }
         
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         let tx=0; document.addEventListener('touchstart',e=>tx=e.changedTouches[0].clientX); document.addEventListener('touchend',e=>{if(viewState.mode==='detail' && tx<60 && e.changedTouches[0].clientX>tx+80) {viewState.mode='list'; render();}});
