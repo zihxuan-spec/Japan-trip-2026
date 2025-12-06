@@ -3,24 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 Japan Trip</title>
-    <link rel="icon" href="icon.png">
-    <link rel="apple-touch-icon" href="icon.png">
+    <title>Japan 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;600;700;900&family=Noto+Serif+JP:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;600;700;900&family=Noto+Serif+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --primary-color: #2E4B71; /* 藍墨茶 */
             --text-color: #333333;
-            --bg-glass: rgba(255, 255, 255, 0.92); /* 卡片背景濃度 */
+            --bg-glass: rgba(255, 255, 255, 0.92);
         }
 
         body {
             font-family: "Noto Serif JP", serif;
             color: var(--text-color);
-            /* 優化：加大字體與行高 */
+            /* 全域字體大小 (用於標題、列表等) */
             font-size: 17px; 
             line-height: 1.75;
             -webkit-tap-highlight-color: transparent;
@@ -31,119 +29,60 @@
             background-position: center;
             background-attachment: fixed;
             min-height: 100vh;
-            overflow-x: hidden; /* 防止滑動特效導致的橫移 */
+            overflow-x: hidden;
         }
         
         /* 預設背景：和紙紋理 */
-        body.default-bg {
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-        .bg-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.85); z-index: -1; pointer-events: none;
-            backdrop-filter: blur(3px); transition: opacity 0.3s;
-        }
-        body.has-custom-bg .bg-overlay { opacity: 1; }
-        body.default-bg .bg-overlay { opacity: 0; }
-
+        body.default-bg { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+        .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.85); z-index: -1; pointer-events: none; backdrop-filter: blur(3px); transition: opacity 0.3s; }
+        body.has-custom-bg .bg-overlay { opacity: 1; } body.default-bg .bg-overlay { opacity: 0; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .jp-font { font-family: 'Zen Old Mincho', serif; }
 
         /* V6 導航列 */
-        .bottom-nav {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: 88%; max-width: 400px;
-            background: rgba(46, 75, 113, 0.95);
-            backdrop-filter: blur(16px);
-            border-radius: 60px;
-            display: flex; justify-content: space-around;
-            padding: 16px 0; z-index: 50;
-            box-shadow: 0 15px 40px rgba(46, 75, 113, 0.3);
-        }
-        .nav-item { text-align: center; color: #94a3b8; transition: 0.3s; cursor: pointer; }
-        .nav-item.active { color: white; transform: translateY(-2px); }
-        .nav-text { font-size: 0.7rem; letter-spacing: 0.1em; margin-top: 2px; display: block; font-family: sans-serif; font-weight: bold; }
-        .nav-icon { font-size: 1.3rem; }
+        .bottom-nav { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 88%; max-width: 400px; background: rgba(46, 75, 113, 0.95); backdrop-filter: blur(16px); border-radius: 60px; display: flex; justify-content: space-around; padding: 16px 0; z-index: 50; box-shadow: 0 15px 40px rgba(46, 75, 113, 0.3); }
+        .nav-item { text-align: center; color: #94a3b8; transition: 0.3s; cursor: pointer; } .nav-item.active { color: white; transform: translateY(-2px); }
+        .nav-text { font-size: 0.7rem; letter-spacing: 0.1em; margin-top: 2px; display: block; font-family: sans-serif; font-weight: bold; } .nav-icon { font-size: 1.3rem; }
 
-        /* Day 卡片 (目錄) - 優化間距 */
-        .day-card {
-            background: var(--bg-glass);
-            border: 1px solid rgba(46, 75, 113, 0.08);
-            padding: 28px 24px; margin-bottom: 20px;
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
-            position: relative; box-shadow: 0 4px 20px rgba(46, 75, 113, 0.02);
-            display: flex; align-items: center; justify-content: space-between;
+        /* Day 卡片 */
+        .day-card { background: var(--bg-glass); border: 1px solid rgba(46, 75, 113, 0.08); padding: 28px 24px; margin-bottom: 20px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; box-shadow: 0 4px 20px rgba(46, 75, 113, 0.02); display: flex; align-items: center; justify-content: space-between; border-radius: 4px; }
+        .day-card:active { transform: scale(0.98); background: white; } .day-card:hover { border-color: rgba(46, 75, 113, 0.3); }
+        .editable-location { transition: 0.2s; border-bottom: 1px solid transparent; } .editable-location:hover { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+
+        /* 行程細節卡片 */
+        .event-card { background: var(--bg-glass); border: 1px solid rgba(46, 75, 113, 0.08); margin-bottom: 24px; position: relative; box-shadow: 0 8px 30px rgba(0,0,0,0.03); overflow: hidden; border-radius: 6px; }
+        .card-img-container { width: 100%; height: 200px; overflow: hidden; display: none; background-color: #eee; } .card-img-container.has-img { display: block; } .card-img { width: 100%; height: 100%; object-fit: cover; }
+        .card-body { padding: 22px; }
+        .card-time { font-family: 'Zen Old Mincho', serif; font-weight: 900; font-size: 1rem; color: #2E4B71; border-bottom: 1px solid rgba(46, 75, 113, 0.1); padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .dot { width: 8px; height: 8px; transform: rotate(45deg); display: inline-block; margin-right: 12px; }
+        .dot.transport { background-color: #5D7C9D; } .dot.food { background-color: #D68F4D; } .dot.sightseeing { background-color: #6D8C6F; } .dot.hotel { background-color: #8A6B9E; }
+        h3.event-title { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.05em; } p.event-desc { font-size: 0.95rem; color: #555; font-weight: 400; line-height: 1.8; }
+
+        /* === Modal & Inputs (修正重點) === */
+        /* 將 Modal 內的輸入框字體改小，並調整 padding */
+        .modal-content input, 
+        .modal-content select, 
+        .modal-content textarea {
+            width: 100%; padding: 12px; margin-bottom: 12px; /* 縮小 padding 和 margin */
+            background: #FDFDFD; border: 1px solid #ddd;
+            font-family: "Noto Serif JP", serif; 
+            font-size: 15px; /* 字體縮小至 15px */
             border-radius: 4px;
         }
-        .day-card:active { transform: scale(0.98); background: white; }
-        .day-card:hover { border-color: rgba(46, 75, 113, 0.3); }
-
-        .editable-location { transition: 0.2s; border-bottom: 1px solid transparent; }
-        .editable-location:hover { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-
-        /* 行程細節卡片 - 優化閱讀 */
-        .event-card {
-            background: var(--bg-glass);
-            border: 1px solid rgba(46, 75, 113, 0.08);
-            margin-bottom: 24px; position: relative;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.03);
-            overflow: hidden; border-radius: 6px;
-        }
-        .card-img-container { width: 100%; height: 200px; overflow: hidden; display: none; background-color: #eee; }
-        .card-img-container.has-img { display: block; }
-        .card-img { width: 100%; height: 100%; object-fit: cover; }
-        .card-body { padding: 22px; }
-        .card-time {
-            font-family: 'Zen Old Mincho', serif; font-weight: 900; font-size: 1rem; color: #2E4B71;
-            border-bottom: 1px solid rgba(46, 75, 113, 0.1); padding-bottom: 10px; margin-bottom: 14px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .dot { width: 8px; height: 8px; transform: rotate(45deg); display: inline-block; margin-right: 12px; }
-        .dot.transport { background-color: #5D7C9D; }
-        .dot.food { background-color: #D68F4D; }
-        .dot.sightseeing { background-color: #6D8C6F; }
-        .dot.hotel { background-color: #8A6B9E; }
-        
-        /* 標題與內文優化 */
-        h3.event-title { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.05em; }
-        p.event-desc { font-size: 0.95rem; color: #555; font-weight: 400; line-height: 1.8; }
-
-        /* Modal & Inputs */
-        input, select, textarea {
-            width: 100%; padding: 14px; margin-bottom: 14px;
-            background: #FDFDFD; border: 1px solid #ddd;
-            font-family: "Noto Serif JP", serif; font-size: 17px; border-radius: 4px;
-        }
-        .btn-primary {
-            background-color: var(--primary-color); color: white; border: none; padding: 16px; width: 100%;
-            font-family: 'Zen Old Mincho', serif; letter-spacing: 0.2em; font-weight: 700; border-radius: 4px;
-        }
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.95); z-index: 100;
-            align-items: center; justify-content: center; backdrop-filter: blur(5px);
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-content {
-            background: white; width: 90%; max-width: 450px; padding: 32px;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.12); max-height: 90vh; overflow-y: auto; border-radius: 12px;
-        }
+        .btn-primary { background-color: var(--primary-color); color: white; border: none; padding: 16px; width: 100%; font-family: 'Zen Old Mincho', serif; letter-spacing: 0.2em; font-weight: 700; border-radius: 4px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(5px); } .modal-overlay.active { display: flex; }
+        .modal-content { background: white; width: 90%; max-width: 450px; padding: 32px; box-shadow: 0 25px 80px rgba(0,0,0,0.12); max-height: 90vh; overflow-y: auto; border-radius: 12px; }
 
         /* Header Buttons */
-        .header-btn {
-            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-            border: 1px solid #2E4B71; color: #2E4B71; border-radius: 50%;
-            cursor: pointer; transition: 0.3s; font-size: 14px; background: rgba(255,255,255,0.5);
-        }
+        .header-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid #2E4B71; color: #2E4B71; border-radius: 50%; cursor: pointer; transition: 0.3s; font-size: 14px; background: rgba(255,255,255,0.5); }
         .header-btn:active { background: #2E4B71; color: white; transform: scale(0.9); }
         
         /* 動畫 */
-        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-        .slide-in-right { animation: slideInRight 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; } .slide-in-right { animation: slideInRight 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
-        .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--primary-color); font-size: 1rem; margin-bottom: 24px; cursor: pointer; opacity: 0.8; font-family: 'Zen Old Mincho', serif; font-weight: bold; }
+        /* 返回按鈕 (修正重點：只留箭頭) */
+        .back-btn { display: inline-flex; align-items: center; color: var(--primary-color); font-size: 1.2rem; margin-bottom: 24px; cursor: pointer; opacity: 0.8; padding: 8px; }
     </style>
 </head>
 <body class="default-bg">
@@ -214,30 +153,13 @@
     </nav>
 
     <script>
-        // === Touch Swipe Logic (New Feature) ===
-        let touchStartX = 0;
-        let touchEndX = 0;
+        // === Touch Swipe Logic ===
+        let touchStartX = 0; let touchEndX = 0;
+        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, false);
+        document.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, false);
+        function handleSwipe() { if (scheduleViewMode !== 'detail') return; if (touchStartX < 60 && touchEndX > touchStartX + 80) { goBackToList(); } }
 
-        document.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, false);
-
-        document.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, false);
-
-        function handleSwipe() {
-            // 只在「詳情模式」下運作
-            if (scheduleViewMode !== 'detail') return;
-            
-            // 邏輯：如果從左側邊緣滑動 (起始點 < 50px)，且向右滑動距離 > 80px
-            if (touchStartX < 60 && touchEndX > touchStartX + 80) {
-                goBackToList();
-            }
-        }
-
-        // === i18n ===
+        // === i18n (已移除返回文字) ===
         const i18n = {
             'zh-TW': {
                 navSched:'行程', navInfo:'資訊', navBudget:'記帳', day:'Day', navBtn:'導航',
@@ -245,7 +167,7 @@
                 phTime:'時間', phTitle:'標題', phDesc:'備註...', phMap:'導航地點',
                 btnSave:'儲存', btnDel:'刪除', btnCancel:'取消', flights:'航班資訊', hotels:'住宿資訊',
                 totalSpent:'總花費', splitBill:'分帳計算機', item:'項目', amount:'金額', people:'人數', calc:'計算', addList:'加入清單',
-                curr:'¥', perPerson:'/ 人', back:'← 返回目錄 (或右滑)', viewList:'行程總覽',
+                curr:'¥', perPerson:'/ 人', viewList:'行程總覽',
                 editLocPrompt: '修改該日地點名稱：'
             },
             'en': {
@@ -254,7 +176,7 @@
                 phTime:'Time', phTitle:'Title', phDesc:'Note...', phMap:'Map Keyword',
                 btnSave:'SAVE', btnDel:'DELETE', btnCancel:'CANCEL', flights:'FLIGHTS', hotels:'HOTELS',
                 totalSpent:'TOTAL SPENT', splitBill:'SPLIT BILL', item:'Item', amount:'Amount', people:'People', calc:'CALC', addList:'ADD TO LIST',
-                curr:'JPY ', perPerson:'/ pp', back:'← BACK (or Swipe)', viewList:'OVERVIEW',
+                curr:'JPY ', perPerson:'/ pp', viewList:'OVERVIEW',
                 editLocPrompt: 'Edit Location Name:'
             }
         };
@@ -298,17 +220,17 @@
 
         // === Init & Storage ===
         function loadAllData() {
-            const sTitle = localStorage.getItem('v10_config'); if(sTitle) appConfig = JSON.parse(sTitle);
-            const sSched = localStorage.getItem('v10_sched'); itinerary = sSched ? JSON.parse(sSched) : JSON.parse(JSON.stringify(defaultItinerary));
-            const sBudget = localStorage.getItem('v10_budget'); budgetList = sBudget ? JSON.parse(sBudget) : [];
-            const sLang = localStorage.getItem('v10_lang'); if(sLang) currentLang = sLang;
-            const sBg = localStorage.getItem('v10_bg'); 
+            const sTitle = localStorage.getItem('v11_config'); if(sTitle) appConfig = JSON.parse(sTitle);
+            const sSched = localStorage.getItem('v11_sched'); itinerary = sSched ? JSON.parse(sSched) : JSON.parse(JSON.stringify(defaultItinerary));
+            const sBudget = localStorage.getItem('v11_budget'); budgetList = sBudget ? JSON.parse(sBudget) : [];
+            const sLang = localStorage.getItem('v11_lang'); if(sLang) currentLang = sLang;
+            const sBg = localStorage.getItem('v11_bg'); 
             if(sBg) { document.body.style.backgroundImage = `url(${sBg})`; document.body.classList.remove('default-bg'); document.body.classList.add('has-custom-bg'); }
             updateHeader(); updateLangUI();
         }
         function saveAllData() {
-            localStorage.setItem('v10_config', JSON.stringify(appConfig)); localStorage.setItem('v10_sched', JSON.stringify(itinerary));
-            localStorage.setItem('v10_budget', JSON.stringify(budgetList)); localStorage.setItem('v10_lang', currentLang);
+            localStorage.setItem('v11_config', JSON.stringify(appConfig)); localStorage.setItem('v11_sched', JSON.stringify(itinerary));
+            localStorage.setItem('v11_budget', JSON.stringify(budgetList)); localStorage.setItem('v11_lang', currentLang);
         }
         function resetAllData() { if(confirm("Reset All Data?")) { localStorage.clear(); location.reload(); } }
         
@@ -318,8 +240,7 @@
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = function(evt) {
-                const img = new Image();
-                img.onload = function() {
+                const img = new Image(); img.onload = function() {
                     const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
                     const maxWidth = 1024; const scaleSize = maxWidth / img.width;
                     canvas.width = maxWidth; canvas.height = img.height * scaleSize;
@@ -327,7 +248,7 @@
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
                     document.body.style.backgroundImage = `url(${dataUrl})`;
                     document.body.classList.remove('default-bg'); document.body.classList.add('has-custom-bg');
-                    localStorage.setItem('v10_bg', dataUrl);
+                    localStorage.setItem('v11_bg', dataUrl);
                 }
                 img.src = evt.target.result;
             }
@@ -388,7 +309,8 @@
                 c.innerHTML = html + "</div>";
             } else {
                 const day = itinerary[activeDayIndex];
-                let html = `<div class="slide-in-right"><div onclick="goBackToList()" class="back-btn"><i class="fas fa-arrow-left"></i> ${t.back}</div>
+                // 修正重點：只保留箭頭
+                let html = `<div class="slide-in-right"><div onclick="goBackToList()" class="back-btn"><i class="fas fa-arrow-left"></i></div>
                     <div class="flex items-end justify-between mb-8 border-l-[6px] border-[#2E4B71] pl-6 py-4 bg-white/50 backdrop-blur-sm rounded-r-xl shadow-sm"><div><h2 class="text-5xl text-[#2E4B71] jp-font font-black leading-none mb-2">${t.day} ${day.day}</h2><p class="text-base text-gray-500 tracking-widest font-bold">${day.date}</p></div><div class="text-2xl font-bold text-[#333] jp-font">${day.location}</div></div>`;
                 day.events.forEach((evt, eIdx) => {
                     let nav = evt.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(evt.map)}" target="_blank" onclick="event.stopPropagation()" class="text-[#2E4B71] text-[11px] border border-[#2E4B71] px-2 py-0.5 rounded hover:bg-[#2E4B71] hover:text-white transition font-bold">${t.navBtn}</a>` : '';
