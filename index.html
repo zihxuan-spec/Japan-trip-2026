@@ -187,7 +187,6 @@
         let data = { config: { title: "JAPAN", subtitle: "2026.02.19 - 02.24", lang: "zh-TW", darkMode: false, bg: null, rate: 0.22 }, itinerary: [], budget: [], shopping: [] };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list' };
         
-        // 修正重點：預設行程包含航班代號與飯店，以便 Info 頁面抓取
         const defItin = [
             {day:1, date:"02/19 (四)", loc:"東京・淺草", events:[
                 {id:1, time:"22:00", title:"抵達 NRT (CI 104)", type:"transport", desc:"Skyliner 直奔淺草", map:"Narita Airport"},
@@ -209,8 +208,8 @@
             ]}
         ];
 
-        function init() { const saved = localStorage.getItem('trip_v18'); if(saved) data = JSON.parse(saved); else data.itinerary = JSON.parse(JSON.stringify(defItin)); applySettings(); render(); updateNavLang(); }
-        function save() { localStorage.setItem('trip_v18', JSON.stringify(data)); }
+        function init() { const saved = localStorage.getItem('trip_v19'); if(saved) data = JSON.parse(saved); else data.itinerary = JSON.parse(JSON.stringify(defItin)); applySettings(); render(); updateNavLang(); }
+        function save() { localStorage.setItem('trip_v19', JSON.stringify(data)); }
         function applySettings() {
             document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg);
             if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = "";
@@ -238,7 +237,7 @@
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("備份已下載 (Backup Downloaded)"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateNavLang(); alert("還原成功 (Restored)"); } catch(err) { alert("檔案錯誤 (Error)"); } }; reader.readAsText(e.target.files[0]); };
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v18'); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v19'); location.reload(); } }
         function switchTab(t) { viewState.tab = t; if(t !== 'schedule') viewState.mode = 'list'; document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); render(); window.scrollTo(0,0); }
         function render() { const box = document.getElementById('app-content'); box.innerHTML = ''; box.classList.remove('page-transition'); void box.offsetWidth; box.classList.add('page-transition'); if(viewState.tab === 'schedule') renderSchedule(box); else if(viewState.tab === 'shopping') renderShopping(box); else if(viewState.tab === 'budget') renderBudget(box); else renderInfo(box); }
 
@@ -306,7 +305,7 @@
         function addBudget() { const item = document.getElementById('bItem').value; const amt = parseInt(document.getElementById('bAmt').value); const ppl = document.getElementById('bPpl').value; if(item && amt) { const per = Math.ceil(amt/ppl); data.budget.push({id:Date.now(), item, amt, note:`(${ppl}人: ¥${per}/人)`}); save(); render(); } }
         function delBudget(id) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); }
 
-        // --- Info (Smart & Dynamic V18) ---
+        // --- Info (Simplified V19) ---
         function renderInfo(box) {
             const isEn = data.config.lang === 'en';
             let html = `<div class="space-y-6">`;
@@ -319,26 +318,23 @@
                     hasInfo = true;
                     html += `
                     <div class="glass-card p-5 border-l-4 border-[var(--primary)]">
-                        <h3 class="text-lg font-bold jp-font mb-3 text-[var(--primary)]">Day ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3>
-                        <div class="space-y-4">`;
+                        <h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">Day ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3>
+                        <div class="space-y-2">`;
                     
                     infoEvents.forEach(e => {
-                        // Smart Icon Logic
                         let icon = 'fa-plane';
                         const t = e.title.toLowerCase();
                         if (e.type === 'hotel') icon = 'fa-bed';
                         else if (t.includes('高鐵') || t.includes('rail') || t.includes('train') || t.includes('shinkansen') || t.includes('skyliner') || t.includes('nex')) icon = 'fa-train';
                         else if (t.includes('巴士') || t.includes('bus')) icon = 'fa-bus';
                         
-                        const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i> ${isEn?'Map':'地圖'}</a>` : '';
+                        const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i></a>` : '';
                         
+                        // 修正重點：只顯示標題 (Title) 和地圖連結，移除時間與詳細說明
                         html += `
-                        <div class="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0 last:pb-0">
-                            <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] flex-shrink-0 mt-1"><i class="fas ${icon}"></i></div>
-                            <div class="flex-1">
-                                <div class="font-bold text-base jp-font text-[#333]">${e.title}</div>
-                                <div class="text-sm text-gray-500 mt-1 font-bold">${e.time} <span class="font-normal text-gray-400 mx-1">|</span> ${e.desc} ${mapLink}</div>
-                            </div>
+                        <div class="flex items-center gap-3 py-1">
+                            <div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div>
+                            <div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div>
                         </div>`;
                     });
                     html += `</div></div>`;
@@ -346,10 +342,10 @@
             });
 
             if (!hasInfo) {
-                html += `<div class="text-center text-gray-400 py-10 glass-card">${isEn ? 'No transport/hotel info found in itinerary.' : '行程中未找到 交通/住宿 資訊。'}</div>`;
+                html += `<div class="text-center text-gray-400 py-10 glass-card">${isEn ? 'No info found.' : '行程中未找到資訊。'}</div>`;
             }
 
-            html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V18.0</div></div>`;
+            html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V19.0</div></div>`;
             box.innerHTML = html;
         }
 
