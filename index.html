@@ -7,6 +7,9 @@
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;600;700;900&family=Noto+Serif+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -43,17 +46,10 @@
         .nav-item.active { color: var(--nav-active); transform: translateY(-3px); }
         .nav-text { font-size: 0.65rem; display: block; font-weight: bold; margin-top: 3px; font-family: sans-serif; }
         .nav-icon { font-size: 1.2rem; }
-        
-        input, select, textarea { 
-            width: 100%; padding: 14px 20px !important; margin-bottom: 20px; 
-            background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); 
-            font-family: "Noto Serif JP", serif; font-size: 16px !important; border-radius: 12px;
-            letter-spacing: 0.05em; line-height: 1.6; transition: 0.2s;
-        }
+        input, select, textarea { width: 100%; padding: 14px 20px !important; margin-bottom: 20px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); font-family: "Noto Serif JP", serif; font-size: 16px !important; border-radius: 12px; letter-spacing: 0.05em; line-height: 1.6; transition: 0.2s; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 75, 113, 0.1); }
         .converter-input { padding: 4px 8px !important; margin-bottom: 0 !important; height: 32px !important; font-size: 14px !important; border-radius: 6px !important; width: auto !important; }
         .jpy-input { padding: 8px 12px !important; margin-bottom: 0 !important; height: 44px !important; font-size: 18px !important; font-weight: bold !important; text-align: center !important; }
-        
         .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; }
         .btn-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: var(--primary); border: 1px solid var(--border); transition: 0.2s; }
         .btn-circle:active { transform: scale(0.9); background: var(--primary); color: #fff; }
@@ -83,28 +79,38 @@
         .type-btn i { font-size: 1.4rem; margin-bottom: 6px; }
         .type-btn span { font-size: 0.75rem; font-weight: bold; }
         .type-btn.active { background-color: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(46, 75, 113, 0.25); transform: translateY(-2px); }
-        .shop-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
-        .shop-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: 0.2s; font-family: "Zen Old Mincho", serif; }
-        .shop-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
-        
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; margin-left: 8px; transition: 0.3s; position: relative; }
         .status-dot.online { background: #4ade80; box-shadow: 0 0 0 rgba(74, 222, 128, 0.7); animation: pulse-green 2s infinite; }
         .status-dot.error { background: #ef4444; }
         @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
-
-        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(46, 75, 113, 0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #error-log { margin-top: 20px; padding: 15px; background: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; border-radius: 8px; font-size: 12px; max-width: 80%; display: none; text-align: left; }
-        
+        .shop-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .shop-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: 0.2s; font-family: "Zen Old Mincho", serif; }
+        .shop-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         header { background-color: var(--bg-body); backdrop-filter: blur(12px); background: linear-gradient(to bottom, var(--bg-body) 80%, rgba(255,255,255,0)); background-color: var(--bg-body); border-bottom: 1px solid var(--border); }
+
+        /* === 🌟 V35 啟動頁 (Splash Screen) === */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #F9F8F6; /* 和紙色 */
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        .splash-title { font-family: 'Zen Old Mincho', serif; font-size: 3rem; font-weight: 900; color: #2E4B71; letter-spacing: 0.2em; margin-bottom: 1rem; opacity: 0; animation: fadeUp 1s ease forwards 0.3s; }
+        .splash-sub { font-family: sans-serif; font-size: 0.8rem; font-weight: bold; color: #999; letter-spacing: 0.5em; opacity: 0; animation: fadeUp 1s ease forwards 0.8s; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="default-bg">
-    <div id="loadingScreen">
-        <div class="spinner mb-4"></div>
-        <div class="text-sm tracking-widest font-bold text-gray-400">CONNECTING...</div>
-        <div id="error-log"></div>
+    
+    <div id="splash-screen">
+        <h1 class="splash-title">JAPAN</h1>
+        <p class="splash-sub">2026.02.19 - 02.24</p>
+    </div>
+
+    <div id="db-indicator" style="position: fixed; top: 10px; right: 10px; z-index: 50; display: none;">
+        <div class="spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>
     </div>
 
     <div class="bg-overlay"></div>
@@ -195,7 +201,6 @@
     </div>
 
     <script>
-        // === YOUR FIREBASE CONFIG (V34) ===
         const firebaseConfig = {
           apiKey: "AIzaSyCZ6-Io1jzxTLz4gzNW_Nf9er5As217erk",
           authDomain: "japan-fb8df.firebaseapp.com",
@@ -208,7 +213,6 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        db.enablePersistence({ synchronizeTabs: true }).catch(err => { console.log(err.code); });
         const TRIP_DOC_ID = "trip_data_2026"; 
 
         const i18n = {
@@ -241,56 +245,49 @@
         };
 
         const defItin = [
-            {day:1, date:"02/19 (四)", loc:"東京・淺草", events:[{id:1, time:"22:00", title:"抵達 NRT (CI 104)", type:"transport", desc:"Skyliner 直奔淺草", map:"Narita Airport"}, {id:2, time:"23:30", title:"Check-in: 御宿野乃淺草", type:"hotel", desc:"免費宵夜拉麵", map:"Onyado Nono Asakusa"}]},
-            {day:2, date:"02/20 (五)", loc:"舞濱", events:[{id:3, time:"ALL DAY", title:"迪士尼樂園", type:"sightseeing", desc:"全日遊玩", map:"Tokyo Disney Resort"}]},
-            {day:3, date:"02/21 (六)", loc:"東京", events:[{id:4, time:"09:00", title:"築地市場", type:"food", desc:"海鮮丼", map:"Tsukiji"}, {id:5, time:"13:00", title:"秋葉原", type:"sightseeing", desc:"購物", map:"Akihabara"}, {id:6, time:"17:00", title:"東京鐵塔", type:"sightseeing", desc:"夜景", map:"Tokyo Tower"}]},
-            {day:4, date:"02/22 (日)", loc:"新宿", events:[{id:7, time:"10:00", title:"搬家", type:"transport", desc:"前往新宿飯店 (待定)", map:"Shinjuku"}, {id:8, time:"14:00", title:"Shibuya Sky", type:"sightseeing", desc:"觀景台", map:"SHIBUYA SKY"}]},
-            {day:5, date:"02/23 (一)", loc:"河口湖", events:[{id:9, time:"07:30", title:"河口湖一日遊", type:"transport", desc:"巴士", map:"Busta Shinjuku"}, {id:10, time:"10:30", title:"大石公園", type:"sightseeing", desc:"富士山", map:"Oishi Park"}]},
-            {day:6, date:"02/24 (二)", loc:"返國", events:[{id:11, time:"11:00", title:"原宿", type:"sightseeing", desc:"購物", map:"Harajuku"}, {id:12, time:"18:00", title:"前往機場 (CI 105)", type:"transport", desc:"返台", map:"Narita Airport"}]}
+            {day:1, date:"02/19 (四)", loc:"東京・淺草", events:[{id:1, time:"22:00", title:"抵達 NRT (CI 104)", type:"transport", desc:"Skyliner 直奔淺草", map:"Narita Airport"}, {id:2, time:"23:30", title:"Check-in: 御宿野乃", type:"hotel", desc:"拉麵", map:"Onyado"}]},
+            {day:2, date:"02/20 (五)", loc:"舞濱", events:[{id:3, time:"ALL DAY", title:"迪士尼", type:"sightseeing", desc:"玩", map:"Disney"}]},
+            {day:3, date:"02/21 (六)", loc:"東京", events:[{id:4, time:"09:00", title:"築地", type:"food", desc:"海鮮", map:"Tsukiji"}, {id:5, time:"13:00", title:"秋葉原", type:"sightseeing", desc:"購", map:"Akihabara"}, {id:6, time:"17:00", title:"鐵塔", type:"sightseeing", desc:"夜", map:"Tokyo Tower"}]},
+            {day:4, date:"02/22 (日)", loc:"新宿", events:[{id:7, time:"10:00", title:"搬家", type:"transport", desc:"宿", map:"Shinjuku"}, {id:8, time:"14:00", title:"Shibuya Sky", type:"sightseeing", desc:"景", map:"SHIBUYA SKY"}]},
+            {day:5, date:"02/23 (一)", loc:"河口湖", events:[{id:9, time:"07:30", title:"河口湖", type:"transport", desc:"巴", map:"Busta"}, {id:10, time:"10:30", title:"大石", type:"sightseeing", desc:"山", map:"Oishi"}]},
+            {day:6, date:"02/24 (二)", loc:"返國", events:[{id:11, time:"11:00", title:"原宿", type:"sightseeing", desc:"購", map:"Harajuku"}, {id:12, time:"18:00", title:"機場 (CI 105)", type:"transport", desc:"返", map:"Narita"}]}
         ];
 
         let data = { config: { title: "JAPAN", subtitle: "2026.02.19 - 02.24", lang: "zh-TW", darkMode: false, bg: null, rate: 0.22 }, itinerary: JSON.parse(JSON.stringify(defItin)), budget: [], shopping: [] };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list', shopTab: 'tobuy' };
-        let loaded = false;
-
-        // === Init & Connection Logic ===
+        
+        // === V35 Init with Splash Logic ===
         function init() {
+            // Remove Splash after 2.5s
             setTimeout(() => {
-                if (!loaded) {
-                    console.warn("Cloud timeout.");
-                    document.getElementById('error-log').innerText = "連線逾時，請檢查網路或 Firebase 設定";
-                    document.getElementById('error-log').style.display = 'block';
-                }
-            }, 6000);
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => splash.style.display = 'none', 1000);
+            }, 2500);
 
-            // Listen to Cloud Updates
+            // Load Local
+            const localSaved = localStorage.getItem('trip_v35_cloud');
+            if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
+
+            // Connect Cloud
             db.collection("trips").doc(TRIP_DOC_ID)
                 .onSnapshot((doc) => {
-                    loaded = true;
-                    hideLoading();
                     const statusDot = document.getElementById('dbStatus');
                     if (doc.exists) {
                         const cloudData = doc.data();
                         if (JSON.stringify(cloudData) !== JSON.stringify(data)) {
-                            console.log("Sync update"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
+                            console.log("Sync"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
                         }
                         statusDot.classList.add('online'); statusDot.classList.remove('error');
                     } else { saveToCloud(); }
-                }, (error) => { 
-                    console.error(error); 
-                    document.getElementById('dbStatus').classList.add('error');
-                    document.getElementById('error-log').innerText = "連線失敗：" + error.code;
-                    document.getElementById('error-log').style.display = 'block';
-                    hideLoading();
-                });
+                }, (error) => { console.error(error); document.getElementById('dbStatus').classList.add('error'); });
         }
 
-        function hideLoading() { const ls = document.getElementById('loadingScreen'); if(ls) { ls.style.opacity = '0'; setTimeout(()=>ls.style.display='none', 500); } }
         function save() { saveLocal(); saveToCloud(); }
-        function saveLocal() { localStorage.setItem('trip_v34_local', JSON.stringify(data)); }
-        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).then(()=>{document.getElementById('dbStatus').classList.add('online')}).catch((err)=>{document.getElementById('dbStatus').classList.add('error'); console.error(err);}); }
+        function saveLocal() { localStorage.setItem('trip_v35_cloud', JSON.stringify(data)); }
+        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
 
-        // ... [Functions applySettings, updateLangUI, etc. - Identical to V33] ...
+        // ... [Functions applySettings, updateLangUI, etc. - Identical to V34] ...
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
         function updateLangUI() { const t = i18n[data.config.lang]; document.getElementById('txt-nav-schedule').innerText = t.navSched; document.getElementById('txt-nav-shopping').innerText = t.navShop; document.getElementById('txt-nav-budget').innerText = t.navBudget; document.getElementById('txt-nav-info').innerText = t.navInfo; document.getElementById('txt-dark').innerText = t.dark; document.getElementById('txt-bg').innerText = t.bg; document.getElementById('txt-lang').innerText = t.lang; document.getElementById('txt-reset').innerText = t.reset; document.getElementById('txt-modal-edit-title').innerText = t.editTitle; document.getElementById('txt-upload-label').innerText = t.upload; document.getElementById('txt-type-sightseeing').innerText = t.tSight; document.getElementById('txt-type-food').innerText = t.tFood; document.getElementById('txt-type-transport').innerText = t.tTrans; document.getElementById('txt-type-hotel').innerText = t.tHotel; document.getElementById('btn-delete').innerText = t.btnDel; document.getElementById('btn-save').innerText = t.btnSave; document.getElementById('btn-cancel-edit').innerText = t.btnCancel; document.getElementById('eTime').placeholder = t.phTime; document.getElementById('eTitle').placeholder = t.phTitle; document.getElementById('eDesc').placeholder = t.phDesc; document.getElementById('eMap').placeholder = t.phMap; document.getElementById('txt-modal-shop-title').innerText = t.shopTitle; document.getElementById('txt-shop-upload-label').innerText = t.shopUpload; document.getElementById('sName').placeholder = t.phShopName; document.getElementById('sNote').placeholder = t.phShopNote; document.getElementById('btn-add-shop').innerText = t.btnAddShop; document.getElementById('btn-cancel-shop').innerText = t.btnCancel; document.getElementById('txt-shop-drug').innerText = t.sDrug; document.getElementById('txt-shop-snack').innerText = t.sSnack; document.getElementById('txt-shop-wear').innerText = t.sWear; document.getElementById('txt-shop-gift').innerText = t.sGift; document.getElementById('txt-export').innerText = t.export; document.getElementById('txt-import').innerText = t.import; }
         function toggleSettings() { document.getElementById('settingsMenu').classList.toggle('show'); }
@@ -301,7 +298,7 @@
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
         function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 1024 / img.width; cvs.width = 1024; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.7)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        function resetAllData() { if(confirm("Clear All (Local & Cloud)?")) { localStorage.removeItem('trip_v34_local'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All (Local & Cloud)?")) { localStorage.removeItem('trip_v35_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -336,32 +333,19 @@
         function saveEvent() { const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; if(!evt.title) return; const events = data.itinerary[viewState.dayIdx].events; if(editIdx !== null) events[editIdx] = evt; else { events.push(evt); events.sort((a,b)=>a.time.localeCompare(b.time)); } save(); closeModal('editModal'); render(); }
         function delEvent() { if(editIdx!==null && confirm("Delete?")) { data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render(); } }
         function setShopType(type) { document.getElementById('sType').value = type; document.querySelectorAll('#shopModal .type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-shop-' + type).classList.add('active'); }
-        
-        // V34 Shopping with Categories
         function renderShopping(box) { 
             const t = i18n[data.config.lang]; const isToBuy = viewState.shopTab === 'tobuy';
             let html = `<div class="shop-tabs"><div class="shop-tab ${isToBuy ? 'active' : ''}" onclick="viewState.shopTab='tobuy'; render()">${t.tabToBuy}</div><div class="shop-tab ${!isToBuy ? 'active' : ''}" onclick="viewState.shopTab='bought'; render()">${t.tabBought}</div></div><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold jp-font text-[var(--primary)]">${t.navShop}</h2><button onclick="openShopModal()" class="text-sm bg-[var(--primary)] text-white px-3 py-1 rounded shadow">＋</button></div><div class="space-y-3">`;
-            
             const filteredList = data.shopping.filter(item => isToBuy ? !item.checked : item.checked);
-            
             if(filteredList.length === 0) {
                 html += `<div class="text-center text-gray-400 py-10">Empty List</div>`;
             } else {
-                // Group By Categories (V34)
                 const types = { 'drug': {label: t.sDrug, icon: 'pills'}, 'snack': {label: t.sSnack, icon: 'cookie-bite'}, 'wear': {label: t.sWear, icon: 'tshirt'}, 'gift': {label: t.sGift, icon: 'gift'} };
-                
-                // Sort by type priority
                 const typeKeys = ['drug', 'snack', 'wear', 'gift'];
-                
                 typeKeys.forEach(typeKey => {
-                    // Filter items of this type (or default if type missing)
                     const itemsOfType = filteredList.filter(i => (i.type === typeKey) || (!i.type && typeKey === 'drug'));
-                    
                     if (itemsOfType.length > 0) {
-                        // Header
                         html += `<div class="text-xs font-bold text-gray-400 mt-4 mb-2 pl-2 tracking-widest uppercase border-b border-gray-100 pb-1"><i class="fas fa-${types[typeKey].icon} mr-1"></i> ${types[typeKey].label}</div>`;
-                        
-                        // Items
                         itemsOfType.forEach(item => {
                             const originalIdx = data.shopping.findIndex(i => i.id === item.id); const checkClass = item.checked ? 'checked' : ''; const img = item.img ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="alert('View Image')">` : ''; 
                             html += `<div class="glass-card p-3 flex items-center ${checkClass}"><div class="custom-checkbox mr-3 flex-shrink-0" onclick="toggleShop(${originalIdx})"><i class="fas fa-check text-xs"></i></div>${img}<div class="flex-1"><div class="font-bold item-name text-lg">${item.name}</div><div class="text-xs text-gray-500">${item.note}</div></div><i class="fas fa-times text-gray-300 p-2 cursor-pointer" onclick="delShop(${originalIdx})"></i></div>`;
@@ -371,7 +355,6 @@
             }
             box.innerHTML = html + "</div>"; 
         }
-
         function openShopModal() { document.getElementById('shopModal').classList.add('active'); document.getElementById('sName').value=""; document.getElementById('sNote').value=""; document.getElementById('shopPreview').classList.remove('show'); setShopType('drug'); }
         document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('shopPreview').src=url; document.getElementById('shopPreview').classList.add('show'); });
         function saveShopItem() { const item = { id: Date.now(), name: document.getElementById('sName').value, note: document.getElementById('sNote').value, type: document.getElementById('sType').value, checked: false, img: document.getElementById('shopPreview').classList.contains('show') ? document.getElementById('shopPreview').src : "" }; if(item.name) { data.shopping.push(item); save(); closeModal('shopModal'); render(); } }
@@ -383,8 +366,31 @@
         function calcTwd(jpy) { document.getElementById('convTwd').innerText = "NT$ " + Math.round(jpy * data.config.rate).toLocaleString(); }
         function addBudget() { const item = document.getElementById('bItem').value; const amt = parseInt(document.getElementById('bAmt').value); if(item && amt) { const per = Math.ceil(amt/2); data.budget.push({id:Date.now(), item, amt, note:`${i18n[data.config.lang].phSplit}${per}${i18n[data.config.lang].currency}`}); save(); render(); } }
         function delBudget(id) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); }
-        function renderInfo(box) { const t = i18n[data.config.lang]; let html = `<div class="space-y-6">`; let hasInfo = false; data.itinerary.forEach(day => { const infoEvents = day.events.filter(e => e.type === 'transport' || e.type === 'hotel'); if (infoEvents.length > 0) { hasInfo = true; html += `<div class="glass-card p-5 border-l-4 border-[var(--primary)]"><h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">${t.day} ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3><div class="space-y-2">`; infoEvents.forEach(e => { let icon = 'fa-plane'; const title = e.title.toLowerCase(); if (e.type === 'hotel') icon = 'fa-bed'; else if (title.includes('高鐵') || title.includes('rail') || title.includes('train') || title.includes('shinkansen') || title.includes('skyliner') || title.includes('nex')) icon = 'fa-train'; else if (title.includes('巴士') || title.includes('bus')) icon = 'fa-bus'; const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i></a>` : ''; html += `<div class="flex items-center gap-3 py-1"><div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div><div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div></div>`; }); html += `</div></div>`; } }); if (!hasInfo) { html += `<div class="text-center text-gray-400 py-10 glass-card">${t.noInfo}</div>`; } html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V34.0 (Grouped)</div></div>`; box.innerHTML = html; }
-        
+
+        function renderInfo(box) {
+            const t = i18n[data.config.lang];
+            let html = `<div class="space-y-6">`; let hasInfo = false;
+            data.itinerary.forEach(day => {
+                const infoEvents = day.events.filter(e => e.type === 'transport' || e.type === 'hotel');
+                if (infoEvents.length > 0) {
+                    hasInfo = true;
+                    html += `<div class="glass-card p-5 border-l-4 border-[var(--primary)]"><h3 class="text-lg font-bold jp-font mb-2 text-[var(--primary)]">${t.day} ${day.day} <span class="text-sm text-gray-500 font-normal ml-2 font-sans">${day.date}</span></h3><div class="space-y-2">`;
+                    infoEvents.forEach(e => {
+                        let icon = 'fa-plane'; const title = e.title.toLowerCase();
+                        if (e.type === 'hotel') icon = 'fa-bed';
+                        else if (title.includes('高鐵') || title.includes('rail') || title.includes('train') || title.includes('shinkansen') || title.includes('skyliner') || title.includes('nex')) icon = 'fa-train';
+                        else if (title.includes('巴士') || title.includes('bus')) icon = 'fa-bus';
+                        const mapLink = e.map ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.map)}" target="_blank" class="ml-2 text-xs text-blue-500 underline font-bold"><i class="fas fa-map-marker-alt"></i></a>` : '';
+                        html += `<div class="flex items-center gap-3 py-1"><div class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[var(--primary)] text-xs flex-shrink-0"><i class="fas ${icon}"></i></div><div class="flex-1 font-bold text-base jp-font text-[#333] truncate">${e.title} ${mapLink}</div></div>`;
+                    });
+                    html += `</div></div>`;
+                }
+            });
+            if (!hasInfo) { html += `<div class="text-center text-gray-400 py-10 glass-card">${t.noInfo}</div>`; }
+            html += `<div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V35.0 (Splash)</div></div>`;
+            box.innerHTML = html;
+        }
+
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         let tx=0; document.addEventListener('touchstart',e=>tx=e.changedTouches[0].clientX); document.addEventListener('touchend',e=>{if(viewState.mode==='detail' && tx<60 && e.changedTouches[0].clientX>tx+80) {viewState.mode='list'; render();}});
         init();
