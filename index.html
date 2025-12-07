@@ -20,6 +20,7 @@
             --primary: #2E4B71; --accent: #C85554; --text-main: #333333; --text-sub: #666666; --bg-body: #F9F8F6;
             --bg-card: rgba(255, 255, 255, 0.92); --bg-nav: rgba(46, 75, 113, 0.95); --nav-text: #94a3b8; --nav-active: #ffffff;
             --border: rgba(46, 75, 113, 0.1); --modal-bg: #ffffff; --input-bg: #FDFDFD;
+            --highlight-border: #f59e0b; --highlight-glow: 0 0 15px rgba(245, 158, 11, 0.4);
         }
         body.dark-mode {
             --primary: #8faecf; --accent: #ff8a80; --text-main: #e0e0e0; --text-sub: #aaaaaa; --bg-body: #121212;
@@ -102,7 +103,7 @@
         .shop-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: 0.2s; font-family: "Zen Old Mincho", serif; }
         .shop-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         
-        /* 綠燈 V47.1 修正 */
+        /* 綠燈 V48 */
         .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; margin-left: 10px; transition: 0.3s; position: relative; display: inline-block; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .status-dot.online { background-color: #22c55e !important; box-shadow: 0 0 10px #22c55e !important; animation: pulse-green 3s infinite; }
         .status-dot.error { background-color: #ef4444 !important; }
@@ -215,7 +216,7 @@
             
             <div class="grid grid-cols-3 gap-4">
                 <div class="col-span-1">
-                    <input id="eTime" placeholder="時間" class="text-center" style="padding: 12px !important;">
+                    <input id="eTime" type="time" class="text-center" style="padding: 12px !important;">
                 </div>
                 <div class="col-span-2"><input id="eTitle" placeholder="標題" class="font-bold"></div>
             </div>
@@ -366,13 +367,19 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v47_cloud');
+            const localSaved = localStorage.getItem('trip_v48_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
-            
+
             db.collection("trips").doc(TRIP_DOC_ID).onSnapshot((doc) => {
                 const statusDot = document.getElementById('dbStatus');
-                statusDot.className = 'status-dot online'; // Force Green V47.1
-                const txt = document.getElementById('status-text'); if(txt) { txt.classList.add('show'); setTimeout(()=>txt.classList.remove('show'), 3000); }
+                const statusText = document.getElementById('status-text');
+                
+                // Force Green if connected
+                statusDot.className = 'status-dot online'; 
+                statusDot.classList.remove('loading', 'error');
+                statusText.innerText = 'Online'; 
+                statusText.classList.add('show');
+                setTimeout(()=>statusText.classList.remove('show'), 3000);
 
                 if (doc.exists) {
                     const cloudData = doc.data();
@@ -382,16 +389,26 @@
                          console.log("Cloud is newer"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
                     }
                 } else { saveToCloud(); }
-            }, (error) => { console.error(error); document.getElementById('dbStatus').className = 'status-dot error'; });
+            }, (error) => { 
+                console.error(error); 
+                document.getElementById('dbStatus').className = 'status-dot error'; 
+                document.getElementById('error-log').style.display='block';
+                document.getElementById('error-log').innerText = "連線失敗: " + error.message;
+            });
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { localStorage.setItem('trip_v47_cloud', JSON.stringify(data)); }
-        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
+        function saveLocal() { localStorage.setItem('trip_v48_cloud', JSON.stringify(data)); }
+        function saveToCloud() { 
+            const statusDot = document.getElementById('dbStatus');
+            statusDot.className = 'status-dot loading'; // Yellow while saving
+            db.collection("trips").doc(TRIP_DOC_ID).set(data)
+                .then(() => { statusDot.className = 'status-dot online'; })
+                .catch(err => { console.error(err); statusDot.className = 'status-dot error'; }); 
+        }
         
+        // ... (UI Functions) ...
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
-        
-        // V47.1 Fixed: Update UI safely with checks
         function updateLangUI() {
             const t = i18n[data.config.lang];
             const safeSet = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
