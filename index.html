@@ -31,7 +31,7 @@
             font-size: 17px; line-height: 1.75; letter-spacing: 0.06em; -webkit-tap-highlight-color: transparent;
             padding-bottom: 140px; min-height: 100vh; overflow-x: hidden;
             transition: background-color 0.5s, color 0.5s;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         body.has-custom-bg { background-image: none; background-size: cover; background-position: center; background-attachment: fixed; }
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); z-index: -1; pointer-events: none; transition: 0.3s; }
@@ -113,8 +113,6 @@
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(46, 75, 113, 0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* 錯誤訊息 */
         #error-log { margin-top: 20px; padding: 15px; background: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; border-radius: 8px; font-size: 12px; max-width: 80%; display: none; text-align: left; }
         
         header { background-color: var(--bg-body); backdrop-filter: blur(12px); background: linear-gradient(to bottom, var(--bg-body) 80%, rgba(255,255,255,0)); background-color: var(--bg-body); border-bottom: 1px solid var(--border); }
@@ -151,6 +149,9 @@
     </style>
 </head>
 <body class="default-bg">
+    
+    <div id="error-log"></div>
+
     <div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img"></div>
     <div id="splash-screen"><h1 class="splash-title">JAPAN</h1><p class="splash-sub">2026.02.19 - 02.24</p></div>
     <div id="loadingScreen" style="display:none"></div>
@@ -164,7 +165,7 @@
             <div class="flex items-center mt-2">
                 <p id="appSubtitle" class="text-xs tracking-[0.2em] uppercase font-sans font-bold" style="color:var(--text-sub)">2026.02.19 - 02.24</p>
                 <div id="dbStatus" class="status-dot" title="Cloud Status"></div>
-                <span id="status-text">Online</span>
+                <span id="status-text">Connecting</span>
             </div>
         </div>
         <div class="flex gap-3">
@@ -194,13 +195,82 @@
         <div class="nav-item" id="tab-info" onclick="switchTab('info')"><div class="nav-icon"><i class="fas fa-passport"></i></div><span class="nav-text" id="txt-nav-info">資訊</span></div>
     </nav>
 
-    <div id="editModal" class="modal-overlay"><div class="modal-content"><h3 id="txt-modal-edit-title" class="text-2xl font-bold text-center mb-6 jp-font" style="color:var(--primary)">編輯行程</h3><div class="text-center mb-6"><div onclick="document.getElementById('editImg').click()" class="border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer text-gray-400 text-sm hover:bg-gray-50 transition"><i class="fas fa-camera text-3xl mb-2"></i><br><span id="txt-upload-label">上傳照片</span></div><input type="file" id="editImg" accept="image/*" hidden><img id="previewImg" class="img-box mt-4"></div><div class="type-selector"><div class="type-btn" onclick="setType('sightseeing')" id="btn-sightseeing"><i class="fas fa-camera"></i><span id="txt-type-sightseeing">觀光</span></div><div class="type-btn" onclick="setType('food')" id="btn-food"><i class="fas fa-utensils"></i><span id="txt-type-food">美食</span></div><div class="type-btn" onclick="setType('transport')" id="btn-transport"><i class="fas fa-train"></i><span id="txt-type-transport">交通</span></div><div class="type-btn" onclick="setType('hotel')" id="btn-hotel"><i class="fas fa-bed"></i><span id="txt-type-hotel">住宿</span></div></div><input type="hidden" id="eType" value="sightseeing"><div class="grid grid-cols-3 gap-4"><div class="col-span-1"><input id="eTime" placeholder="時間" class="text-center"></div><div class="col-span-2"><input id="eTitle" placeholder="標題" class="font-bold"></div></div><textarea id="eDesc" rows="3" placeholder="備註..."></textarea><div class="relative"><i class="fas fa-map-marker-alt absolute left-4 top-4 text-red-400 text-lg"></i><input id="eMap" placeholder="地圖連結" style="padding-left: 45px !important;"></div><div class="flex gap-4 mt-4"><button id="btn-delete" onclick="delEvent()" class="flex-1 py-3 rounded-xl border border-red-200 text-red-400 font-bold hover:bg-red-50">刪除</button><button id="btn-save" onclick="saveEvent()" class="flex-[2] btn-primary shadow-lg">儲存</button></div><div class="text-center mt-6"><span id="btn-cancel-edit" onclick="closeModal('editModal')" class="text-sm text-gray-400 font-bold cursor-pointer hover:text-gray-600">取消</span></div></div></div>
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="txt-modal-edit-title" class="text-2xl font-bold text-center mb-6 jp-font" style="color:var(--primary)">編輯行程</h3>
+            <div class="text-center mb-6">
+                <div onclick="document.getElementById('editImg').click()" class="border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer text-gray-400 text-sm hover:bg-gray-50 transition">
+                    <i class="fas fa-camera text-3xl mb-2"></i><br><span id="txt-upload-label">上傳照片</span>
+                </div>
+                <input type="file" id="editImg" accept="image/*" hidden>
+                <img id="previewImg" class="img-box mt-4">
+            </div>
+            <div class="type-selector">
+                <div class="type-btn" onclick="setType('sightseeing')" id="btn-sightseeing"><i class="fas fa-camera"></i><span id="txt-type-sightseeing">觀光</span></div>
+                <div class="type-btn" onclick="setType('food')" id="btn-food"><i class="fas fa-utensils"></i><span id="txt-type-food">美食</span></div>
+                <div class="type-btn" onclick="setType('transport')" id="btn-transport"><i class="fas fa-train"></i><span id="txt-type-transport">交通</span></div>
+                <div class="type-btn" onclick="setType('hotel')" id="btn-hotel"><i class="fas fa-bed"></i><span id="txt-type-hotel">住宿</span></div>
+            </div>
+            <input type="hidden" id="eType" value="sightseeing">
+            <div class="grid grid-cols-3 gap-4">
+                <div class="col-span-1"><input id="eTime" placeholder="時間" class="text-center"></div>
+                <div class="col-span-2"><input id="eTitle" placeholder="標題" class="font-bold"></div>
+            </div>
+            <textarea id="eDesc" rows="3" placeholder="備註..."></textarea>
+            <div class="relative"><i class="fas fa-map-marker-alt absolute left-4 top-4 text-red-400 text-lg"></i><input id="eMap" placeholder="地圖連結" style="padding-left: 45px !important;"></div>
+            <div class="flex gap-4 mt-4"><button id="btn-delete" onclick="delEvent()" class="flex-1 py-3 rounded-xl border border-red-200 text-red-400 font-bold hover:bg-red-50">刪除</button><button id="btn-save" onclick="saveEvent()" class="flex-[2] btn-primary shadow-lg">儲存</button></div>
+            <div class="text-center mt-6"><span id="btn-cancel-edit" onclick="closeModal('editModal')" class="text-sm text-gray-400 font-bold cursor-pointer hover:text-gray-600">取消</span></div>
+        </div>
+    </div>
+
+    <div id="shopModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="txt-modal-shop-title" class="text-xl font-bold text-center mb-4 jp-font">新增購物清單</h3>
+            <div class="text-center mb-4">
+                <div onclick="document.getElementById('shopImg').click()" class="border-2 border-dashed border-gray-300 rounded p-4 cursor-pointer text-gray-400 text-sm">
+                    <i class="fas fa-camera text-2xl mb-1"></i><br><span id="txt-shop-upload-label">商品照片</span>
+                </div>
+                <input type="file" id="shopImg" accept="image/*" hidden>
+                <img id="shopPreview" class="img-box mt-2">
+            </div>
+            <div class="type-selector">
+                <div class="type-btn" onclick="setShopType('drug')" id="btn-shop-drug"><i class="fas fa-pills"></i><span id="txt-shop-drug">藥妝</span></div>
+                <div class="type-btn" onclick="setShopType('snack')" id="btn-shop-snack"><i class="fas fa-cookie-bite"></i><span id="txt-shop-snack">零食</span></div>
+                <div class="type-btn" onclick="setShopType('wear')" id="btn-shop-wear"><i class="fas fa-tshirt"></i><span id="txt-shop-wear">服飾</span></div>
+                <div class="type-btn" onclick="setShopType('gift')" id="btn-shop-gift"><i class="fas fa-gift"></i><span id="txt-shop-gift">雜貨</span></div>
+            </div>
+            <input type="hidden" id="sType" value="drug">
+            <input id="sName" placeholder="商品名稱">
+            <textarea id="sNote" rows="2" placeholder="備註"></textarea>
+            <button id="btn-add-shop" onclick="saveShopItem()" class="btn-primary mt-2">加入清單</button>
+            <div class="text-center mt-3"><span id="btn-cancel-shop" onclick="closeModal('shopModal')" class="text-xs text-gray-400 underline cursor-pointer">取消</span></div>
+        </div>
+    </div>
+
+    <div id="hotelModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-center mb-6 jp-font">住宿資訊</h3>
+            <input id="hName" placeholder="飯店名稱 (Name)">
+            <textarea id="hAddr" rows="3" placeholder="地址 (Address)"></textarea>
+            <input id="hTel" placeholder="電話 (Phone)">
+            <button onclick="saveHotel()" class="btn-primary mt-4">儲存</button>
+            <div class="text-center mt-3"><span onclick="closeModal('hotelModal')" class="text-xs text-gray-400 underline cursor-pointer">取消</span></div>
+        </div>
+    </div>
     
-    <div id="shopModal" class="modal-overlay"><div class="modal-content"><h3 id="txt-modal-shop-title" class="text-xl font-bold text-center mb-4 jp-font">新增購物清單</h3><div class="text-center mb-4"><div onclick="document.getElementById('shopImg').click()" class="border-2 border-dashed border-gray-300 rounded p-4 cursor-pointer text-gray-400 text-sm"><i class="fas fa-camera text-2xl mb-1"></i><br><span id="txt-shop-upload-label">商品照片</span></div><input type="file" id="shopImg" accept="image/*" hidden><img id="shopPreview" class="img-box mt-2"></div><div class="type-selector"><div class="type-btn" onclick="setShopType('drug')" id="btn-shop-drug"><i class="fas fa-pills"></i><span id="txt-shop-drug">藥妝</span></div><div class="type-btn" onclick="setShopType('snack')" id="btn-shop-snack"><i class="fas fa-cookie-bite"></i><span id="txt-shop-snack">零食</span></div><div class="type-btn" onclick="setShopType('wear')" id="btn-shop-wear"><i class="fas fa-tshirt"></i><span id="txt-shop-wear">服飾</span></div><div class="type-btn" onclick="setShopType('gift')" id="btn-shop-gift"><i class="fas fa-gift"></i><span id="txt-shop-gift">雜貨</span></div></div><input type="hidden" id="sType" value="drug"><input id="sName" placeholder="商品名稱"><textarea id="sNote" rows="2" placeholder="備註"></textarea><button id="btn-add-shop" onclick="saveShopItem()" class="btn-primary mt-2">加入清單</button><div class="text-center mt-3"><span id="btn-cancel-shop" onclick="closeModal('shopModal')" class="text-xs text-gray-400 underline cursor-pointer">取消</span></div></div></div>
-    
-    <div id="hotelModal" class="modal-overlay"><div class="modal-content"><h3 class="text-xl font-bold text-center mb-6 jp-font">住宿資訊</h3><input id="hName" placeholder="飯店名稱 (Name)"><textarea id="hAddr" rows="3" placeholder="地址 (Address)"></textarea><input id="hTel" placeholder="電話 (Phone)"><button onclick="saveHotel()" class="btn-primary mt-4">儲存</button><div class="text-center mt-3"><span onclick="closeModal('hotelModal')" class="text-xs text-gray-400 underline cursor-pointer">取消</span></div></div></div>
-    
-    <div id="flightModal" class="modal-overlay"><div class="modal-content"><h3 class="text-xl font-bold text-center mb-6 jp-font">航班資訊</h3><input type="hidden" id="fType"><div class="grid grid-cols-2 gap-3"><input id="fCode" placeholder="航班 (CI 104)"><input id="fPnr" placeholder="代號 (PNR)"></div><input id="fTicket" placeholder="票號 (Ticket No.)"><button onclick="saveFlight()" class="btn-primary mt-4">儲存</button><div class="text-center mt-3"><span onclick="closeModal('flightModal')" class="text-xs text-gray-400 underline cursor-pointer">取消</span></div></div></div>
+    <div id="flightModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-center mb-6 jp-font">航班資訊</h3>
+            <input type="hidden" id="fType">
+            <div class="grid grid-cols-2 gap-3">
+                <input id="fCode" placeholder="航班 (CI 104)">
+                <input id="fPnr" placeholder="代號 (PNR)">
+            </div>
+            <input id="fTicket" placeholder="票號 (Ticket No.)">
+            <button onclick="saveFlight()" class="btn-primary mt-4">儲存</button>
+            <div class="text-center mt-3"><span onclick="closeModal('flightModal')" class="text-xs text-gray-400 underline cursor-pointer">取消</span></div>
+        </div>
+    </div>
 
     <script>
         // Global Error Handler
@@ -212,6 +282,22 @@
             }
             console.error(error);
             return false;
+        };
+
+        // ⚠️ Function to safely define openShopModal in global scope BEFORE init
+        window.openShopModal = function() { 
+            try {
+                const modal = document.getElementById('shopModal');
+                if(modal) {
+                    modal.classList.add('active'); 
+                    document.getElementById('sName').value=""; 
+                    document.getElementById('sNote').value=""; 
+                    document.getElementById('shopPreview').classList.remove('show'); 
+                    if(window.setShopType) window.setShopType('drug'); 
+                } else {
+                    console.error("Shop modal element not found!");
+                }
+            } catch(e) { console.error("Error opening modal: " + e); }
         };
 
         const firebaseConfig = { apiKey: "AIzaSyCZ6-Io1jzxTLz4gzNW_Nf9er5As217erk", authDomain: "japan-fb8df.firebaseapp.com", projectId: "japan-fb8df", storageBucket: "japan-fb8df.firebasestorage.app", messagingSenderId: "395174393492", appId: "1:395174393492:web:118d202e6387787a1f2681", measurementId: "G-F1Y2PGN2R5" };
@@ -269,7 +355,7 @@
             itinerary: JSON.parse(JSON.stringify(defItin)), 
             budget: [], 
             shopping: [],
-            info: { hotels: [{name: "御宿 野乃 淺草別邸", addr: "2-7-20 Asakusa", tel: "+81-3-0000-0000"}, {name: "新宿/澀谷飯店", addr: "Shinjuku-ku", tel: "+81-3-1111-1111"}], flightOut: { code: "CI 104", pnr: "ABCDEF", ticket: "297-0001" }, flightIn: { code: "CI 105", pnr: "ABCDEF", ticket: "297-0002" } },
+            info: { hotels: [{name: "御宿 野乃 淺草別邸", addr: "2-7-20 Asakusa, Taito-ku, Tokyo 111-0032", tel: "+81-3-0000-0000"}, {name: "新宿/澀谷飯店", addr: "Shinjuku-ku, Tokyo", tel: "+81-3-1111-1111"}], flightOut: { code: "CI 104", pnr: "ABCDEF", ticket: "297-0001" }, flightIn: { code: "CI 105", pnr: "ABCDEF", ticket: "297-0002" } },
             updatedAt: 0
         };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list', shopTab: 'tobuy', shopMode: 'list' }; 
@@ -277,7 +363,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v47_cloud');
+            const localSaved = localStorage.getItem('trip_v53_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             db.collection("trips").doc(TRIP_DOC_ID).onSnapshot((doc) => {
@@ -297,7 +383,7 @@
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { localStorage.setItem('trip_v47_cloud', JSON.stringify(data)); }
+        function saveLocal() { localStorage.setItem('trip_v53_cloud', JSON.stringify(data)); }
         function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
         
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
@@ -327,7 +413,7 @@
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
         function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 800 / img.width; cvs.width = 800; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.6)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v47_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v53_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -364,34 +450,31 @@
         let editIdx = null; function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); } function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:""}); } function setType(type) { document.getElementById('eType').value = type; document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + type).classList.add('active'); }
         function fillModal(id, obj) { document.getElementById(id).classList.add('active'); if(id === 'editModal') { document.getElementById('eTime').value = obj.time; document.getElementById('eTitle').value = obj.title; document.getElementById('eDesc').value = obj.desc; document.getElementById('eMap').value = obj.map||""; setType(obj.type || 'sightseeing'); const img = document.getElementById('previewImg'); if(obj.img) { img.src=obj.img; img.classList.add('show'); } else { img.src=''; img.classList.remove('show'); } } }
         document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); });
-        function saveEvent() { const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; if(!evt.title) return; const events = data.itinerary[viewState.dayIdx].events; if(editIdx !== null) events[editIdx] = evt; else { events.push(evt); events.sort((a,b)=>a.time.localeCompare(b.time)); } save(); closeModal('editModal'); render(); }
+        
+        // V53.0 Sorting Fix
+        function saveEvent() { 
+            const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; 
+            if(!evt.title) return; 
+            const events = data.itinerary[viewState.dayIdx].events; 
+            
+            // 1. Update or Push
+            if(editIdx !== null) events[editIdx] = evt; 
+            else events.push(evt); 
+
+            // 2. Always Sort (Fix for V53)
+            events.sort((a,b)=>a.time.localeCompare(b.time));
+
+            save(); closeModal('editModal'); render(); 
+        }
+        
         function delEvent() { if(editIdx!==null && confirm("Delete?")) { data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render(); } }
         function toggleShopView() { viewState.shopMode = viewState.shopMode === 'list' ? 'grid' : 'list'; render(); }
-        
-        // --- Shopping Logic V47.1 ---
-        // V47.1: Global function to ensure it's found
-        window.openShopModal = function() { 
-            const modal = document.getElementById('shopModal');
-            if(modal) {
-                modal.classList.add('active'); 
-                document.getElementById('sName').value = ""; 
-                document.getElementById('sNote').value = "";
-                document.getElementById('shopPreview').src = "";
-                document.getElementById('shopPreview').classList.remove('show');
-                setShopType('drug');
-            }
-        };
-
         function setShopType(type) { document.getElementById('sType').value = type; document.querySelectorAll('#shopModal .type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-shop-' + type).classList.add('active'); }
-        document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('shopPreview').src=url; document.getElementById('shopPreview').classList.add('show'); });
-        function saveShopItem() { const item = { id: Date.now(), name: document.getElementById('sName').value, note: document.getElementById('sNote').value, type: document.getElementById('sType').value, checked: false, img: document.getElementById('shopPreview').classList.contains('show') ? document.getElementById('shopPreview').src : "" }; if(item.name) { data.shopping.push(item); save(); closeModal('shopModal'); render(); } }
-        function toggleShop(idx) { data.shopping[idx].checked = !data.shopping[idx].checked; save(); render(); }
-        function delShop(idx) { if(confirm("Delete?")) { data.shopping.splice(idx,1); save(); render(); } }
-        
         function renderShopping(box) { 
             const t = i18n[data.config.lang]; const isToBuy = viewState.shopTab === 'tobuy';
             setTimeout(() => { const btn = document.getElementById('viewToggleBtn'); if(btn) { btn.classList.remove('hidden'); btn.innerHTML = viewState.shopMode === 'list' ? '<i class="fas fa-th-large"></i>' : '<i class="fas fa-bars"></i>'; } }, 50);
-            let html = `<div class="shop-tabs"><div class="shop-tab ${isToBuy ? 'active' : ''}" onclick="viewState.shopTab='tobuy'; render()">${t.tabToBuy}</div><div class="shop-tab ${!isToBuy ? 'active' : ''}" onclick="viewState.shopTab='bought'; render()">${t.tabBought}</div></div><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold jp-font text-[var(--primary)]">${t.navShop}</h2><button onclick="window.openShopModal()" class="text-sm bg-[var(--primary)] text-white px-3 py-1 rounded shadow">＋</button></div>`;
+            let html = `<div class="shop-tabs"><div class="shop-tab ${isToBuy ? 'active' : ''}" onclick="viewState.shopTab='tobuy'; render()">${t.tabToBuy}</div><div class="shop-tab ${!isToBuy ? 'active' : ''}" onclick="viewState.shopTab='bought'; render()">${t.tabBought}</div></div><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold jp-font text-[var(--primary)]">${t.navShop}</h2>
+            <div onclick="window.openShopModal()" class="cursor-pointer text-sm bg-[var(--primary)] text-white px-4 py-2 rounded-lg shadow-md font-bold hover:opacity-90 active:scale-95" style="z-index: 1000; position: relative;">＋ ${t.btnAddShop}</div></div>`;
             const filteredList = data.shopping.filter(item => isToBuy ? !item.checked : item.checked);
             if(filteredList.length === 0) { html += `<div class="text-center text-gray-400 py-10">Empty List</div>`; } else {
                 const types = { 'drug': {label: t.sDrug, icon: 'pills'}, 'snack': {label: t.sSnack, icon: 'cookie-bite'}, 'wear': {label: t.sWear, icon: 'tshirt'}, 'gift': {label: t.sGift, icon: 'gift'} };
@@ -400,7 +483,7 @@
                     const itemsOfType = filteredList.filter(i => (i.type === typeKey) || (!i.type && typeKey === 'drug'));
                     if (itemsOfType.length > 0) {
                         html += `<div class="text-xs font-bold text-gray-400 mt-4 mb-3 pl-2 tracking-widest uppercase border-b border-gray-100 pb-1"><i class="fas fa-${types[typeKey].icon} mr-1"></i> ${types[typeKey].label}</div>`;
-                        if (viewState.shopMode === 'grid') { html += `<div class="shop-grid">`; itemsOfType.forEach(item => { const originalIdx = data.shopping.findIndex(i => i.id === item.id); const imgDisplay = item.img ? item.img : 'https://placehold.co/300x300/eee/999?text=No+Img'; html += `<div class="shop-grid-item" onclick="toggleShop(${originalIdx})"><img src="${imgDisplay}" class="shop-grid-img" onclick="openLightbox('${imgDisplay}')"><div class="shop-grid-check" onclick="toggleShop(${originalIdx})"><i class="fas fa-${isToBuy ? 'circle' : 'check-circle'} text-${isToBuy?'gray-300':'green-500'}"></i></div><div class="shop-grid-info"><div class="font-bold text-sm truncate">${item.name}</div><div class="text-xs text-gray-500 truncate">${item.note}</div></div></div>`; }); html += `</div>`; } 
+                        if (viewState.shopMode === 'grid') { html += `<div class="shop-grid">`; itemsOfType.forEach(item => { const originalIdx = data.shopping.findIndex(i => i.id === item.id); const imgDisplay = item.img ? item.img : 'https://placehold.co/300x300/eee/999?text=No+Img'; html += `<div class="shop-grid-item"><img src="${imgDisplay}" class="shop-grid-img" onclick="openLightbox('${imgDisplay}')"><div class="shop-grid-check" onclick="toggleShop(${originalIdx})"><i class="fas fa-${isToBuy ? 'circle' : 'check-circle'} text-${isToBuy?'gray-300':'green-500'}"></i></div><div class="shop-grid-info"><div class="font-bold text-sm truncate">${item.name}</div><div class="text-xs text-gray-500 truncate">${item.note}</div></div></div>`; }); html += `</div>`; } 
                         else { 
                             html += `<div class="space-y-3">`; 
                             itemsOfType.forEach(item => { 
