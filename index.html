@@ -60,7 +60,7 @@
         .converter-input { padding: 4px 8px !important; margin-bottom: 0 !important; height: 32px !important; font-size: 14px !important; border-radius: 6px !important; width: auto !important; }
         .jpy-input { padding: 8px 12px !important; margin-bottom: 0 !important; height: 44px !important; font-size: 18px !important; font-weight: bold !important; text-align: center !important; }
 
-        .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; }
+        .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; cursor: pointer; }
         .btn-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: var(--primary); border: 1px solid var(--border); transition: 0.2s; }
         .btn-circle:active { transform: scale(0.9); background: var(--primary); color: #fff; }
 
@@ -102,6 +102,7 @@
         .shop-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: 0.2s; font-family: "Zen Old Mincho", serif; }
         .shop-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         
+        /* 綠燈 V47.1 修正 */
         .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; margin-left: 10px; transition: 0.3s; position: relative; display: inline-block; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .status-dot.online { background-color: #22c55e !important; box-shadow: 0 0 10px #22c55e !important; animation: pulse-green 3s infinite; }
         .status-dot.error { background-color: #ef4444 !important; }
@@ -339,7 +340,7 @@
                 infoTitle: 'Travel Wallet', entryCard: 'Accommodation', flightCard: 'Flights',
                 addr: 'Address', tel: 'Tel', pnr: 'PNR', ticket: 'Ticket No.', copied: 'Copied', noInfo: 'No info added.',
                 outbound: 'Outbound', inbound: 'Inbound', addHotel: '＋ Add Hotel',
-                simMode: 'Simulate Trip (On/Off)', man: '👦 Man', woman: '👧 Woman', balance: 'Balance', owes: 'owes', paid: 'paid'
+                simMode: 'Simulate Trip (On/Off)', man: '👦 Dylan', woman: '👧 Alyshia', balance: 'Balance', owes: 'owes', paid: 'paid'
             }
         };
 
@@ -404,14 +405,89 @@
                 .then(() => { statusDot.className = 'status-dot online'; })
                 .catch(err => { console.error(err); statusDot.className = 'status-dot error'; }); 
         }
+        
+        // ... (UI Functions) ...
+        function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
+        function updateLangUI() {
+            const t = i18n[data.config.lang];
+            const safeSet = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
+            const safePlace = (id, text) => { const el = document.getElementById(id); if(el) el.placeholder = text; };
 
+            safeSet('txt-nav-schedule', t.navSched); safeSet('txt-nav-shopping', t.navShop); safeSet('txt-nav-budget', t.navBudget); safeSet('txt-nav-info', t.navInfo);
+            safeSet('txt-dark', t.dark); safeSet('txt-bg', t.bg); safeSet('txt-lang', t.lang); safeSet('txt-reset', t.reset);
+            safeSet('txt-edit-title', t.editAppTitle); safeSet('txt-modal-edit-title', t.editTitle); safeSet('txt-upload-label', t.upload); safeSet('txt-type-sightseeing', t.tSight); safeSet('txt-type-food', t.tFood); safeSet('txt-type-transport', t.tTrans); safeSet('txt-type-hotel', t.tHotel); safeSet('btn-delete', t.btnDel); safeSet('btn-save', t.btnSave); safeSet('btn-cancel-edit', t.btnCancel);
+            safePlace('eTime', t.phTime); safePlace('eTitle', t.phTitle); safePlace('eDesc', t.phDesc); safePlace('eMap', t.phMap);
+            safeSet('txt-modal-shop-title', t.shopTitle); safeSet('txt-shop-upload-label', t.shopUpload); safePlace('sName', t.phShopName); safePlace('sNote', t.phShopNote); safeSet('btn-add-shop', t.btnAddShop); safeSet('btn-cancel-shop', t.btnCancel);
+            safeSet('txt-shop-drug', t.sDrug); safeSet('txt-shop-snack', t.sSnack); safeSet('txt-shop-wear', t.sWear); safeSet('txt-shop-gift', t.sGift);
+            safeSet('txt-export', t.export); safeSet('txt-import', t.import);
+            safeSet('pay-man', t.man); safeSet('pay-woman', t.woman);
+        }
+
+        function toggleSettings() { document.getElementById('settingsMenu').classList.toggle('show'); }
+        document.addEventListener('click', (e) => { if(!e.target.closest('.btn-circle') && !e.target.closest('.settings-menu')) document.getElementById('settingsMenu').classList.remove('show'); });
+        function toggleDarkMode() { data.config.darkMode = !data.config.darkMode; save(); applySettings(); }
+        function toggleLang() { data.config.lang = data.config.lang === 'zh-TW' ? 'en' : 'zh-TW'; save(); applySettings(); render(); updateLangUI(); }
+        function toggleSimulate() { data.config.simulate = !data.config.simulate; save(); render(); alert(data.config.simulate ? "Simulation ON (Day 1 Highlighted)" : "Simulation OFF"); }
+        function editTitle() { const t = prompt("Title", data.config.title); if(t) { data.config.title = t; data.config.subtitle = prompt("Subtitle", data.config.subtitle)||data.config.subtitle; save(); applySettings(); } }
+        function triggerBgUpload() { document.getElementById('bgInput').click(); }
+        function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 800 / img.width; cvs.width = 800; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.6)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
+        document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v47_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
+        function importData() { document.getElementById('importInput').click(); }
+        document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
+        function switchTab(t) { viewState.tab = t; if(t !== 'schedule') viewState.mode = 'list'; document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); render(); window.scrollTo(0,0); }
+        function render() { const box = document.getElementById('app-content'); box.innerHTML = ''; box.classList.remove('page-transition'); void box.offsetWidth; box.classList.add('page-transition'); if(viewState.tab === 'schedule') renderSchedule(box); else if(viewState.tab === 'shopping') renderShopping(box); else if(viewState.tab === 'budget') renderBudget(box); else renderInfo(box); }
+        function goHome() { if(viewState.tab === 'schedule' && viewState.mode === 'detail') { viewState.mode = 'list'; render(); } else if (viewState.tab !== 'schedule') { switchTab('schedule'); } window.scrollTo(0,0); }
+
+        function isToday(dateStr) {
+            if(data.config.simulate && dateStr.includes("02/19")) return true; 
+            const now = new Date(); const year = now.getFullYear(); const month = String(now.getMonth() + 1).padStart(2, '0'); const day = String(now.getDate()).padStart(2, '0'); const todayFormatted = `${month}/${day}`;
+            return dateStr.includes(todayFormatted) && year === 2026;
+        }
+
+        // V48: Sorting Fix & Time Input Fix
+        function renderSchedule(box) {
+            const t = i18n[data.config.lang];
+            if(viewState.mode === 'list') {
+                let html = `<h2 class="text-xs text-gray-400 mb-4 font-bold tracking-widest uppercase">${t.overview}</h2>`;
+                data.itinerary.forEach((day, idx) => {
+                    const wIcon = day.weather === 'sunny' ? 'sun text-yellow-500' : day.weather === 'cloudy' ? 'cloud text-gray-400' : 'umbrella text-blue-400';
+                    const highlightClass = isToday(day.date) ? 'highlight-card' : '';
+                    html += `<div class="glass-card list-item-card ${highlightClass}" onclick="openDay(${idx})"><div><div class="flex items-center gap-2"><div class="text-2xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</div><button class="weather-btn" onclick="event.stopPropagation(); toggleWeather(${idx})"><i class="fas fa-${wIcon} weather-icon"></i></button></div><div class="text-xs text-gray-500 font-bold tracking-wider">${day.date}</div></div><div class="text-right"><div class="text-base font-bold jp-font mb-1 editable-location" onclick="event.stopPropagation(); editLoc(${idx})">${day.loc} <i class="fas fa-pen text-[10px] text-gray-300"></i></div><div class="view-btn">${t.view} <i class="fas fa-chevron-right"></i></div></div></div>`;
+                }); box.innerHTML = html;
+            } else {
+                const day = data.itinerary[viewState.dayIdx]; let mapUrl = "https://www.google.com/maps/dir/"; day.events.forEach(e => { if(e.map) mapUrl += encodeURIComponent(e.map) + "/"; });
+                let html = `<div onclick="viewState.mode='list'; render()" class="back-btn mb-4 inline-flex items-center text-primary cursor-pointer font-bold"><i class="fas fa-arrow-left mr-2"></i></div><div class="flex items-end justify-between mb-6 border-l-4 border-[var(--primary)] pl-4"><div><h2 class="text-4xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</h2><p class="text-sm text-gray-500 font-bold">${day.date}</p></div><div class="text-xl font-bold jp-font">${day.loc}</div></div><a href="${mapUrl}" target="_blank" class="map-route-btn"><i class="fas fa-map-marked-alt"></i> ${t.viewMap}</a><div class="space-y-4">`;
+                day.events.forEach((evt, eIdx) => { const img = evt.img ? `<img src="${evt.img}" class="w-full h-48 object-cover">` : ''; const nav = evt.map ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(evt.map)}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] border border-[var(--primary)] text-[var(--primary)] px-2 py-0.5 rounded font-bold">NAV</a>` : ''; html += `<div class="glass-card overflow-hidden" onclick="editEvent(${eIdx})">${img}<div class="p-5"><div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-100"><span class="font-black jp-font text-[var(--primary)]">${evt.time}</span>${nav}</div><div class="flex items-center mb-2"><span class="w-2 h-2 rounded-full mr-2" style="background:${getDotColor(evt.type)}"></span><h3 class="text-lg font-bold jp-font">${evt.title}</h3></div><p class="text-sm text-gray-500 leading-relaxed">${evt.desc}</p></div></div>`; });
+                html += `<div onclick="newEvent()" class="text-center py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 cursor-pointer font-bold bg-white/30 text-sm hover:bg-white transition">${t.addEvent}</div></div>`; box.innerHTML = html;
+            }
+        }
+        function toggleWeather(idx) { const states = ['sunny', 'cloudy', 'rainy']; const curr = data.itinerary[idx].weather || 'sunny'; const next = states[(states.indexOf(curr) + 1) % states.length]; data.itinerary[idx].weather = next; save(); render(); }
+        function openDay(idx) { viewState.dayIdx = idx; viewState.mode = 'detail'; render(); }
+        function editLoc(idx) { const n = prompt("Location:", data.itinerary[idx].loc); if(n) { data.itinerary[idx].loc = n; save(); render(); } }
+        function getDotColor(t) { return t==='food'?'#D68F4D':t==='transport'?'#5D7C9D':t==='hotel'?'#8A6B9E':'#6D8C6F'; }
+        let editIdx = null; function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); } function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:""}); } function setType(type) { document.getElementById('eType').value = type; document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + type).classList.add('active'); }
+        function fillModal(id, obj) { document.getElementById(id).classList.add('active'); if(id === 'editModal') { document.getElementById('eTime').value = obj.time; document.getElementById('eTitle').value = obj.title; document.getElementById('eDesc').value = obj.desc; document.getElementById('eMap').value = obj.map||""; setType(obj.type || 'sightseeing'); const img = document.getElementById('previewImg'); if(obj.img) { img.src=obj.img; img.classList.add('show'); } else { img.src=''; img.classList.remove('show'); } } }
+        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); });
+        
+        // V48: Auto Sort by Time
+        function saveEvent() { 
+            const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; 
+            if(!evt.title) return; 
+            const events = data.itinerary[viewState.dayIdx].events; 
+            if(editIdx !== null) events[editIdx] = evt; else events.push(evt); 
+            // Sort Logic:
+            events.sort((a,b) => (a.time || "00:00").localeCompare(b.time || "00:00"));
+            save(); closeModal('editModal'); render(); 
+        }
+        function delEvent() { if(editIdx!==null && confirm("Delete?")) { data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render(); } }
         function toggleShopView() { viewState.shopMode = viewState.shopMode === 'list' ? 'grid' : 'list'; render(); }
         function setShopType(type) { document.getElementById('sType').value = type; document.querySelectorAll('#shopModal .type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-shop-' + type).classList.add('active'); }
         function renderShopping(box) { 
             const t = i18n[data.config.lang]; const isToBuy = viewState.shopTab === 'tobuy';
             setTimeout(() => { const btn = document.getElementById('viewToggleBtn'); if(btn) { btn.classList.remove('hidden'); btn.innerHTML = viewState.shopMode === 'list' ? '<i class="fas fa-th-large"></i>' : '<i class="fas fa-bars"></i>'; } }, 50);
-            let html = `<div class="shop-tabs"><div class="shop-tab ${isToBuy ? 'active' : ''}" onclick="viewState.shopTab='tobuy'; render()">${t.tabToBuy}</div><div class="shop-tab ${!isToBuy ? 'active' : ''}" onclick="viewState.shopTab='bought'; render()">${t.tabBought}</div></div><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold jp-font text-[var(--primary)]">${t.navShop}</h2>
-            <div onclick="window.openShopModal()" class="cursor-pointer text-sm bg-[var(--primary)] text-white px-4 py-2 rounded-lg shadow-md font-bold hover:opacity-90 active:scale-95" style="z-index: 1000; position: relative;">＋ ${t.btnAddShop}</div></div>`;
+            let html = `<div class="shop-tabs"><div class="shop-tab ${isToBuy ? 'active' : ''}" onclick="viewState.shopTab='tobuy'; render()">${t.tabToBuy}</div><div class="shop-tab ${!isToBuy ? 'active' : ''}" onclick="viewState.shopTab='bought'; render()">${t.tabBought}</div></div><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold jp-font text-[var(--primary)]">${t.navShop}</h2><button onclick="window.openShopModal()" class="text-sm bg-[var(--primary)] text-white px-3 py-1 rounded shadow">＋</button></div>`;
             const filteredList = data.shopping.filter(item => isToBuy ? !item.checked : item.checked);
             if(filteredList.length === 0) { html += `<div class="text-center text-gray-400 py-10">Empty List</div>`; } else {
                 const types = { 'drug': {label: t.sDrug, icon: 'pills'}, 'snack': {label: t.sSnack, icon: 'cookie-bite'}, 'wear': {label: t.sWear, icon: 'tshirt'}, 'gift': {label: t.sGift, icon: 'gift'} };
@@ -451,26 +527,6 @@
         }
         function setPayer(p) { document.getElementById('bPayer').value = p; document.querySelectorAll('.payer-btn').forEach(b=>b.classList.remove('active')); document.getElementById('pay-'+p).classList.add('active'); }
         function addBudget() { const item = document.getElementById('bItem').value; const amt = parseInt(document.getElementById('bAmt').value); const payer = document.getElementById('bPayer').value; if(item && amt) { data.budget.push({id:Date.now(), item, amt, payer}); save(); render(); } }
-        function delBudget(id) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); }
-        function calcTwd(val) {
-            const jpy = parseFloat(val);
-            const rate = data.config.rate || 0.22;
-            if(!isNaN(jpy)) {
-                document.getElementById('convTwd').innerText = "NT$ " + Math.round(jpy * rate).toLocaleString();
-            } else {
-                document.getElementById('convTwd').innerText = "NT$ 0";
-            }
-        }
-        function updateRate(val) {
-            const r = parseFloat(val);
-            if(!isNaN(r)) {
-                data.config.rate = r;
-                save();
-                const cur = document.getElementById('convJpy').value;
-                if(cur) calcTwd(cur);
-            }
-        }
-        // -----------------------
 
         function renderInfo(box) {
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
