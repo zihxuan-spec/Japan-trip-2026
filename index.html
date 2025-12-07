@@ -21,19 +21,17 @@
             --bg-card: rgba(255, 255, 255, 0.92); --bg-nav: rgba(46, 75, 113, 0.95); --nav-text: #94a3b8; --nav-active: #ffffff;
             --border: rgba(46, 75, 113, 0.1); --modal-bg: #ffffff; --input-bg: #FDFDFD;
         }
-
         body.dark-mode {
             --primary: #8faecf; --accent: #ff8a80; --text-main: #e0e0e0; --text-sub: #aaaaaa; --bg-body: #121212;
             --bg-card: rgba(30, 30, 40, 0.85); --bg-nav: rgba(20, 20, 30, 0.95); --nav-text: #555555; --nav-active: #8faecf;
             --border: rgba(255, 255, 255, 0.1); --modal-bg: #1e1e24; --input-bg: #2b2b36;
         }
-
         body {
             font-family: "Noto Serif JP", serif; color: var(--text-main); background-color: var(--bg-body);
             font-size: 17px; line-height: 1.75; letter-spacing: 0.06em; -webkit-tap-highlight-color: transparent;
             padding-bottom: 140px; min-height: 100vh; overflow-x: hidden;
             transition: background-color 0.5s, color 0.5s;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         body.has-custom-bg { background-image: none; background-size: cover; background-position: center; background-attachment: fixed; }
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); z-index: -1; pointer-events: none; transition: 0.3s; }
@@ -104,12 +102,13 @@
         .shop-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: 0.2s; font-family: "Zen Old Mincho", serif; }
         .shop-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         
-        /* 綠燈 V43 (亮一點，且常亮) */
+        /* 綠燈 V44 (強化狀態顯示) */
         .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; margin-left: 10px; transition: 0.3s; position: relative; display: inline-block; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .status-dot.online { background: #22c55e; box-shadow: 0 0 10px #22c55e; animation: pulse-green 3s infinite; }
+        .status-dot.offline { background: #eab308; } /* 黃燈：離線快取 */
         .status-dot.error { background: #ef4444; }
         @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
-        #status-text { font-size: 9px; color: #22c55e; font-weight: bold; margin-left: 5px; opacity: 0; transition: opacity 0.5s; }
+        #status-text { font-size: 9px; color: #22c55e; font-weight: bold; margin-left: 5px; opacity: 0; transition: opacity 0.5s; display: inline-block;}
         #status-text.show { opacity: 1; }
 
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
@@ -122,7 +121,6 @@
         .splash-title { font-family: 'Zen Old Mincho', serif; font-size: 3rem; font-weight: 900; color: #2E4B71; letter-spacing: 0.2em; margin-bottom: 1rem; opacity: 0; animation: fadeUp 1s ease forwards 0.3s; }
         .splash-sub { font-family: sans-serif; font-size: 0.8rem; font-weight: bold; color: #999; letter-spacing: 0.5em; opacity: 0; animation: fadeUp 1s ease forwards 0.8s; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
         .weather-btn { background: rgba(0,0,0,0.03); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; margin-left: 10px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; z-index: 20; position: relative; }
         .weather-btn:active { transform: scale(0.9); background: rgba(0,0,0,0.1); }
         .weather-icon { font-size: 1.2rem; color: #999; pointer-events: none; }
@@ -131,17 +129,12 @@
         .shop-grid-img { width: 100%; height: 150px; object-fit: cover; }
         .shop-grid-info { padding: 10px; }
         .shop-grid-check { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border-radius: 50%; padding: 4px; }
-        
-        /* Info Cards V43 Fixed */
         .info-card { background: var(--bg-card); border-left: 5px solid var(--primary); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.04); position: relative; }
-        /* V43: Move delete button to top-right corner with spacing */
         .info-card-del { position: absolute; top: 12px; right: 12px; color: #ccc; cursor: pointer; font-size: 16px; padding: 8px; z-index: 10; }
         .info-label { font-size: 0.7rem; color: var(--text-sub); font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
         .info-val { font-size: 1.15rem; font-weight: 700; color: var(--text-main); font-family: "Zen Old Mincho", serif; margin-bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; word-break: break-all;}
-        /* V43: Smaller copy button */
         .copy-btn { font-size: 0.6rem; padding: 2px 8px; border: 1px solid #ddd; border-radius: 12px; color: #999; cursor: pointer; background: white; white-space: nowrap; margin-left: 4px; }
         .copy-btn:active { background: var(--primary); color: white; }
-        
         #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         #lightbox img { max-width: 95%; max-height: 90%; border-radius: 8px; box-shadow: 0 0 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s; }
         #lightbox.active { display: flex; } #lightbox.active img { transform: scale(1); }
@@ -170,13 +163,14 @@
             <div class="flex items-center mt-2">
                 <p id="appSubtitle" class="text-xs tracking-[0.2em] uppercase font-sans font-bold" style="color:var(--text-sub)">2026.02.19 - 02.24</p>
                 <div id="dbStatus" class="status-dot" title="Cloud Status"></div>
-                <span id="status-text">Online</span>
+                <span id="status-text">...</span>
             </div>
         </div>
         <div class="flex gap-3">
             <button id="viewToggleBtn" onclick="toggleShopView()" class="btn-circle hidden"><i class="fas fa-th-large"></i></button>
             <button onclick="toggleSettings()" class="btn-circle"><i class="fas fa-cog"></i></button>
         </div>
+        
         <div id="settingsMenu" class="settings-menu">
             <div class="settings-item" onclick="toggleSimulate()"><i class="fas fa-magic"></i> <span id="txt-sim">模擬旅程中 (Simulate)</span></div>
             <div class="settings-item" onclick="editTitle()"><i class="fas fa-pen"></i> <span id="txt-edit-title">修改標題</span></div>
@@ -205,8 +199,20 @@
     <div id="flightModal" class="modal-overlay"><div class="modal-content"><h3 class="text-xl font-bold text-center mb-6 jp-font">航班資訊</h3><input type="hidden" id="fType"><div class="grid grid-cols-2 gap-3"><input id="fCode" placeholder="航班 (CI 104)"><input id="fPnr" placeholder="代號 (PNR)"></div><input id="fTicket" placeholder="票號 (Ticket No.)"><button onclick="saveFlight()" class="btn-primary mt-4">儲存</button><div class="text-center mt-3"><span onclick="closeModal('flightModal')" class="text-xs text-gray-400 underline cursor-pointer">取消</span></div></div></div>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyCZ6-Io1jzxTLz4gzNW_Nf9er5As217erk", authDomain: "japan-fb8df.firebaseapp.com", projectId: "japan-fb8df", storageBucket: "japan-fb8df.firebasestorage.app", messagingSenderId: "395174393492", appId: "1:395174393492:web:118d202e6387787a1f2681", measurementId: "G-F1Y2PGN2R5" };
-        firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); db.enablePersistence({ synchronizeTabs: true }).catch(err => console.log(err)); const TRIP_DOC_ID = "trip_data_2026"; 
+        // === V44 FIREBASE CONFIG ===
+        const firebaseConfig = {
+          apiKey: "AIzaSyCZ6-Io1jzxTLz4gzNW_Nf9er5As217erk",
+          authDomain: "japan-fb8df.firebaseapp.com",
+          projectId: "japan-fb8df",
+          storageBucket: "japan-fb8df.firebasestorage.app",
+          messagingSenderId: "395174393492",
+          appId: "1:395174393492:web:118d202e6387787a1f2681",
+          measurementId: "G-F1Y2PGN2R5"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const TRIP_DOC_ID = "trip_data_2026"; 
 
         const i18n = {
             'zh-TW': {
@@ -254,42 +260,73 @@
 
         let data = { 
             config: { title: "JAPAN", subtitle: "2026.02.19 - 02.24", lang: "zh-TW", darkMode: false, bg: null, rate: 0.22, simulate: false }, 
-            itinerary: JSON.parse(JSON.stringify(defItin)), budget: [], shopping: [],
+            itinerary: JSON.parse(JSON.stringify(defItin)), 
+            budget: [], 
+            shopping: [],
             info: { hotels: [{name: "御宿 野乃 淺草別邸", addr: "2-7-20 Asakusa", tel: "+81-3-0000-0000"}, {name: "新宿/澀谷飯店", addr: "Shinjuku-ku", tel: "+81-3-1111-1111"}], flightOut: { code: "CI 104", pnr: "ABCDEF", ticket: "297-0001" }, flightIn: { code: "CI 105", pnr: "ABCDEF", ticket: "297-0002" } },
             updatedAt: 0
         };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list', shopTab: 'tobuy', shopMode: 'list' }; 
 
+        // === V44 Smart Connection Logic ===
         function init() {
-            setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); }
+            }, 2500);
+
+            const localSaved = localStorage.getItem('trip_v44_cloud');
+            if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
-            // Force Render immediately
-            const localSaved = localStorage.getItem('trip_v43_cloud');
-            if(localSaved) { data = JSON.parse(localSaved); }
-            applySettings(); render(); updateLangUI();
-
-            db.collection("trips").doc(TRIP_DOC_ID).onSnapshot((doc) => {
-                const statusDot = document.getElementById('dbStatus');
-                // V43: Force Green if connected
-                statusDot.classList.add('online'); statusDot.classList.remove('error');
-                const txt = document.getElementById('status-text'); if(txt) { txt.classList.add('show'); setTimeout(()=>txt.classList.remove('show'), 3000); }
-
-                if (doc.exists) {
-                    const cloudData = doc.data();
-                    const localTime = data.updatedAt || 0;
-                    const cloudTime = cloudData.updatedAt || 0;
-                    if (cloudTime > localTime) {
-                         console.log("Cloud is newer"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
+            // Listen with Metadata
+            db.collection("trips").doc(TRIP_DOC_ID)
+                .onSnapshot({ includeMetadataChanges: true }, (doc) => {
+                    const statusDot = document.getElementById('dbStatus');
+                    const statusText = document.getElementById('status-text');
+                    
+                    if (doc.metadata.fromCache) {
+                        statusDot.className = 'status-dot offline'; // Yellow
+                        statusText.innerText = 'Offline';
+                        statusText.style.color = '#eab308';
+                    } else {
+                        statusDot.className = 'status-dot online'; // Green
+                        statusText.innerText = 'Online';
+                        statusText.style.color = '#22c55e';
                     }
-                } else { saveToCloud(); } 
-            }, (error) => { console.error(error); document.getElementById('dbStatus').classList.add('error'); });
+                    
+                    // Show status text briefly
+                    statusText.classList.add('show');
+                    setTimeout(() => statusText.classList.remove('show'), 3000);
+
+                    if (doc.exists) {
+                        const cloudData = doc.data();
+                        const localTime = data.updatedAt || 0;
+                        const cloudTime = cloudData.updatedAt || 0;
+                        // V44: Only update if cloud is strictly newer
+                        if (cloudTime > localTime) {
+                            console.log("Cloud is newer");
+                            data = cloudData; 
+                            saveLocal(); 
+                            applySettings(); render(); updateLangUI();
+                        }
+                    } else { saveToCloud(); }
+                }, (error) => { 
+                    console.error(error); 
+                    document.getElementById('dbStatus').className = 'status-dot error'; 
+                });
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { localStorage.setItem('trip_v43_cloud', JSON.stringify(data)); }
-        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
+        function saveLocal() { localStorage.setItem('trip_v44_cloud', JSON.stringify(data)); }
+        function saveToCloud() { 
+            const statusDot = document.getElementById('dbStatus');
+            statusDot.className = 'status-dot offline'; // Yellow while saving
+            db.collection("trips").doc(TRIP_DOC_ID).set(data)
+                .then(() => { statusDot.className = 'status-dot online'; })
+                .catch(err => { console.error(err); statusDot.className = 'status-dot error'; }); 
+        }
         
-        // ... (UI Functions) ...
+        // ... (UI Functions same as V43) ...
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
         function updateLangUI() {
             const t = i18n[data.config.lang];
@@ -312,7 +349,7 @@
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
         function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 800 / img.width; cvs.width = 800; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.6)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v43_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v44_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -366,7 +403,13 @@
                     if (itemsOfType.length > 0) {
                         html += `<div class="text-xs font-bold text-gray-400 mt-4 mb-3 pl-2 tracking-widest uppercase border-b border-gray-100 pb-1"><i class="fas fa-${types[typeKey].icon} mr-1"></i> ${types[typeKey].label}</div>`;
                         if (viewState.shopMode === 'grid') { html += `<div class="shop-grid">`; itemsOfType.forEach(item => { const originalIdx = data.shopping.findIndex(i => i.id === item.id); const imgDisplay = item.img ? item.img : 'https://placehold.co/300x300/eee/999?text=No+Img'; html += `<div class="shop-grid-item"><img src="${imgDisplay}" class="shop-grid-img" onclick="openLightbox('${imgDisplay}')"><div class="shop-grid-check" onclick="toggleShop(${originalIdx})"><i class="fas fa-${isToBuy ? 'circle' : 'check-circle'} text-${isToBuy?'gray-300':'green-500'}"></i></div><div class="shop-grid-info"><div class="font-bold text-sm truncate">${item.name}</div><div class="text-xs text-gray-500 truncate">${item.note}</div></div></div>`; }); html += `</div>`; } 
-                        else { html += `<div class="space-y-3">`; itemsOfType.forEach(item => { const originalIdx = data.shopping.findIndex(i => i.id === item.id); const checkClass = item.checked ? 'checked' : ''; const img = item.img ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="openLightbox('${item.img}')">` : ''; html += `<div class="swipe-container"><div class="swipe-actions" onclick="delShop(${originalIdx})"><i class="fas fa-trash"></i></div><div class="swipe-content glass-card p-3 flex items-center ${checkClass}" ontouchstart="touchStart(event)" ontouchend="touchEnd(event, this)"><div class="custom-checkbox mr-3 flex-shrink-0" onclick="toggleShop(${originalIdx})"><i class="fas fa-check text-xs"></i></div>${img}<div class="flex-1"><div class="font-bold item-name text-lg">${item.name}</div><div class="text-xs text-gray-500">${item.note}</div></div></div></div>`; }); html += `</div>`; }
+                        else { 
+                            html += `<div class="space-y-3">`; 
+                            itemsOfType.forEach(item => { 
+                                const originalIdx = data.shopping.findIndex(i => i.id === item.id); const checkClass = item.checked ? 'checked' : ''; const img = item.img ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="openLightbox('${item.img}')">` : ''; 
+                                html += `<div class="swipe-container"><div class="swipe-actions" onclick="delShop(${originalIdx})"><i class="fas fa-trash"></i></div><div class="swipe-content glass-card p-3 flex items-center ${checkClass}" ontouchstart="touchStart(event)" ontouchend="touchEnd(event, this)"><div class="custom-checkbox mr-3 flex-shrink-0" onclick="toggleShop(${originalIdx})"><i class="fas fa-check text-xs"></i></div>${img}<div class="flex-1"><div class="font-bold item-name text-lg">${item.name}</div><div class="text-xs text-gray-500">${item.note}</div></div></div></div>`; 
+                            }); html += `</div>`; 
+                        }
                     }
                 });
             } box.innerHTML = html; 
@@ -391,12 +434,11 @@
         function setPayer(p) { document.getElementById('bPayer').value = p; document.querySelectorAll('.payer-btn').forEach(b=>b.classList.remove('active')); document.getElementById('pay-'+p).classList.add('active'); }
         function addBudget() { const item = document.getElementById('bItem').value; const amt = parseInt(document.getElementById('bAmt').value); const payer = document.getElementById('bPayer').value; if(item && amt) { data.budget.push({id:Date.now(), item, amt, payer}); save(); render(); } }
 
-        // V43 Info Update
         function renderInfo(box) {
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="info-card-del" onclick="delHotel(${idx})"><i class="fas fa-times"></i></div><div class="mb-3"><div class="info-label">HOTEL NAME</div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i> Copy</span></div></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i> Copy</span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V43.0 (Fixed)</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V44.0 (Live)</div>`; box.innerHTML = html;
         }
 
         function addHotel() { document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
