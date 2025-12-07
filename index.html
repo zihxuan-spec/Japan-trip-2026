@@ -215,7 +215,7 @@
             
             <div class="grid grid-cols-3 gap-4">
                 <div class="col-span-1">
-                    <input id="eTime" type="time" class="text-center" style="padding: 12px !important;">
+                    <input id="eTime" placeholder="時間" class="text-center" style="padding: 12px !important;">
                 </div>
                 <div class="col-span-2"><input id="eTitle" placeholder="標題" class="font-bold"></div>
             </div>
@@ -366,19 +366,13 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v48_cloud');
+            const localSaved = localStorage.getItem('trip_v47_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
-
+            
             db.collection("trips").doc(TRIP_DOC_ID).onSnapshot((doc) => {
                 const statusDot = document.getElementById('dbStatus');
-                const statusText = document.getElementById('status-text');
-                
-                // Force Green if connected
-                statusDot.className = 'status-dot online'; 
-                statusDot.classList.remove('loading', 'error');
-                statusText.innerText = 'Online'; 
-                statusText.classList.add('show');
-                setTimeout(()=>statusText.classList.remove('show'), 3000);
+                statusDot.className = 'status-dot online'; // Force Green V47.1
+                const txt = document.getElementById('status-text'); if(txt) { txt.classList.add('show'); setTimeout(()=>txt.classList.remove('show'), 3000); }
 
                 if (doc.exists) {
                     const cloudData = doc.data();
@@ -388,26 +382,16 @@
                          console.log("Cloud is newer"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
                     }
                 } else { saveToCloud(); }
-            }, (error) => { 
-                console.error(error); 
-                document.getElementById('dbStatus').className = 'status-dot error'; 
-                document.getElementById('error-log').style.display='block';
-                document.getElementById('error-log').innerText = "連線失敗: " + error.message;
-            });
+            }, (error) => { console.error(error); document.getElementById('dbStatus').className = 'status-dot error'; });
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { localStorage.setItem('trip_v48_cloud', JSON.stringify(data)); }
-        function saveToCloud() { 
-            const statusDot = document.getElementById('dbStatus');
-            statusDot.className = 'status-dot loading'; // Yellow while saving
-            db.collection("trips").doc(TRIP_DOC_ID).set(data)
-                .then(() => { statusDot.className = 'status-dot online'; })
-                .catch(err => { console.error(err); statusDot.className = 'status-dot error'; }); 
-        }
+        function saveLocal() { localStorage.setItem('trip_v47_cloud', JSON.stringify(data)); }
+        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
         
-        // ... (UI Functions) ...
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
+        
+        // V47.1 Fixed: Update UI safely with checks
         function updateLangUI() {
             const t = i18n[data.config.lang];
             const safeSet = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
@@ -470,7 +454,17 @@
         let editIdx = null; function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); } function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:""}); } function setType(type) { document.getElementById('eType').value = type; document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + type).classList.add('active'); }
         function fillModal(id, obj) { document.getElementById(id).classList.add('active'); if(id === 'editModal') { document.getElementById('eTime').value = obj.time; document.getElementById('eTitle').value = obj.title; document.getElementById('eDesc').value = obj.desc; document.getElementById('eMap').value = obj.map||""; setType(obj.type || 'sightseeing'); const img = document.getElementById('previewImg'); if(obj.img) { img.src=obj.img; img.classList.add('show'); } else { img.src=''; img.classList.remove('show'); } } }
         document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); });
-        function saveEvent() { const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; if(!evt.title) return; const events = data.itinerary[viewState.dayIdx].events; if(editIdx !== null) events[editIdx] = evt; else { events.push(evt); events.sort((a,b)=>a.time.localeCompare(b.time)); } save(); closeModal('editModal'); render(); }
+        
+        // V48: Auto Sort by Time
+        function saveEvent() { 
+            const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; 
+            if(!evt.title) return; 
+            const events = data.itinerary[viewState.dayIdx].events; 
+            if(editIdx !== null) events[editIdx] = evt; else events.push(evt); 
+            // Sort Logic:
+            events.sort((a,b) => (a.time || "00:00").localeCompare(b.time || "00:00"));
+            save(); closeModal('editModal'); render(); 
+        }
         function delEvent() { if(editIdx!==null && confirm("Delete?")) { data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render(); } }
         function toggleShopView() { viewState.shopMode = viewState.shopMode === 'list' ? 'grid' : 'list'; render(); }
         function setShopType(type) { document.getElementById('sType').value = type; document.querySelectorAll('#shopModal .type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-shop-' + type).classList.add('active'); }
