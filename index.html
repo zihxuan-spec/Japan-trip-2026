@@ -60,7 +60,7 @@
         .converter-input { padding: 4px 8px !important; margin-bottom: 0 !important; height: 32px !important; font-size: 14px !important; border-radius: 6px !important; width: auto !important; }
         .jpy-input { padding: 8px 12px !important; margin-bottom: 0 !important; height: 44px !important; font-size: 18px !important; font-weight: bold !important; text-align: center !important; }
 
-        .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; }
+        .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; cursor: pointer; }
         .btn-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: var(--primary); border: 1px solid var(--border); transition: 0.2s; }
         .btn-circle:active { transform: scale(0.9); background: var(--primary); color: #fff; }
 
@@ -102,8 +102,10 @@
         .shop-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: 0.2s; font-family: "Zen Old Mincho", serif; }
         .shop-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         
+        /* 綠燈 V48 */
         .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; margin-left: 10px; transition: 0.3s; position: relative; display: inline-block; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .status-dot.online { background: #22c55e; box-shadow: 0 0 10px #22c55e; animation: pulse-green 3s infinite; }
+        .status-dot.loading { background: #eab308; } /* Yellow */
         .status-dot.error { background: #ef4444; }
         @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
         #status-text { font-size: 9px; color: #22c55e; font-weight: bold; margin-left: 5px; opacity: 0; transition: opacity 0.5s; display: inline-block;}
@@ -112,7 +114,12 @@
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(46, 75, 113, 0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #error-log { margin-top: 20px; padding: 15px; background: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; border-radius: 8px; font-size: 12px; max-width: 80%; display: none; text-align: left; }
+        
+        #error-log { 
+            position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
+            padding: 10px 20px; background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; 
+            border-radius: 8px; font-size: 12px; z-index: 9999; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
         
         header { background-color: var(--bg-body); backdrop-filter: blur(12px); background: linear-gradient(to bottom, var(--bg-body) 80%, rgba(255,255,255,0)); background-color: var(--bg-body); border-bottom: 1px solid var(--border); }
         #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #F9F8F6; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 1s ease-out, transform 1s ease-out; }
@@ -148,6 +155,9 @@
     </style>
 </head>
 <body class="default-bg">
+    
+    <div id="error-log"></div>
+
     <div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img"></div>
     <div id="splash-screen"><h1 class="splash-title">JAPAN</h1><p class="splash-sub">2026.02.19 - 02.24</p></div>
     <div id="loadingScreen" style="display:none"></div>
@@ -160,8 +170,8 @@
             <h1 id="appTitleMain" class="text-3xl font-black tracking-widest jp-font cursor-pointer" style="color:var(--primary)">JAPAN</h1>
             <div class="flex items-center mt-2">
                 <p id="appSubtitle" class="text-xs tracking-[0.2em] uppercase font-sans font-bold" style="color:var(--text-sub)">2026.02.19 - 02.24</p>
-                <div id="dbStatus" class="status-dot" title="Cloud Status"></div>
-                <span id="status-text">Online</span>
+                <div id="dbStatus" class="status-dot loading" title="Status"></div>
+                <span id="status-text">Connecting</span>
             </div>
         </div>
         <div class="flex gap-3">
@@ -192,13 +202,23 @@
     </nav>
 
     <div id="editModal" class="modal-overlay"><div class="modal-content"><h3 id="txt-modal-edit-title" class="text-2xl font-bold text-center mb-6 jp-font" style="color:var(--primary)">編輯行程</h3><div class="text-center mb-6"><div onclick="document.getElementById('editImg').click()" class="border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer text-gray-400 text-sm hover:bg-gray-50 transition"><i class="fas fa-camera text-3xl mb-2"></i><br><span id="txt-upload-label">上傳照片</span></div><input type="file" id="editImg" accept="image/*" hidden><img id="previewImg" class="img-box mt-4"></div><div class="type-selector"><div class="type-btn" onclick="setType('sightseeing')" id="btn-sightseeing"><i class="fas fa-camera"></i><span id="txt-type-sightseeing">觀光</span></div><div class="type-btn" onclick="setType('food')" id="btn-food"><i class="fas fa-utensils"></i><span id="txt-type-food">美食</span></div><div class="type-btn" onclick="setType('transport')" id="btn-transport"><i class="fas fa-train"></i><span id="txt-type-transport">交通</span></div><div class="type-btn" onclick="setType('hotel')" id="btn-hotel"><i class="fas fa-bed"></i><span id="txt-type-hotel">住宿</span></div></div><input type="hidden" id="eType" value="sightseeing"><div class="grid grid-cols-3 gap-4"><div class="col-span-1"><input id="eTime" placeholder="時間" class="text-center"></div><div class="col-span-2"><input id="eTitle" placeholder="標題" class="font-bold"></div></div><textarea id="eDesc" rows="3" placeholder="備註..."></textarea><div class="relative"><i class="fas fa-map-marker-alt absolute left-4 top-4 text-red-400 text-lg"></i><input id="eMap" placeholder="地圖連結" style="padding-left: 45px !important;"></div><div class="flex gap-4 mt-4"><button id="btn-delete" onclick="delEvent()" class="flex-1 py-3 rounded-xl border border-red-200 text-red-400 font-bold hover:bg-red-50">刪除</button><button id="btn-save" onclick="saveEvent()" class="flex-[2] btn-primary shadow-lg">儲存</button></div><div class="text-center mt-6"><span id="btn-cancel-edit" onclick="closeModal('editModal')" class="text-sm text-gray-400 font-bold cursor-pointer hover:text-gray-600">取消</span></div></div></div>
-    <div id="shopModal" class="modal-overlay"><div class="modal-content"><h3 id="txt-modal-shop-title" class="text-xl font-bold text-center mb-4 jp-font">新增購物清單</h3><div class="text-center mb-4"><div onclick="document.getElementById('shopImg').click()" class="border-2 border-dashed border-gray-300 rounded p-4 cursor-pointer text-gray-400 text-sm"><i class="fas fa-camera text-2xl mb-1"></i><br><span id="txt-shop-upload-label">商品照片</span></div><input type="file" id="shopImg" accept="image/*" hidden><img id="shopPreview" class="img-box mt-2"></div><div class="type-selector"><div class="type-btn" onclick="setShopType('drug')" id="btn-shop-drug"><i class="fas fa-pills"></i><span id="txt-shop-drug">藥妝</span></div><div class="type-btn" onclick="setShopType('snack')" id="btn-shop-snack"><i class="fas fa-cookie-bite"></i><span id="txt-shop-snack">零食</span></div><div class="type-btn" onclick="setShopType('wear')" id="btn-shop-wear"><i class="fas fa-tshirt"></i><span id="txt-shop-wear">服飾</span></div><div class="type-btn" onclick="setShopType('gift')" id="btn-shop-gift"><i class="fas fa-gift"></i><span id="txt-shop-gift">雜貨</span></div></div><input type="hidden" id="sType" value="drug"><input id="sName" placeholder="商品名稱"><textarea id="sNote" rows="2" placeholder="備註"></textarea><button id="btn-add-shop" onclick="saveShopItem()" class="btn-primary mt-2">加入清單</button><div class="text-center mt-3"><span id="btn-cancel-shop" onclick="closeModal('shopModal')" class="text-xs text-gray-400 underline cursor-pointer">取消</span></div></div></div>
+    <div id="shopModal" class="modal-overlay"><div class="modal-content"><h3 id="txt-modal-shop-title" class="text-xl font-bold text-center mb-4 jp-font">新增購物清單</h3><div class="text-center mb-4"><div onclick="document.getElementById('shopImg').click()" class="border-2 border-dashed border-gray-300 rounded p-4 cursor-pointer text-gray-400 text-sm hover:bg-gray-50 transition"><i class="fas fa-camera text-2xl mb-1"></i><br><span id="txt-shop-upload-label">商品照片</span></div><input type="file" id="shopImg" accept="image/*" hidden><img id="shopPreview" class="img-box mt-2"></div><div class="type-selector"><div class="type-btn" onclick="setShopType('drug')" id="btn-shop-drug"><i class="fas fa-pills"></i><span id="txt-shop-drug">藥妝</span></div><div class="type-btn" onclick="setShopType('snack')" id="btn-shop-snack"><i class="fas fa-cookie-bite"></i><span id="txt-shop-snack">零食</span></div><div class="type-btn" onclick="setShopType('wear')" id="btn-shop-wear"><i class="fas fa-tshirt"></i><span id="txt-shop-wear">服飾</span></div><div class="type-btn" onclick="setShopType('gift')" id="btn-shop-gift"><i class="fas fa-gift"></i><span id="txt-shop-gift">雜貨</span></div></div><input type="hidden" id="sType" value="drug"><input id="sName" placeholder="商品名稱"><textarea id="sNote" rows="2" placeholder="備註"></textarea><button id="btn-add-shop" onclick="saveShopItem()" class="btn-primary mt-2">加入清單</button><div class="text-center mt-3"><span id="btn-cancel-shop" onclick="closeModal('shopModal')" class="text-xs text-gray-400 underline cursor-pointer">取消</span></div></div></div>
     <div id="hotelModal" class="modal-overlay"><div class="modal-content"><h3 class="text-xl font-bold text-center mb-6 jp-font">住宿資訊</h3><input id="hName" placeholder="飯店名稱 (Name)"><textarea id="hAddr" rows="3" placeholder="地址 (Address)"></textarea><input id="hTel" placeholder="電話 (Phone)"><button onclick="saveHotel()" class="btn-primary mt-4">儲存</button><div class="text-center mt-3"><span onclick="closeModal('hotelModal')" class="text-xs text-gray-400 underline cursor-pointer">取消</span></div></div></div>
     <div id="flightModal" class="modal-overlay"><div class="modal-content"><h3 class="text-xl font-bold text-center mb-6 jp-font">航班資訊</h3><input type="hidden" id="fType"><div class="grid grid-cols-2 gap-3"><input id="fCode" placeholder="航班 (CI 104)"><input id="fPnr" placeholder="代號 (PNR)"></div><input id="fTicket" placeholder="票號 (Ticket No.)"><button onclick="saveFlight()" class="btn-primary mt-4">儲存</button><div class="text-center mt-3"><span onclick="closeModal('flightModal')" class="text-xs text-gray-400 underline cursor-pointer">取消</span></div></div></div>
 
     <script>
+        // Error Handler
+        window.onerror = function(msg, url, line, col, error) {
+            const errDiv = document.getElementById('error-log');
+            errDiv.style.display = 'block';
+            errDiv.innerHTML = `⚠️ JS Error: ${msg}`;
+            return false;
+        };
+
         const firebaseConfig = { apiKey: "AIzaSyCZ6-Io1jzxTLz4gzNW_Nf9er5As217erk", authDomain: "japan-fb8df.firebaseapp.com", projectId: "japan-fb8df", storageBucket: "japan-fb8df.firebasestorage.app", messagingSenderId: "395174393492", appId: "1:395174393492:web:118d202e6387787a1f2681", measurementId: "G-F1Y2PGN2R5" };
-        firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); db.enablePersistence({ synchronizeTabs: true }).catch(err => console.log(err)); const TRIP_DOC_ID = "trip_data_2026"; 
+        firebase.initializeApp(firebaseConfig); 
+        const db = firebase.firestore(); 
+        const TRIP_DOC_ID = "trip_data_2026"; 
 
         const i18n = {
             'zh-TW': {
@@ -249,7 +269,7 @@
             itinerary: JSON.parse(JSON.stringify(defItin)), 
             budget: [], 
             shopping: [],
-            info: { hotels: [{name: "御宿 野乃 淺草別邸", addr: "2-7-20 Asakusa, Taito-ku, Tokyo 111-0032", tel: "+81-3-0000-0000"}, {name: "新宿/澀谷飯店", addr: "Shinjuku-ku, Tokyo", tel: "+81-3-1111-1111"}], flightOut: { code: "CI 104", pnr: "ABCDEF", ticket: "297-0001" }, flightIn: { code: "CI 105", pnr: "ABCDEF", ticket: "297-0002" } },
+            info: { hotels: [{name: "御宿 野乃 淺草別邸", addr: "2-7-20 Asakusa", tel: "+81-3-0000-0000"}, {name: "新宿/澀谷飯店", addr: "Shinjuku-ku", tel: "+81-3-1111-1111"}], flightOut: { code: "CI 104", pnr: "ABCDEF", ticket: "297-0001" }, flightIn: { code: "CI 105", pnr: "ABCDEF", ticket: "297-0002" } },
             updatedAt: 0
         };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list', shopTab: 'tobuy', shopMode: 'list' }; 
@@ -257,14 +277,19 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v47_cloud');
-            if(localSaved) { data = JSON.parse(localSaved); }
-            applySettings(); render(); updateLangUI();
+            const localSaved = localStorage.getItem('trip_v48_cloud');
+            if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
 
             db.collection("trips").doc(TRIP_DOC_ID).onSnapshot((doc) => {
                 const statusDot = document.getElementById('dbStatus');
-                statusDot.className = 'status-dot online'; // Force Green
-                const txt = document.getElementById('status-text'); if(txt) { txt.classList.add('show'); setTimeout(()=>txt.classList.remove('show'), 3000); }
+                const statusText = document.getElementById('status-text');
+                
+                // Force Green on Connect
+                statusDot.className = 'status-dot online'; 
+                statusDot.classList.remove('loading', 'error');
+                statusText.innerText = 'Online'; 
+                statusText.classList.add('show');
+                setTimeout(()=>statusText.classList.remove('show'), 3000);
 
                 if (doc.exists) {
                     const cloudData = doc.data();
@@ -274,92 +299,32 @@
                          console.log("Cloud is newer"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
                     }
                 } else { saveToCloud(); }
-            }, (error) => { console.error(error); document.getElementById('dbStatus').className = 'status-dot error'; });
+            }, (error) => { 
+                console.error(error); 
+                const statusDot = document.getElementById('dbStatus');
+                statusDot.className = 'status-dot error'; 
+                document.getElementById('error-log').style.display='block';
+                document.getElementById('error-log').innerText = "連線失敗: " + error.message;
+            });
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { localStorage.setItem('trip_v47_cloud', JSON.stringify(data)); }
-        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
-        
-        function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
-        function updateLangUI() {
-            const t = i18n[data.config.lang];
-            document.getElementById('txt-nav-schedule').innerText = t.navSched; document.getElementById('txt-nav-shopping').innerText = t.navShop; document.getElementById('txt-nav-budget').innerText = t.navBudget; document.getElementById('txt-nav-info').innerText = t.navInfo;
-            document.getElementById('txt-dark').innerText = t.dark; document.getElementById('txt-bg').innerText = t.bg; document.getElementById('txt-lang').innerText = t.lang; document.getElementById('txt-reset').innerText = t.reset; document.getElementById('txt-sim').innerText = t.simMode;
-            document.getElementById('txt-edit-title').innerText = t.editAppTitle;
-            document.getElementById('txt-modal-edit-title').innerText = t.editTitle; document.getElementById('txt-upload-label').innerText = t.upload; document.getElementById('txt-type-sightseeing').innerText = t.tSight; document.getElementById('txt-type-food').innerText = t.tFood; document.getElementById('txt-type-transport').innerText = t.tTrans; document.getElementById('txt-type-hotel').innerText = t.tHotel; document.getElementById('btn-delete').innerText = t.btnDel; document.getElementById('btn-save').innerText = t.btnSave; document.getElementById('btn-cancel-edit').innerText = t.btnCancel;
-            document.getElementById('eTime').placeholder = t.phTime; document.getElementById('eTitle').placeholder = t.phTitle; document.getElementById('eDesc').placeholder = t.phDesc; document.getElementById('eMap').placeholder = t.phMap;
-            document.getElementById('txt-modal-shop-title').innerText = t.shopTitle; document.getElementById('txt-shop-upload-label').innerText = t.shopUpload; document.getElementById('sName').placeholder = t.phShopName; document.getElementById('sNote').placeholder = t.phShopNote; document.getElementById('btn-add-shop').innerText = t.btnAddShop; document.getElementById('btn-cancel-shop').innerText = t.btnCancel;
-            document.getElementById('txt-shop-drug').innerText = t.sDrug; document.getElementById('txt-shop-snack').innerText = t.sSnack; document.getElementById('txt-shop-wear').innerText = t.sWear; document.getElementById('txt-shop-gift').innerText = t.sGift;
-            document.getElementById('txt-export').innerText = t.export; document.getElementById('txt-import').innerText = t.import;
-            document.getElementById('pay-man').innerText = t.man; document.getElementById('pay-woman').innerText = t.woman;
-        }
-        function toggleSettings() { document.getElementById('settingsMenu').classList.toggle('show'); }
-        document.addEventListener('click', (e) => { if(!e.target.closest('.btn-circle') && !e.target.closest('.settings-menu')) document.getElementById('settingsMenu').classList.remove('show'); });
-        function toggleDarkMode() { data.config.darkMode = !data.config.darkMode; save(); applySettings(); }
-        function toggleLang() { data.config.lang = data.config.lang === 'zh-TW' ? 'en' : 'zh-TW'; save(); applySettings(); render(); updateLangUI(); }
-        function toggleSimulate() { data.config.simulate = !data.config.simulate; save(); render(); alert(data.config.simulate ? "Simulation ON (Day 1 Highlighted)" : "Simulation OFF"); }
-        function editTitle() { const t = prompt("Title", data.config.title); if(t) { data.config.title = t; data.config.subtitle = prompt("Subtitle", data.config.subtitle)||data.config.subtitle; save(); applySettings(); } }
-        function triggerBgUpload() { document.getElementById('bgInput').click(); }
-        function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 800 / img.width; cvs.width = 800; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.6)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
-        document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v47_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
-        function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
-        function importData() { document.getElementById('importInput').click(); }
-        document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
-        
-        function switchTab(t) { 
-            viewState.tab = t; 
-            if(t !== 'schedule') viewState.mode = 'list'; 
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); 
-            document.getElementById('tab-'+t).classList.add('active'); 
-            render(); window.scrollTo(0,0); 
+        function saveLocal() { localStorage.setItem('trip_v48_cloud', JSON.stringify(data)); }
+        function saveToCloud() { 
+            const statusDot = document.getElementById('dbStatus');
+            statusDot.className = 'status-dot loading'; // Yellow while saving
+            db.collection("trips").doc(TRIP_DOC_ID).set(data)
+                .then(() => { statusDot.className = 'status-dot online'; })
+                .catch(err => { console.error(err); statusDot.className = 'status-dot error'; }); 
         }
 
-        function render() { const box = document.getElementById('app-content'); box.innerHTML = ''; box.classList.remove('page-transition'); void box.offsetWidth; box.classList.add('page-transition'); if(viewState.tab === 'schedule') renderSchedule(box); else if(viewState.tab === 'shopping') renderShopping(box); else if(viewState.tab === 'budget') renderBudget(box); else renderInfo(box); }
-        function goHome() { if(viewState.tab === 'schedule' && viewState.mode === 'detail') { viewState.mode = 'list'; render(); } else if (viewState.tab !== 'schedule') { switchTab('schedule'); } window.scrollTo(0,0); }
-
-        function isToday(dateStr) {
-            if(data.config.simulate && dateStr.includes("02/19")) return true; 
-            const now = new Date(); const year = now.getFullYear(); const month = String(now.getMonth() + 1).padStart(2, '0'); const day = String(now.getDate()).padStart(2, '0'); const todayFormatted = `${month}/${day}`;
-            return dateStr.includes(todayFormatted) && year === 2026;
-        }
-
-        function renderSchedule(box) {
-            const t = i18n[data.config.lang];
-            if(viewState.mode === 'list') {
-                let html = `<h2 class="text-xs text-gray-400 mb-4 font-bold tracking-widest uppercase">${t.overview}</h2>`;
-                data.itinerary.forEach((day, idx) => {
-                    const wIcon = day.weather === 'sunny' ? 'sun text-yellow-500' : day.weather === 'cloudy' ? 'cloud text-gray-400' : 'umbrella text-blue-400';
-                    const highlightClass = isToday(day.date) ? 'highlight-card' : '';
-                    html += `<div class="glass-card list-item-card ${highlightClass}" onclick="openDay(${idx})"><div><div class="flex items-center gap-2"><div class="text-2xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</div><button class="weather-btn" onclick="event.stopPropagation(); toggleWeather(${idx})"><i class="fas fa-${wIcon} weather-icon"></i></button></div><div class="text-xs text-gray-500 font-bold tracking-wider">${day.date}</div></div><div class="text-right"><div class="text-base font-bold jp-font mb-1 editable-location" onclick="event.stopPropagation(); editLoc(${idx})">${day.loc} <i class="fas fa-pen text-[10px] text-gray-300"></i></div><div class="view-btn">${t.view} <i class="fas fa-chevron-right"></i></div></div></div>`;
-                }); box.innerHTML = html;
-            } else {
-                const day = data.itinerary[viewState.dayIdx]; let mapUrl = "https://www.google.com/maps/dir/"; day.events.forEach(e => { if(e.map) mapUrl += encodeURIComponent(e.map) + "/"; });
-                let html = `<div onclick="viewState.mode='list'; render()" class="back-btn mb-4 inline-flex items-center text-primary cursor-pointer font-bold"><i class="fas fa-arrow-left mr-2"></i></div><div class="flex items-end justify-between mb-6 border-l-4 border-[var(--primary)] pl-4"><div><h2 class="text-4xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</h2><p class="text-sm text-gray-500 font-bold">${day.date}</p></div><div class="text-xl font-bold jp-font">${day.loc}</div></div><a href="${mapUrl}" target="_blank" class="map-route-btn"><i class="fas fa-map-marked-alt"></i> ${t.viewMap}</a><div class="space-y-4">`;
-                day.events.forEach((evt, eIdx) => { const img = evt.img ? `<img src="${evt.img}" class="w-full h-48 object-cover">` : ''; const nav = evt.map ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(evt.map)}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] border border-[var(--primary)] text-[var(--primary)] px-2 py-0.5 rounded font-bold">NAV</a>` : ''; html += `<div class="glass-card overflow-hidden" onclick="editEvent(${eIdx})">${img}<div class="p-5"><div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-100"><span class="font-black jp-font text-[var(--primary)]">${evt.time}</span>${nav}</div><div class="flex items-center mb-2"><span class="w-2 h-2 rounded-full mr-2" style="background:${getDotColor(evt.type)}"></span><h3 class="text-lg font-bold jp-font">${evt.title}</h3></div><p class="text-sm text-gray-500 leading-relaxed">${evt.desc}</p></div></div>`; });
-                html += `<div onclick="newEvent()" class="text-center py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 cursor-pointer font-bold bg-white/30 text-sm hover:bg-white transition">${t.addEvent}</div></div>`; box.innerHTML = html;
-            }
-        }
-        function toggleWeather(idx) { const states = ['sunny', 'cloudy', 'rainy']; const curr = data.itinerary[idx].weather || 'sunny'; const next = states[(states.indexOf(curr) + 1) % states.length]; data.itinerary[idx].weather = next; save(); render(); }
-        function openDay(idx) { viewState.dayIdx = idx; viewState.mode = 'detail'; render(); }
-        function editLoc(idx) { const n = prompt("Location:", data.itinerary[idx].loc); if(n) { data.itinerary[idx].loc = n; save(); render(); } }
-        function getDotColor(t) { return t==='food'?'#D68F4D':t==='transport'?'#5D7C9D':t==='hotel'?'#8A6B9E':'#6D8C6F'; }
-        let editIdx = null; function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); } function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:""}); } function setType(type) { document.getElementById('eType').value = type; document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + type).classList.add('active'); }
-        function fillModal(id, obj) { document.getElementById(id).classList.add('active'); if(id === 'editModal') { document.getElementById('eTime').value = obj.time; document.getElementById('eTitle').value = obj.title; document.getElementById('eDesc').value = obj.desc; document.getElementById('eMap').value = obj.map||""; setType(obj.type || 'sightseeing'); const img = document.getElementById('previewImg'); if(obj.img) { img.src=obj.img; img.classList.add('show'); } else { img.src=''; img.classList.remove('show'); } } }
-        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); });
-        function saveEvent() { const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; if(!evt.title) return; const events = data.itinerary[viewState.dayIdx].events; if(editIdx !== null) events[editIdx] = evt; else { events.push(evt); events.sort((a,b)=>a.time.localeCompare(b.time)); } save(); closeModal('editModal'); render(); }
-        function delEvent() { if(editIdx!==null && confirm("Delete?")) { data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render(); } }
         function toggleShopView() { viewState.shopMode = viewState.shopMode === 'list' ? 'grid' : 'list'; render(); }
         function setShopType(type) { document.getElementById('sType').value = type; document.querySelectorAll('#shopModal .type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-shop-' + type).classList.add('active'); }
-        
         function renderShopping(box) { 
             const t = i18n[data.config.lang]; const isToBuy = viewState.shopTab === 'tobuy';
             setTimeout(() => { const btn = document.getElementById('viewToggleBtn'); if(btn) { btn.classList.remove('hidden'); btn.innerHTML = viewState.shopMode === 'list' ? '<i class="fas fa-th-large"></i>' : '<i class="fas fa-bars"></i>'; } }, 50);
-            
-            // V47: Re-added Inline Button here
-            let html = `<div class="shop-tabs"><div class="shop-tab ${isToBuy ? 'active' : ''}" onclick="viewState.shopTab='tobuy'; render()">${t.tabToBuy}</div><div class="shop-tab ${!isToBuy ? 'active' : ''}" onclick="viewState.shopTab='bought'; render()">${t.tabBought}</div></div><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold jp-font text-[var(--primary)]">${t.navShop}</h2><button onclick="openShopModal()" class="text-sm bg-[var(--primary)] text-white px-3 py-1 rounded shadow">＋</button></div>`;
-            
+            let html = `<div class="shop-tabs"><div class="shop-tab ${isToBuy ? 'active' : ''}" onclick="viewState.shopTab='tobuy'; render()">${t.tabToBuy}</div><div class="shop-tab ${!isToBuy ? 'active' : ''}" onclick="viewState.shopTab='bought'; render()">${t.tabBought}</div></div><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold jp-font text-[var(--primary)]">${t.navShop}</h2>
+            <button onclick="openShopModal()" class="text-sm bg-[var(--primary)] text-white px-4 py-2 rounded-lg shadow-md hover:bg-opacity-90 transition transform active:scale-95" style="z-index:50;">＋ ${t.btnAddShop}</button></div>`;
             const filteredList = data.shopping.filter(item => isToBuy ? !item.checked : item.checked);
             if(filteredList.length === 0) { html += `<div class="text-center text-gray-400 py-10">Empty List</div>`; } else {
                 const types = { 'drug': {label: t.sDrug, icon: 'pills'}, 'snack': {label: t.sSnack, icon: 'cookie-bite'}, 'wear': {label: t.sWear, icon: 'tshirt'}, 'gift': {label: t.sGift, icon: 'gift'} };
@@ -380,33 +345,49 @@
                 });
             } box.innerHTML = html; 
         }
-        let touchStartX = 0; window.touchStart = function(e) { touchStartX = e.changedTouches[0].screenX; }
-        window.touchEnd = function(e, el) { if(touchStartX - e.changedTouches[0].screenX > 50) el.parentElement.classList.add('swiped-left'); else el.parentElement.classList.remove('swiped-left'); }
-        function openLightbox(src) { document.getElementById('lightbox').classList.add('active'); document.getElementById('lightbox-img').src = src; }
-        function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
-
-        function renderBudget(box) { 
-            document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; 
-            const total = data.budget.reduce((a,c)=>a+c.amt,0); const rate = data.config.rate; 
-            let manPaid = 0; let womanPaid = 0;
-            data.budget.forEach(b => { if(b.payer === 'man') manPaid += b.amt; else if(b.payer === 'woman') womanPaid += b.amt; else { manPaid += b.amt/2; womanPaid += b.amt/2; } });
-            const diff = (manPaid - womanPaid) / 2;
-            let balanceText = diff === 0 ? "All Clear" : diff > 0 ? `${t.woman} ${t.owes} ${t.man} ¥${Math.abs(diff).toLocaleString()}` : `${t.man} ${t.owes} ${t.woman} ¥${Math.abs(diff).toLocaleString()}`;
-            
-            let html = `<div class="glass-card p-6 text-center mb-6"><div class="text-xs text-gray-500 mb-2 font-bold tracking-widest uppercase">${t.totalSpent}</div><div class="text-4xl font-black jp-font text-[var(--primary)]">¥${total.toLocaleString()}</div><div class="mt-4 pt-4 border-t border-gray-100 text-sm font-bold text-[var(--accent)]">${t.balance}: ${balanceText}</div></div>
-            <div class="glass-card p-4 mb-6 bg-blue-50/50"><div class="flex justify-between items-center mb-2"><h3 class="text-sm font-bold text-[var(--primary)]"><i class="fas fa-exchange-alt"></i> ${t.converter}</h3><input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center text-xs p-1 h-6 mb-0" title="Rate"></div><div class="flex gap-2 items-center"><input type="number" id="convJpy" placeholder="JPY" oninput="calcTwd(this.value)" class="jpy-input mb-0 text-center font-bold"><span class="text-gray-400">=</span><div id="convTwd" class="flex-1 text-center font-bold text-xl text-[var(--accent)] jp-font">NT$ 0</div></div></div>
-            <div class="glass-card p-5 mb-4"><h3 class="font-bold text-sm mb-3 tracking-widest">${t.newExp}</h3><div class="payer-toggle"><div class="payer-btn active" id="pay-man" onclick="setPayer('man')">${t.man}</div><div class="payer-btn" id="pay-woman" onclick="setPayer('woman')">${t.woman}</div></div><input type="hidden" id="bPayer" value="man"><input id="bItem" placeholder="${t.phItem}"><input type="number" id="bAmt" placeholder="${t.phAmt}"><button onclick="addBudget()" class="btn-primary py-2 text-sm">${t.btnAddExp}</button></div><div class="space-y-3">${data.budget.slice().reverse().map((b,i) => `<div class="swipe-container"><div class="swipe-actions" onclick="delBudget(${b.id})"><i class="fas fa-trash"></i></div><div class="swipe-content glass-card p-4 flex justify-between items-center border-l-4 border-${b.payer==='man'?'blue-500':b.payer==='woman'?'pink-500':'gray-400'}" ontouchstart="touchStart(event)" ontouchend="touchEnd(event, this)"><div><div class="font-bold jp-font">${b.item}</div><div class="text-xs text-gray-500">${b.payer==='man'?t.man:b.payer==='woman'?t.woman:'Split'} ${t.paid}</div></div><div class="flex items-center gap-3"><span class="font-bold text-lg jp-font">¥${b.amt.toLocaleString()}</span></div></div></div>`).join('')}</div>`; box.innerHTML = html; 
+        function openShopModal() { 
+            try {
+                document.getElementById('shopModal').classList.add('active'); 
+                document.getElementById('sName').value=""; document.getElementById('sNote').value=""; 
+                document.getElementById('shopPreview').classList.remove('show'); setShopType('drug'); 
+            } catch(e) { alert("Error opening modal: " + e); }
         }
-        function setPayer(p) { document.getElementById('bPayer').value = p; document.querySelectorAll('.payer-btn').forEach(b=>b.classList.remove('active')); document.getElementById('pay-'+p).classList.add('active'); }
-        function addBudget() { const item = document.getElementById('bItem').value; const amt = parseInt(document.getElementById('bAmt').value); const payer = document.getElementById('bPayer').value; if(item && amt) { data.budget.push({id:Date.now(), item, amt, payer}); save(); render(); } }
-
-        function renderInfo(box) {
-            document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
-            let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="info-card-del" onclick="delHotel(${idx})"><i class="fas fa-times"></i></div><div class="mb-3"><div class="info-label">HOTEL NAME</div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i> Copy</span></div></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i> Copy</span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
-            const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V47.0 (Fixed Btn)</div>`; box.innerHTML = html;
-        }
-
+        document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('shopPreview').src=url; document.getElementById('shopPreview').classList.add('show'); });
+        function saveShopItem() { const item = { id: Date.now(), name: document.getElementById('sName').value, note: document.getElementById('sNote').value, type: document.getElementById('sType').value, checked: false, img: document.getElementById('shopPreview').classList.contains('show') ? document.getElementById('shopPreview').src : "" }; if(item.name) { data.shopping.push(item); save(); closeModal('shopModal'); render(); } }
+        function toggleShop(idx) { data.shopping[idx].checked = !data.shopping[idx].checked; save(); render(); }
+        function delShop(idx) { if(confirm("Delete?")) { data.shopping.splice(idx,1); save(); render(); } }
+        
+        // ... (Other functions same as before) ...
+        function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
+        function updateLangUI() { const t = i18n[data.config.lang]; document.getElementById('txt-nav-schedule').innerText = t.navSched; document.getElementById('txt-nav-shopping').innerText = t.navShop; document.getElementById('txt-nav-budget').innerText = t.navBudget; document.getElementById('txt-nav-info').innerText = t.navInfo; document.getElementById('txt-dark').innerText = t.dark; document.getElementById('txt-bg').innerText = t.bg; document.getElementById('txt-lang').innerText = t.lang; document.getElementById('txt-reset').innerText = t.reset; document.getElementById('txt-modal-edit-title').innerText = t.editTitle; document.getElementById('txt-upload-label').innerText = t.upload; document.getElementById('txt-type-sightseeing').innerText = t.tSight; document.getElementById('txt-type-food').innerText = t.tFood; document.getElementById('txt-type-transport').innerText = t.tTrans; document.getElementById('txt-type-hotel').innerText = t.tHotel; document.getElementById('btn-delete').innerText = t.btnDel; document.getElementById('btn-save').innerText = t.btnSave; document.getElementById('btn-cancel-edit').innerText = t.btnCancel; document.getElementById('eTime').placeholder = t.phTime; document.getElementById('eTitle').placeholder = t.phTitle; document.getElementById('eDesc').placeholder = t.phDesc; document.getElementById('eMap').placeholder = t.phMap; document.getElementById('txt-modal-shop-title').innerText = t.shopTitle; document.getElementById('txt-shop-upload-label').innerText = t.shopUpload; document.getElementById('sName').placeholder = t.phShopName; document.getElementById('sNote').placeholder = t.phShopNote; document.getElementById('btn-add-shop').innerText = t.btnAddShop; document.getElementById('btn-cancel-shop').innerText = t.btnCancel; document.getElementById('txt-shop-drug').innerText = t.sDrug; document.getElementById('txt-shop-snack').innerText = t.sSnack; document.getElementById('txt-shop-wear').innerText = t.sWear; document.getElementById('txt-shop-gift').innerText = t.sGift; document.getElementById('txt-export').innerText = t.export; document.getElementById('txt-import').innerText = t.import; document.getElementById('pay-man').innerText = t.man; document.getElementById('pay-woman').innerText = t.woman; }
+        function toggleSettings() { document.getElementById('settingsMenu').classList.toggle('show'); }
+        document.addEventListener('click', (e) => { if(!e.target.closest('.btn-circle') && !e.target.closest('.settings-menu')) document.getElementById('settingsMenu').classList.remove('show'); });
+        function toggleDarkMode() { data.config.darkMode = !data.config.darkMode; save(); applySettings(); }
+        function toggleLang() { data.config.lang = data.config.lang === 'zh-TW' ? 'en' : 'zh-TW'; save(); applySettings(); render(); updateLangUI(); }
+        function toggleSimulate() { data.config.simulate = !data.config.simulate; save(); render(); alert(data.config.simulate ? "Simulation ON (Day 1 Highlighted)" : "Simulation OFF"); }
+        function editTitle() { const t = prompt("Title", data.config.title); if(t) { data.config.title = t; data.config.subtitle = prompt("Subtitle", data.config.subtitle)||data.config.subtitle; save(); applySettings(); } }
+        function triggerBgUpload() { document.getElementById('bgInput').click(); }
+        function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 800 / img.width; cvs.width = 800; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.6)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
+        document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v48_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
+        function importData() { document.getElementById('importInput').click(); }
+        document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
+        function switchTab(t) { viewState.tab = t; if(t !== 'schedule') viewState.mode = 'list'; document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); render(); window.scrollTo(0,0); }
+        function render() { const box = document.getElementById('app-content'); box.innerHTML = ''; box.classList.remove('page-transition'); void box.offsetWidth; box.classList.add('page-transition'); if(viewState.tab === 'schedule') renderSchedule(box); else if(viewState.tab === 'shopping') renderShopping(box); else if(viewState.tab === 'budget') renderBudget(box); else renderInfo(box); }
+        function goHome() { if(viewState.tab === 'schedule' && viewState.mode === 'detail') { viewState.mode = 'list'; render(); } else if (viewState.tab !== 'schedule') { switchTab('schedule'); } window.scrollTo(0,0); }
+        function isToday(dateStr) { if(data.config.simulate && dateStr.includes("02/19")) return true; const now = new Date(); const year = now.getFullYear(); const month = String(now.getMonth() + 1).padStart(2, '0'); const day = String(now.getDate()).padStart(2, '0'); const todayFormatted = `${month}/${day}`; return dateStr.includes(todayFormatted) && year === 2026; }
+        function renderSchedule(box) { const t = i18n[data.config.lang]; if(viewState.mode === 'list') { let html = `<h2 class="text-xs text-gray-400 mb-4 font-bold tracking-widest uppercase">${t.overview}</h2>`; data.itinerary.forEach((day, idx) => { const wIcon = day.weather === 'sunny' ? 'sun text-yellow-500' : day.weather === 'cloudy' ? 'cloud text-gray-400' : 'umbrella text-blue-400'; const highlightClass = isToday(day.date) ? 'highlight-card' : ''; html += `<div class="glass-card list-item-card ${highlightClass}" onclick="openDay(${idx})"><div><div class="flex items-center gap-2"><div class="text-2xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</div><button class="weather-btn" onclick="event.stopPropagation(); toggleWeather(${idx})"><i class="fas fa-${wIcon} weather-icon"></i></button></div><div class="text-xs text-gray-500 font-bold tracking-wider">${day.date}</div></div><div class="text-right"><div class="text-base font-bold jp-font mb-1 editable-location" onclick="event.stopPropagation(); editLoc(${idx})">${day.loc} <i class="fas fa-pen text-[10px] text-gray-300"></i></div><div class="view-btn">${t.view} <i class="fas fa-chevron-right"></i></div></div></div>`; }); box.innerHTML = html; } else { const day = data.itinerary[viewState.dayIdx]; let mapUrl = "https://www.google.com/maps/dir/"; day.events.forEach(e => { if(e.map) mapUrl += encodeURIComponent(e.map) + "/"; }); let html = `<div onclick="viewState.mode='list'; render()" class="back-btn mb-4 inline-flex items-center text-primary cursor-pointer font-bold"><i class="fas fa-arrow-left mr-2"></i></div><div class="flex items-end justify-between mb-6 border-l-4 border-[var(--primary)] pl-4"><div><h2 class="text-4xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</h2><p class="text-sm text-gray-500 font-bold">${day.date}</p></div><div class="text-xl font-bold jp-font">${day.loc}</div></div><a href="${mapUrl}" target="_blank" class="map-route-btn"><i class="fas fa-map-marked-alt"></i> ${t.viewMap}</a><div class="space-y-4">`; day.events.forEach((evt, eIdx) => { const img = evt.img ? `<img src="${evt.img}" class="w-full h-48 object-cover">` : ''; const nav = evt.map ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(evt.map)}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] border border-[var(--primary)] text-[var(--primary)] px-2 py-0.5 rounded font-bold">NAV</a>` : ''; html += `<div class="glass-card overflow-hidden" onclick="editEvent(${eIdx})">${img}<div class="p-5"><div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-100"><span class="font-black jp-font text-[var(--primary)]">${evt.time}</span>${nav}</div><div class="flex items-center mb-2"><span class="w-2 h-2 rounded-full mr-2" style="background:${getDotColor(evt.type)}"></span><h3 class="text-lg font-bold jp-font">${evt.title}</h3></div><p class="text-sm text-gray-500 leading-relaxed">${evt.desc}</p></div></div>`; }); html += `<div onclick="newEvent()" class="text-center py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 cursor-pointer font-bold bg-white/30 text-sm hover:bg-white transition">${t.addEvent}</div></div>`; box.innerHTML = html; } }
+        function toggleWeather(idx) { const states = ['sunny', 'cloudy', 'rainy']; const curr = data.itinerary[idx].weather || 'sunny'; const next = states[(states.indexOf(curr) + 1) % states.length]; data.itinerary[idx].weather = next; save(); render(); }
+        function openDay(idx) { viewState.dayIdx = idx; viewState.mode = 'detail'; render(); }
+        function editLoc(idx) { const n = prompt("Location:", data.itinerary[idx].loc); if(n) { data.itinerary[idx].loc = n; save(); render(); } }
+        function getDotColor(t) { return t==='food'?'#D68F4D':t==='transport'?'#5D7C9D':t==='hotel'?'#8A6B9E':'#6D8C6F'; }
+        let editIdx = null; function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); } function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:""}); } function setType(type) { document.getElementById('eType').value = type; document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + type).classList.add('active'); }
+        function fillModal(id, obj) { document.getElementById(id).classList.add('active'); if(id === 'editModal') { document.getElementById('eTime').value = obj.time; document.getElementById('eTitle').value = obj.title; document.getElementById('eDesc').value = obj.desc; document.getElementById('eMap').value = obj.map||""; setType(obj.type || 'sightseeing'); const img = document.getElementById('previewImg'); if(obj.img) { img.src=obj.img; img.classList.add('show'); } else { img.src=''; img.classList.remove('show'); } } }
+        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); });
+        function saveEvent() { const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; if(!evt.title) return; const events = data.itinerary[viewState.dayIdx].events; if(editIdx !== null) events[editIdx] = evt; else { events.push(evt); events.sort((a,b)=>a.time.localeCompare(b.time)); } save(); closeModal('editModal'); render(); }
+        function delEvent() { if(editIdx!==null && confirm("Delete?")) { data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render(); } }
+        function renderInfo(box) { document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} }; let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="info-card-del" onclick="delHotel(${idx})"><i class="fas fa-times"></i></div><div class="mb-3"><div class="info-label">HOTEL NAME</div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i> Copy</span></div></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i> Copy</span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; }); const fOut = info.flightOut || {}; const fIn = info.flightIn || {}; let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V48.0 (Final Fix)</div>`; box.innerHTML = html; }
         function addHotel() { document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
         function saveHotel() { const h = { name: document.getElementById('hName').value, addr: document.getElementById('hAddr').value, tel: document.getElementById('hTel').value }; if(h.name) { if(!data.info) data.info = { hotels: [] }; if(!data.info.hotels) data.info.hotels = []; data.info.hotels.push(h); save(); closeModal('hotelModal'); render(); } }
         function delHotel(idx) { if(confirm("Delete Hotel?")) { data.info.hotels.splice(idx, 1); save(); render(); } }
