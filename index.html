@@ -20,6 +20,9 @@
             --primary: #2E4B71; --accent: #C85554; --text-main: #333333; --text-sub: #666666; --bg-body: #F9F8F6;
             --bg-card: rgba(255, 255, 255, 0.92); --bg-nav: rgba(46, 75, 113, 0.95); --nav-text: #94a3b8; --nav-active: #ffffff;
             --border: rgba(46, 75, 113, 0.1); --modal-bg: #ffffff; --input-bg: #FDFDFD;
+            /* V47.2 Fix: Add missing highlight variables */
+            --highlight-glow: 0 0 15px rgba(212, 175, 55, 0.6); 
+            --highlight-border: #D4AF37;
         }
         body.dark-mode {
             --primary: #8faecf; --accent: #ff8a80; --text-main: #e0e0e0; --text-sub: #aaaaaa; --bg-body: #121212;
@@ -60,7 +63,7 @@
         .converter-input { padding: 4px 8px !important; margin-bottom: 0 !important; height: 32px !important; font-size: 14px !important; border-radius: 6px !important; width: auto !important; }
         .jpy-input { padding: 8px 12px !important; margin-bottom: 0 !important; height: 44px !important; font-size: 18px !important; font-weight: bold !important; text-align: center !important; }
 
-        .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; cursor: pointer; }
+        .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; }
         .btn-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: var(--primary); border: 1px solid var(--border); transition: 0.2s; }
         .btn-circle:active { transform: scale(0.9); background: var(--primary); color: #fff; }
 
@@ -137,8 +140,11 @@
         #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         #lightbox img { max-width: 95%; max-height: 90%; border-radius: 8px; box-shadow: 0 0 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s; }
         #lightbox.active { display: flex; } #lightbox.active img { transform: scale(1); }
+        
+        /* Highlight V47.2 */
         .highlight-card { border: 2px solid var(--highlight-border) !important; box-shadow: var(--highlight-glow) !important; position: relative; overflow: hidden; }
         .highlight-card::after { content: "NOW"; position: absolute; top: 0; right: 0; background: var(--highlight-border); color: white; font-size: 0.6rem; font-weight: bold; padding: 2px 8px; border-bottom-left-radius: 8px; }
+        
         .swipe-container { position: relative; overflow: hidden; border-radius: 12px; transition: transform 0.2s; }
         .swipe-content { position: relative; z-index: 10; transition: transform 0.3s ease-out; background: var(--bg-card); }
         .swipe-actions { position: absolute; top: 0; right: 0; bottom: 0; width: 80px; background: #ef4444; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; z-index: 0; border-radius: 0 12px 12px 0; }
@@ -340,7 +346,7 @@
                 infoTitle: 'Travel Wallet', entryCard: 'Accommodation', flightCard: 'Flights',
                 addr: 'Address', tel: 'Tel', pnr: 'PNR', ticket: 'Ticket No.', copied: 'Copied', noInfo: 'No info added.',
                 outbound: 'Outbound', inbound: 'Inbound', addHotel: '＋ Add Hotel',
-                simMode: 'Simulate Trip (On/Off)', man: '👦 Dylan', woman: '👧 Alyshia', balance: 'Balance', owes: 'owes', paid: 'paid'
+                simMode: 'Simulate Trip (On/Off)', man: '👦 Man', woman: '👧 Woman', balance: 'Balance', owes: 'owes', paid: 'paid'
             }
         };
 
@@ -366,19 +372,13 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v48_cloud');
+            const localSaved = localStorage.getItem('trip_v47_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
-
+            
             db.collection("trips").doc(TRIP_DOC_ID).onSnapshot((doc) => {
                 const statusDot = document.getElementById('dbStatus');
-                const statusText = document.getElementById('status-text');
-                
-                // Force Green if connected
-                statusDot.className = 'status-dot online'; 
-                statusDot.classList.remove('loading', 'error');
-                statusText.innerText = 'Online'; 
-                statusText.classList.add('show');
-                setTimeout(()=>statusText.classList.remove('show'), 3000);
+                statusDot.className = 'status-dot online'; // Force Green V47.1
+                const txt = document.getElementById('status-text'); if(txt) { txt.classList.add('show'); setTimeout(()=>txt.classList.remove('show'), 3000); }
 
                 if (doc.exists) {
                     const cloudData = doc.data();
@@ -388,26 +388,16 @@
                          console.log("Cloud is newer"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
                     }
                 } else { saveToCloud(); }
-            }, (error) => { 
-                console.error(error); 
-                document.getElementById('dbStatus').className = 'status-dot error'; 
-                document.getElementById('error-log').style.display='block';
-                document.getElementById('error-log').innerText = "連線失敗: " + error.message;
-            });
+            }, (error) => { console.error(error); document.getElementById('dbStatus').className = 'status-dot error'; });
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { localStorage.setItem('trip_v48_cloud', JSON.stringify(data)); }
-        function saveToCloud() { 
-            const statusDot = document.getElementById('dbStatus');
-            statusDot.className = 'status-dot loading'; // Yellow while saving
-            db.collection("trips").doc(TRIP_DOC_ID).set(data)
-                .then(() => { statusDot.className = 'status-dot online'; })
-                .catch(err => { console.error(err); statusDot.className = 'status-dot error'; }); 
-        }
+        function saveLocal() { localStorage.setItem('trip_v47_cloud', JSON.stringify(data)); }
+        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
         
-        // ... (UI Functions) ...
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
+        
+        // V47.1 Fixed: Update UI safely with checks
         function updateLangUI() {
             const t = i18n[data.config.lang];
             const safeSet = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
@@ -446,7 +436,6 @@
             return dateStr.includes(todayFormatted) && year === 2026;
         }
 
-        // V48: Sorting Fix & Time Input Fix
         function renderSchedule(box) {
             const t = i18n[data.config.lang];
             if(viewState.mode === 'list') {
@@ -470,17 +459,7 @@
         let editIdx = null; function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); } function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:""}); } function setType(type) { document.getElementById('eType').value = type; document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + type).classList.add('active'); }
         function fillModal(id, obj) { document.getElementById(id).classList.add('active'); if(id === 'editModal') { document.getElementById('eTime').value = obj.time; document.getElementById('eTitle').value = obj.title; document.getElementById('eDesc').value = obj.desc; document.getElementById('eMap').value = obj.map||""; setType(obj.type || 'sightseeing'); const img = document.getElementById('previewImg'); if(obj.img) { img.src=obj.img; img.classList.add('show'); } else { img.src=''; img.classList.remove('show'); } } }
         document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); });
-        
-        // V48: Auto Sort by Time
-        function saveEvent() { 
-            const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; 
-            if(!evt.title) return; 
-            const events = data.itinerary[viewState.dayIdx].events; 
-            if(editIdx !== null) events[editIdx] = evt; else events.push(evt); 
-            // Sort Logic:
-            events.sort((a,b) => (a.time || "00:00").localeCompare(b.time || "00:00"));
-            save(); closeModal('editModal'); render(); 
-        }
+        function saveEvent() { const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; if(!evt.title) return; const events = data.itinerary[viewState.dayIdx].events; if(editIdx !== null) events[editIdx] = evt; else { events.push(evt); events.sort((a,b)=>a.time.localeCompare(b.time)); } save(); closeModal('editModal'); render(); }
         function delEvent() { if(editIdx!==null && confirm("Delete?")) { data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render(); } }
         function toggleShopView() { viewState.shopMode = viewState.shopMode === 'list' ? 'grid' : 'list'; render(); }
         function setShopType(type) { document.getElementById('sType').value = type; document.querySelectorAll('#shopModal .type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-shop-' + type).classList.add('active'); }
@@ -527,6 +506,26 @@
         }
         function setPayer(p) { document.getElementById('bPayer').value = p; document.querySelectorAll('.payer-btn').forEach(b=>b.classList.remove('active')); document.getElementById('pay-'+p).classList.add('active'); }
         function addBudget() { const item = document.getElementById('bItem').value; const amt = parseInt(document.getElementById('bAmt').value); const payer = document.getElementById('bPayer').value; if(item && amt) { data.budget.push({id:Date.now(), item, amt, payer}); save(); render(); } }
+        function delBudget(id) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); }
+        function calcTwd(val) {
+            const jpy = parseFloat(val);
+            const rate = data.config.rate || 0.22;
+            if(!isNaN(jpy)) {
+                document.getElementById('convTwd').innerText = "NT$ " + Math.round(jpy * rate).toLocaleString();
+            } else {
+                document.getElementById('convTwd').innerText = "NT$ 0";
+            }
+        }
+        function updateRate(val) {
+            const r = parseFloat(val);
+            if(!isNaN(r)) {
+                data.config.rate = r;
+                save();
+                const cur = document.getElementById('convJpy').value;
+                if(cur) calcTwd(cur);
+            }
+        }
+        // -----------------------
 
         function renderInfo(box) {
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
