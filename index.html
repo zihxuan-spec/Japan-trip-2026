@@ -20,9 +20,6 @@
             --primary: #2E4B71; --accent: #C85554; --text-main: #333333; --text-sub: #666666; --bg-body: #F9F8F6;
             --bg-card: rgba(255, 255, 255, 0.92); --bg-nav: rgba(46, 75, 113, 0.95); --nav-text: #94a3b8; --nav-active: #ffffff;
             --border: rgba(46, 75, 113, 0.1); --modal-bg: #ffffff; --input-bg: #FDFDFD;
-            /* V47.2 Fix: Add missing highlight variables */
-            --highlight-glow: 0 0 15px rgba(212, 175, 55, 0.6); 
-            --highlight-border: #D4AF37;
         }
         body.dark-mode {
             --primary: #8faecf; --accent: #ff8a80; --text-main: #e0e0e0; --text-sub: #aaaaaa; --bg-body: #121212;
@@ -140,11 +137,8 @@
         #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         #lightbox img { max-width: 95%; max-height: 90%; border-radius: 8px; box-shadow: 0 0 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s; }
         #lightbox.active { display: flex; } #lightbox.active img { transform: scale(1); }
-        
-        /* Highlight V47.2 */
         .highlight-card { border: 2px solid var(--highlight-border) !important; box-shadow: var(--highlight-glow) !important; position: relative; overflow: hidden; }
         .highlight-card::after { content: "NOW"; position: absolute; top: 0; right: 0; background: var(--highlight-border); color: white; font-size: 0.6rem; font-weight: bold; padding: 2px 8px; border-bottom-left-radius: 8px; }
-        
         .swipe-container { position: relative; overflow: hidden; border-radius: 12px; transition: transform 0.2s; }
         .swipe-content { position: relative; z-index: 10; transition: transform 0.3s ease-out; background: var(--bg-card); }
         .swipe-actions { position: absolute; top: 0; right: 0; bottom: 0; width: 80px; background: #ef4444; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; z-index: 0; border-radius: 0 12px 12px 0; }
@@ -372,13 +366,19 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v47_cloud');
+            const localSaved = localStorage.getItem('trip_v48_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
-            
+
             db.collection("trips").doc(TRIP_DOC_ID).onSnapshot((doc) => {
                 const statusDot = document.getElementById('dbStatus');
-                statusDot.className = 'status-dot online'; // Force Green V47.1
-                const txt = document.getElementById('status-text'); if(txt) { txt.classList.add('show'); setTimeout(()=>txt.classList.remove('show'), 3000); }
+                const statusText = document.getElementById('status-text');
+                
+                // Force Green if connected
+                statusDot.className = 'status-dot online'; 
+                statusDot.classList.remove('loading', 'error');
+                statusText.innerText = 'Online'; 
+                statusText.classList.add('show');
+                setTimeout(()=>statusText.classList.remove('show'), 3000);
 
                 if (doc.exists) {
                     const cloudData = doc.data();
@@ -388,16 +388,26 @@
                          console.log("Cloud is newer"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
                     }
                 } else { saveToCloud(); }
-            }, (error) => { console.error(error); document.getElementById('dbStatus').className = 'status-dot error'; });
+            }, (error) => { 
+                console.error(error); 
+                document.getElementById('dbStatus').className = 'status-dot error'; 
+                document.getElementById('error-log').style.display='block';
+                document.getElementById('error-log').innerText = "連線失敗: " + error.message;
+            });
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { localStorage.setItem('trip_v47_cloud', JSON.stringify(data)); }
-        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
+        function saveLocal() { localStorage.setItem('trip_v48_cloud', JSON.stringify(data)); }
+        function saveToCloud() { 
+            const statusDot = document.getElementById('dbStatus');
+            statusDot.className = 'status-dot loading'; // Yellow while saving
+            db.collection("trips").doc(TRIP_DOC_ID).set(data)
+                .then(() => { statusDot.className = 'status-dot online'; })
+                .catch(err => { console.error(err); statusDot.className = 'status-dot error'; }); 
+        }
         
+        // ... (UI Functions) ...
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
-        
-        // V47.1 Fixed: Update UI safely with checks
         function updateLangUI() {
             const t = i18n[data.config.lang];
             const safeSet = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
@@ -436,6 +446,7 @@
             return dateStr.includes(todayFormatted) && year === 2026;
         }
 
+        // V48: Sorting Fix & Time Input Fix
         function renderSchedule(box) {
             const t = i18n[data.config.lang];
             if(viewState.mode === 'list') {
