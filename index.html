@@ -140,7 +140,10 @@
         .shop-grid-info { padding: 10px; }
         .shop-grid-check { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border-radius: 50%; padding: 4px; }
         .info-card { background: var(--bg-card); border-left: 5px solid var(--primary); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.04); position: relative; }
+        /* V56 Hotel Edit Button */
         .info-card-del { position: absolute; top: 12px; right: 12px; color: #ccc; cursor: pointer; font-size: 16px; padding: 8px; z-index: 10; }
+        .info-card-edit { position: absolute; top: 12px; right: 45px; color: #9ca3af; cursor: pointer; font-size: 14px; padding: 8px; z-index: 10; }
+        
         .info-label { font-size: 0.7rem; color: var(--text-sub); font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
         .info-val { font-size: 1.15rem; font-weight: 700; color: var(--text-main); font-family: "Zen Old Mincho", serif; margin-bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; word-break: break-all;}
         .copy-btn { font-size: 0.6rem; padding: 2px 8px; border: 1px solid #ddd; border-radius: 12px; color: #999; cursor: pointer; background: white; white-space: nowrap; margin-left: 4px; }
@@ -229,13 +232,11 @@
             </div>
             <input type="hidden" id="eType" value="sightseeing">
             
-            <div class="grid grid-cols-3 gap-7 mb-4">
+            <div class="grid grid-cols-3 gap-4">
                 <div class="col-span-1">
-                    <input id="eTime" type="time" class="text-center" style="padding: 12px !important; margin-bottom: 0 !important;">
+                    <input id="eTime" type="time" class="text-center" style="padding: 12px !important;">
                 </div>
-                <div class="col-span-2">
-                    <input id="eTitle" placeholder="標題" class="font-bold" style="margin-bottom: 0 !important;">
-                </div>
+                <div class="col-span-2"><input id="eTitle" placeholder="標題" class="font-bold"></div>
             </div>
             <textarea id="eDesc" rows="3" placeholder="備註..."></textarea>
             <div class="relative"><i class="fas fa-map-marker-alt absolute left-4 top-4 text-red-400 text-lg"></i><input id="eMap" placeholder="地圖連結" style="padding-left: 45px !important;"></div>
@@ -365,7 +366,7 @@
                 infoTitle: 'Travel Wallet', entryCard: 'Accommodation', flightCard: 'Flights',
                 addr: 'Address', tel: 'Tel', pnr: 'PNR', ticket: 'Ticket No.', copied: 'Copied', noInfo: 'No info added.',
                 outbound: 'Outbound', inbound: 'Inbound', addHotel: '＋ Add Hotel',
-                simMode: 'Simulate Trip (On/Off)', man: '👦 Dylan', woman: '👧 Alyshia', balance: 'Balance', owes: 'owes', paid: 'paid'
+                simMode: 'Simulate Trip (On/Off)', man: '👦 Man', woman: '👧 Woman', balance: 'Balance', owes: 'owes', paid: 'paid'
             }
         };
 
@@ -391,9 +392,14 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v55_cloud');
+            const localSaved = localStorage.getItem('trip_v56_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
+            // V56 Check Data
+            if(!data.shopping) data.shopping = [];
+            if(!data.info) data.info = { hotels: [] };
+            if(!data.info.hotels) data.info.hotels = [];
+
             // V55: Removed timestamp check, always accept cloud update
             db.collection("trips").doc(TRIP_DOC_ID).onSnapshot((doc) => {
                 const statusDot = document.getElementById('dbStatus');
@@ -403,7 +409,11 @@
                 if (doc.exists) {
                     const cloudData = doc.data();
                     console.log("Cloud update received");
-                    data = cloudData; 
+                    data = cloudData;
+                    // V56 Safety Re-check
+                    if(!data.shopping) data.shopping = [];
+                    if(!data.info) data.info = { hotels: [] };
+                    
                     saveLocal(); 
                     applySettings(); render(); updateLangUI();
                 } else { saveToCloud(); }
@@ -413,7 +423,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v55_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v56_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -465,7 +475,7 @@
         }
 
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v55_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v56_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -546,6 +556,13 @@
         function delEvent() { if(editIdx!==null && confirm("Delete?")) { data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render(); } }
         function toggleShopView() { viewState.shopMode = viewState.shopMode === 'list' ? 'grid' : 'list'; render(); }
         function setShopType(type) { document.getElementById('sType').value = type; document.querySelectorAll('#shopModal .type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-shop-' + type).classList.add('active'); }
+        
+        // V56 Fix: Ensure data.shopping exists
+        function saveShopItem() { 
+            if(!data.shopping) data.shopping = [];
+            const item = { id: Date.now(), name: document.getElementById('sName').value, note: document.getElementById('sNote').value, type: document.getElementById('sType').value, checked: false, img: document.getElementById('shopPreview').classList.contains('show') ? document.getElementById('shopPreview').src : "" }; if(item.name) { data.shopping.push(item); save(); closeModal('shopModal'); render(); } 
+        }
+
         function renderShopping(box) { 
             const t = i18n[data.config.lang]; const isToBuy = viewState.shopTab === 'tobuy';
             setTimeout(() => { const btn = document.getElementById('viewToggleBtn'); if(btn) { btn.classList.remove('hidden'); btn.innerHTML = viewState.shopMode === 'list' ? '<i class="fas fa-th-large"></i>' : '<i class="fas fa-bars"></i>'; } }, 50);
@@ -608,17 +625,36 @@
                 if(cur) calcTwd(cur);
             }
         }
-        // -----------------------
-
+        
+        // V56 Info Edit Logic
+        let editHotelIdx = null;
         function renderInfo(box) {
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
-            let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="info-card-del" onclick="delHotel(${idx})"><i class="fas fa-times"></i></div><div class="mb-3"><div class="info-label">HOTEL NAME</div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i> Copy</span></div></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i> Copy</span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
+            let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { 
+                hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative">
+                    <div class="info-card-del" onclick="delHotel(${idx})"><i class="fas fa-times"></i></div>
+                    <div class="info-card-edit" onclick="editHotel(${idx})"><i class="fas fa-pen"></i></div>
+                    <div class="mb-3"><div class="info-label">HOTEL NAME</div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i> Copy</span></div></div>
+                    <div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i> Copy</span></div></div>
+                    <div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div>
+                </div>`; 
+            });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V55.0 (Sync & Photo)</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V56.0 (Final)</div>`; box.innerHTML = html;
         }
 
-        function addHotel() { document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
-        function saveHotel() { const h = { name: document.getElementById('hName').value, addr: document.getElementById('hAddr').value, tel: document.getElementById('hTel').value }; if(h.name) { if(!data.info) data.info = { hotels: [] }; if(!data.info.hotels) data.info.hotels = []; data.info.hotels.push(h); save(); closeModal('hotelModal'); render(); } }
+        function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
+        function editHotel(idx) { editHotelIdx = idx; const h = data.info.hotels[idx]; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = h.name; document.getElementById('hAddr').value = h.addr; document.getElementById('hTel').value = h.tel; }
+        
+        function saveHotel() { 
+            const h = { name: document.getElementById('hName').value, addr: document.getElementById('hAddr').value, tel: document.getElementById('hTel').value }; 
+            if(h.name) { 
+                if(!data.info) data.info = { hotels: [] }; if(!data.info.hotels) data.info.hotels = []; 
+                if(editHotelIdx !== null) data.info.hotels[editHotelIdx] = h;
+                else data.info.hotels.push(h); 
+                save(); closeModal('hotelModal'); render(); 
+            } 
+        }
         function delHotel(idx) { if(confirm("Delete Hotel?")) { data.info.hotels.splice(idx, 1); save(); render(); } }
         function editFlight(type) { document.getElementById('flightModal').classList.add('active'); const f = (type === 'out') ? (data.info.flightOut || {}) : (data.info.flightIn || {}); document.getElementById('fType').value = type; document.getElementById('fCode').value = f.code || ''; document.getElementById('fPnr').value = f.pnr || ''; document.getElementById('fTicket').value = f.ticket || ''; }
         function saveFlight() { const type = document.getElementById('fType').value; const f = { code: document.getElementById('fCode').value, pnr: document.getElementById('fPnr').value, ticket: document.getElementById('fTicket').value }; if(!data.info) data.info = {}; if(type === 'out') data.info.flightOut = f; else data.info.flightIn = f; save(); closeModal('flightModal'); render(); }
