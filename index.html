@@ -456,7 +456,7 @@
         function toggleSimulate() { data.config.simulate = !data.config.simulate; save(); render(); alert(data.config.simulate ? "Simulation ON (Day 1 Highlighted)" : "Simulation OFF"); }
         function editTitle() { const t = prompt("Title", data.config.title); if(t) { data.config.title = t; data.config.subtitle = prompt("Subtitle", data.config.subtitle)||data.config.subtitle; save(); applySettings(); } }
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
-        // V53.1 Compression + V55 Fix
+        // V53.1: Stronger Image Compression
         function handleImgUpload(file, callback) { 
             if(!file) return; 
             const reader = new FileReader(); 
