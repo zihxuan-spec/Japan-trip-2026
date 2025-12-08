@@ -104,9 +104,9 @@
         .shop-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: 0.2s; font-family: "Zen Old Mincho", serif; }
         .shop-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         
-        /* 綠燈 V47.1 修正 */
         .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; margin-left: 10px; transition: 0.3s; position: relative; display: inline-block; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .status-dot.online { background-color: #22c55e !important; box-shadow: 0 0 10px #22c55e !important; animation: pulse-green 3s infinite; }
+        .status-dot.loading { background: #eab308; } 
         .status-dot.error { background-color: #ef4444 !important; }
         @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
         #status-text { font-size: 9px; color: #22c55e; font-weight: bold; margin-left: 5px; opacity: 0; transition: opacity 0.5s; display: inline-block;}
@@ -115,6 +115,8 @@
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(46, 75, 113, 0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* 錯誤訊息框 */
         #error-log { margin-top: 20px; padding: 15px; background: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; border-radius: 8px; font-size: 12px; max-width: 80%; display: none; text-align: left; }
         
         header { background-color: var(--bg-body); backdrop-filter: blur(12px); background: linear-gradient(to bottom, var(--bg-body) 80%, rgba(255,255,255,0)); background-color: var(--bg-body); border-bottom: 1px solid var(--border); }
@@ -214,11 +216,8 @@
                 <div class="type-btn" onclick="setType('hotel')" id="btn-hotel"><i class="fas fa-bed"></i><span id="txt-type-hotel">住宿</span></div>
             </div>
             <input type="hidden" id="eType" value="sightseeing">
-            
             <div class="grid grid-cols-3 gap-4">
-                <div class="col-span-1">
-                    <input id="eTime" type="time" class="text-center" style="padding: 12px !important;">
-                </div>
+                <div class="col-span-1"><input id="eTime" type="time" class="text-center" style="padding: 12px !important;"></div>
                 <div class="col-span-2"><input id="eTitle" placeholder="標題" class="font-bold"></div>
             </div>
             <textarea id="eDesc" rows="3" placeholder="備註..."></textarea>
@@ -368,19 +367,25 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v53.1_cloud');
+            const localSaved = localStorage.getItem('trip_v54_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
+            // 🔥 V54 Clean up old keys
+            try {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    // If key starts with 'trip_v' but is NOT current version, delete it.
+                    if (key && key.startsWith('trip_v') && key !== 'trip_v54_cloud') {
+                        console.warn('Cleaning up old data:', key);
+                        localStorage.removeItem(key);
+                    }
+                }
+            } catch(e) { console.error("Cleanup error", e); }
+
             db.collection("trips").doc(TRIP_DOC_ID).onSnapshot((doc) => {
                 const statusDot = document.getElementById('dbStatus');
-                const statusText = document.getElementById('status-text');
-                
-                // Force Green if connected
                 statusDot.className = 'status-dot online'; 
-                statusDot.classList.remove('loading', 'error');
-                statusText.innerText = 'Online'; 
-                statusText.classList.add('show');
-                setTimeout(()=>statusText.classList.remove('show'), 3000);
+                const txt = document.getElementById('status-text'); if(txt) { txt.classList.add('show'); setTimeout(()=>txt.classList.remove('show'), 3000); }
 
                 if (doc.exists) {
                     const cloudData = doc.data();
@@ -390,26 +395,23 @@
                          console.log("Cloud is newer"); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI();
                     }
                 } else { saveToCloud(); }
-            }, (error) => { 
-                console.error(error); 
-                document.getElementById('dbStatus').className = 'status-dot error'; 
-                document.getElementById('error-log').style.display='block';
-                document.getElementById('error-log').innerText = "連線失敗: " + error.message;
-            });
+            }, (error) => { console.error(error); document.getElementById('dbStatus').className = 'status-dot error'; });
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { localStorage.setItem('trip_v53.1_cloud', JSON.stringify(data)); }
-        function saveToCloud() { 
-            const statusDot = document.getElementById('dbStatus');
-            statusDot.className = 'status-dot loading'; // Yellow while saving
-            db.collection("trips").doc(TRIP_DOC_ID).set(data)
-                .then(() => { statusDot.className = 'status-dot online'; })
-                .catch(err => { console.error(err); statusDot.className = 'status-dot error'; }); 
+        function saveLocal() { 
+            try {
+                localStorage.setItem('trip_v54_cloud', JSON.stringify(data)); 
+            } catch(e) {
+                if(e.name === 'QuotaExceededError') {
+                    alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
+                }
+            }
         }
+        function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
         
-        // ... (UI Functions) ...
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
+        
         function updateLangUI() {
             const t = i18n[data.config.lang];
             const safeSet = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
@@ -456,7 +458,7 @@
         }
 
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v53.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v54_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -470,6 +472,7 @@
             return dateStr.includes(todayFormatted) && year === 2026;
         }
 
+        // V48: Sorting Fix & Time Input Fix
         function renderSchedule(box) {
             const t = i18n[data.config.lang];
             if(viewState.mode === 'list') {
@@ -493,14 +496,7 @@
         let editIdx = null; function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); } function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:""}); } function setType(type) { document.getElementById('eType').value = type; document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + type).classList.add('active'); }
         function fillModal(id, obj) { document.getElementById(id).classList.add('active'); if(id === 'editModal') { document.getElementById('eTime').value = obj.time; document.getElementById('eTitle').value = obj.title; document.getElementById('eDesc').value = obj.desc; document.getElementById('eMap').value = obj.map||""; setType(obj.type || 'sightseeing'); const img = document.getElementById('previewImg'); if(obj.img) { img.src=obj.img; img.classList.add('show'); } else { img.src=''; img.classList.remove('show'); } } }
         document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); });
-        function saveEvent() { 
-            const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; 
-            if(!evt.title) return; 
-            const events = data.itinerary[viewState.dayIdx].events; 
-            if(editIdx !== null) events[editIdx] = evt; else events.push(evt); 
-            events.sort((a,b) => (a.time || "00:00").localeCompare(b.time || "00:00"));
-            save(); closeModal('editModal'); render(); 
-        }
+        function saveEvent() { const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: document.getElementById('previewImg').classList.contains('show') ? document.getElementById('previewImg').src : "" }; if(!evt.title) return; const events = data.itinerary[viewState.dayIdx].events; if(editIdx !== null) events[editIdx] = evt; else { events.push(evt); events.sort((a,b)=>a.time.localeCompare(b.time)); } save(); closeModal('editModal'); render(); }
         function delEvent() { if(editIdx!==null && confirm("Delete?")) { data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render(); } }
         function toggleShopView() { viewState.shopMode = viewState.shopMode === 'list' ? 'grid' : 'list'; render(); }
         function setShopType(type) { document.getElementById('sType').value = type; document.querySelectorAll('#shopModal .type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-shop-' + type).classList.add('active'); }
