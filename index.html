@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V63.4</title>
+    <title>Japan Trip V64 (Timeline)</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -21,11 +21,13 @@
             --bg-card: rgba(255, 255, 255, 0.92); --bg-nav: rgba(46, 75, 113, 0.95); --nav-text: #94a3b8; --nav-active: #ffffff;
             --border: rgba(46, 75, 113, 0.1); --modal-bg: #ffffff; --input-bg: #FDFDFD;
             --highlight-border: #f59e0b; --highlight-glow: 0 0 15px rgba(245, 158, 11, 0.4);
+            --line-color: #cbd5e1;
         }
         body.dark-mode {
             --primary: #8faecf; --accent: #ff8a80; --text-main: #e0e0e0; --text-sub: #aaaaaa; --bg-body: #121212;
             --bg-card: rgba(30, 30, 40, 0.85); --bg-nav: rgba(20, 20, 30, 0.95); --nav-text: #555555; --nav-active: #8faecf;
             --border: rgba(255, 255, 255, 0.1); --modal-bg: #1e1e24; --input-bg: #2b2b36;
+            --line-color: #475569;
         }
         body {
             font-family: "Noto Serif JP", serif; color: var(--text-main); background-color: var(--bg-body);
@@ -156,21 +158,21 @@
         .total-amount { font-family: "Zen Old Mincho", serif; font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 2px; }
         .total-sub { font-size: 0.9rem; opacity: 0.9; margin-bottom: 10px; }
         
-        /* V63.4 FIXED Converter Layout (Vertical Stack for Mobile) */
         .converter-card {
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; 
-            padding: 20px; margin-bottom: 25px;
-            display: flex; flex-direction: column; align-items: center; gap: 15px; /* Vertical Stack */
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            padding: 20px 10px; margin-bottom: 25px;
+            display: grid; grid-template-columns: 1fr 40px 1fr; align-items: center; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden;
         }
         
-        .converter-row {
-            width: 100%; display: flex; justify-content: space-between; align-items: center;
+        .converter-section {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 100%; min-width: 0; 
         }
-
+        
         .converter-input-box {
             background: transparent; border: none; border-bottom: 2px solid #e2e8f0; 
-            font-weight: 900; text-align: center; width: 100%; padding: 5px 0; font-size: 1.8rem; /* Larger Font */
+            font-weight: 900; text-align: center; width: 100%; padding: 5px 0; font-size: 1.3rem; 
             color: var(--text-main); border-radius: 0; outline: none; transition: 0.3s;
         }
         .converter-input-box:focus { border-color: var(--primary); }
@@ -213,6 +215,54 @@
         .budget-title { font-weight: bold; color: var(--text-main); font-size: 1rem; }
         .budget-amt { font-weight: 900; font-size: 1.1rem; color: var(--text-main); font-family: "Zen Old Mincho", serif; }
         
+        /* V63.4 Timeline CSS */
+        /* Container line */
+        .timeline-container { position: relative; padding-left: 24px; }
+        /* The vertical line */
+        .timeline-container::before {
+            content: ''; position: absolute; left: 6px; top: 10px; bottom: -20px;
+            width: 2px; background: var(--line-color); z-index: 0;
+        }
+        .timeline-container:last-child::before { display: none; } /* No line after last item */
+        
+        /* Standard Card Event */
+        .timeline-event {
+            position: relative; margin-bottom: 25px;
+        }
+        .timeline-dot {
+            position: absolute; left: -23px; top: 20px;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--primary); border: 2px solid #fff; z-index: 1;
+            box-shadow: 0 0 0 2px rgba(46, 75, 113, 0.1);
+        }
+
+        /* V64 Transport Connector (The Indented Style) */
+        .timeline-transport {
+            position: relative; margin: 15px 0; padding-left: 15px; /* Indent */
+            display: flex; align-items: center; gap: 12px;
+        }
+        .timeline-transport-icon {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: #f1f5f9; color: var(--text-sub);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; border: 1px solid #e2e8f0; z-index: 2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .timeline-transport-content {
+            flex: 1; background: transparent; padding: 5px 0;
+        }
+        .transport-time { font-size: 0.75rem; font-weight: bold; color: var(--primary); }
+        .transport-title { font-size: 0.9rem; font-weight: bold; color: var(--text-sub); }
+        /* Dotted line specifically for transport segment */
+        .timeline-transport::before {
+            content: ''; position: absolute; left: -19px; top: -10px; bottom: -10px;
+            width: 2px; border-left: 2px dashed var(--line-color); z-index: 0;
+        }
+
+        /* V64 Edit Modal Fix */
+        .edit-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 20px; }
+        .edit-grid input { margin-bottom: 0 !important; }
+        
         /* V62.1 Fix: Hotel Card Buttons */
         .info-card-del { position: absolute; top: 12px; right: 12px; color: #ccc; cursor: pointer; font-size: 16px; padding: 8px; z-index: 10; }
         .info-card-edit { position: absolute; top: 12px; right: 45px; color: #9ca3af; cursor: pointer; font-size: 14px; padding: 8px; z-index: 10; }
@@ -242,6 +292,7 @@
             <button id="viewToggleBtn" onclick="toggleShopView()" class="btn-circle hidden"><i class="fas fa-th-large"></i></button>
             <button onclick="toggleSettings()" class="btn-circle"><i class="fas fa-cog"></i></button>
         </div>
+        
         <div id="settingsMenu" class="settings-menu">
             <div class="settings-item" onclick="toggleSimulate()"><i class="fas fa-magic"></i> <span id="txt-sim">模擬旅程中</span></div>
             <div class="settings-item" onclick="editTitle()"><i class="fas fa-pen"></i> <span id="txt-edit-title">修改標題</span></div>
@@ -281,10 +332,12 @@
                 <div class="type-btn" onclick="setType('hotel')" id="btn-hotel"><i class="fas fa-bed"></i><span id="txt-type-hotel">住宿</span></div>
             </div>
             <input type="hidden" id="eType" value="sightseeing">
-            <div class="grid grid-cols-3 gap-5 mb-4">
-                <div class="col-span-1"><input id="eTime" type="time" class="text-center" style="padding: 12px !important; margin-bottom: 0 !important;"></div>
-                <div class="col-span-2"><input id="eTitle" placeholder="標題" class="font-bold" style="margin-bottom: 0 !important;"></div>
+            
+            <div class="edit-grid">
+                <div><input id="eTime" type="time" class="text-center" style="padding: 12px !important;"></div>
+                <div><input id="eTitle" placeholder="標題" class="font-bold"></div>
             </div>
+
             <textarea id="eDesc" rows="3" placeholder="備註..."></textarea>
             <div class="relative"><i class="fas fa-map-marker-alt absolute left-4 top-4 text-red-400 text-lg"></i><input id="eMap" placeholder="地圖連結" style="padding-left: 45px !important;"></div>
             <div class="flex gap-4 mt-4"><button id="btn-delete" onclick="delEvent()" class="flex-1 py-3 rounded-xl border border-red-200 text-red-400 font-bold hover:bg-red-50">刪除</button><button id="btn-save" onclick="saveEvent()" class="flex-[2] btn-primary shadow-lg">儲存</button></div>
@@ -391,7 +444,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v63.4_cloud');
+            const localSaved = localStorage.getItem('trip_v64_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             // V57 Safety Init
@@ -420,7 +473,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v63.4_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v64_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -452,39 +505,9 @@
         function toggleSimulate() { data.config.simulate = !data.config.simulate; save(); render(); alert(data.config.simulate ? "Simulation ON (Day 1 Highlighted)" : "Simulation OFF"); }
         function editTitle() { const t = prompt("Title", data.config.title); if(t) { data.config.title = t; data.config.subtitle = prompt("Subtitle", data.config.subtitle)||data.config.subtitle; save(); applySettings(); } }
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
-        // V53.1: Stronger Image Compression
-        function handleImgUpload(file, callback) { 
-            if(!file) return; 
-            const reader = new FileReader(); 
-            reader.onload = (e) => { 
-                const img = new Image(); 
-                img.onload = () => { 
-                    const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); 
-                    const maxWidth = 400; const scale = maxWidth / img.width; 
-                    cvs.width = maxWidth; cvs.height = img.height * scale; 
-                    ctx.drawImage(img, 0, 0, cvs.width, cvs.height); 
-                    // V58.1 Fix: Specify format for compression
-                    callback(cvs.toDataURL('image/jpeg', 0.4)); 
-                }; 
-                img.src = e.target.result; 
-            }; 
-            reader.readAsDataURL(file); 
-        }
-
-        // V59: Added shopImg Binding
+        function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 800 / img.width; cvs.width = 800; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.4)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
-            document.getElementById('previewImg').src=url; 
-            document.getElementById('previewImg').classList.add('show'); 
-            document.getElementById('editImgContainer').classList.add('show'); 
-        });
-        document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
-            document.getElementById('shopPreview').src = url; 
-            document.getElementById('shopPreview').classList.add('show'); 
-            document.getElementById('shopImgContainer').classList.add('show'); 
-        });
-
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v63.4_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v64_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -498,7 +521,7 @@
             return dateStr.includes(todayFormatted) && year === 2026;
         }
 
-        // V48: Sorting Fix & Time Input Fix
+        // V64: Timeline Schedule
         function renderSchedule(box) {
             const t = i18n[data.config.lang];
             if(viewState.mode === 'list') {
@@ -510,9 +533,46 @@
                 }); box.innerHTML = html;
             } else {
                 const day = data.itinerary[viewState.dayIdx]; let mapUrl = "https://www.google.com/maps/dir/"; day.events.forEach(e => { if(e.map) mapUrl += encodeURIComponent(e.map) + "/"; });
-                let html = `<div onclick="viewState.mode='list'; render()" class="back-btn mb-4 inline-flex items-center text-primary cursor-pointer font-bold"><i class="fas fa-arrow-left mr-2"></i></div><div class="flex items-end justify-between mb-6 border-l-4 border-[var(--primary)] pl-4"><div><h2 class="text-4xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</h2><p class="text-sm text-gray-500 font-bold">${day.date}</p></div><div class="text-xl font-bold jp-font">${day.loc}</div></div><a href="${mapUrl}" target="_blank" class="map-route-btn"><i class="fas fa-map-marked-alt"></i> ${t.viewMap}</a><div class="space-y-4">`;
-                day.events.forEach((evt, eIdx) => { const img = evt.img ? `<img src="${evt.img}" class="w-full h-48 object-cover">` : ''; const nav = evt.map ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(evt.map)}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] border border-[var(--primary)] text-[var(--primary)] px-2 py-0.5 rounded font-bold">NAV</a>` : ''; html += `<div class="glass-card overflow-hidden" onclick="editEvent(${eIdx})">${img}<div class="p-5"><div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-100"><span class="font-black jp-font text-[var(--primary)]">${evt.time}</span>${nav}</div><div class="flex items-center mb-2"><span class="w-2 h-2 rounded-full mr-2" style="background:${getDotColor(evt.type)}"></span><h3 class="text-lg font-bold jp-font">${evt.title}</h3></div><p class="text-sm text-gray-500 leading-relaxed">${evt.desc}</p></div></div>`; });
-                html += `<div onclick="newEvent()" class="text-center py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 cursor-pointer font-bold bg-white/30 text-sm hover:bg-white transition">${t.addEvent}</div></div>`; box.innerHTML = html;
+                
+                // V64 Timeline Logic
+                let html = `<div onclick="viewState.mode='list'; render()" class="back-btn mb-4 inline-flex items-center text-primary cursor-pointer font-bold"><i class="fas fa-arrow-left mr-2"></i></div><div class="flex items-end justify-between mb-6 border-l-4 border-[var(--primary)] pl-4"><div><h2 class="text-4xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</h2><p class="text-sm text-gray-500 font-bold">${day.date}</p></div><div class="text-xl font-bold jp-font">${day.loc}</div></div><a href="${mapUrl}" target="_blank" class="map-route-btn"><i class="fas fa-map-marked-alt"></i> ${t.viewMap}</a><div class="space-y-0 timeline-container">`;
+                
+                day.events.forEach((evt, eIdx) => { 
+                    const img = evt.img ? `<img src="${evt.img}" class="w-full h-48 object-cover rounded-lg mb-3">` : ''; 
+                    const nav = evt.map ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(evt.map)}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] border border-[var(--primary)] text-[var(--primary)] px-2 py-0.5 rounded font-bold ml-2">NAV</a>` : ''; 
+                    
+                    if (evt.type === 'transport') {
+                        // V64 Transport Connector Style
+                        html += `
+                        <div class="timeline-transport" onclick="editEvent(${eIdx})">
+                            <div class="timeline-transport-icon"><i class="fas fa-arrow-down"></i></div>
+                            <div class="timeline-transport-content">
+                                <div class="transport-time"><i class="fas fa-clock mr-1"></i>${evt.time}</div>
+                                <div class="transport-title">${evt.title} ${nav}</div>
+                            </div>
+                        </div>`;
+                    } else {
+                        // Standard Card
+                        html += `
+                        <div class="timeline-event" onclick="editEvent(${eIdx})">
+                            <div class="timeline-dot"></div>
+                            <div class="glass-card p-5">
+                                <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-100">
+                                    <span class="font-black jp-font text-[var(--primary)] text-lg">${evt.time}</span>
+                                    ${nav}
+                                </div>
+                                ${img}
+                                <div class="flex items-center mb-1">
+                                    <span class="w-2 h-2 rounded-full mr-2" style="background:${getDotColor(evt.type)}"></span>
+                                    <h3 class="text-lg font-bold jp-font">${evt.title}</h3>
+                                </div>
+                                <p class="text-sm text-gray-500 leading-relaxed">${evt.desc}</p>
+                            </div>
+                        </div>`; 
+                    }
+                });
+                
+                html += `<div onclick="newEvent()" class="text-center py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 cursor-pointer font-bold bg-white/30 text-sm hover:bg-white transition mt-8" style="margin-left:-24px;">${t.addEvent}</div></div>`; box.innerHTML = html;
             }
         }
         function toggleWeather(idx) { const states = ['sunny', 'cloudy', 'rainy']; const curr = data.itinerary[idx].weather || 'sunny'; const next = states[(states.indexOf(curr) + 1) % states.length]; data.itinerary[idx].weather = next; save(); render(); }
@@ -531,6 +591,16 @@
                 if(obj.img) { img.src=obj.img; img.classList.add('show'); cont.classList.add('show'); } else { img.src=''; img.classList.remove('show'); cont.classList.remove('show'); } 
             } 
         }
+        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
+            document.getElementById('previewImg').src=url; 
+            document.getElementById('previewImg').classList.add('show'); 
+            document.getElementById('editImgContainer').classList.add('show'); 
+        });
+        document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
+            document.getElementById('shopPreview').src = url; 
+            document.getElementById('shopPreview').classList.add('show'); 
+            document.getElementById('shopImgContainer').classList.add('show'); 
+        });
         function removeImg(type) {
             if(type === 'edit') {
                 document.getElementById('previewImg').src = "";
