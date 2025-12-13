@@ -155,27 +155,53 @@
         .payer-btn { flex: 1; padding: 10px; text-align: center; font-size: 14px; cursor: pointer; transition: 0.2s; color: #999; }
         .payer-btn.active { background: var(--primary); color: white; font-weight: bold; }
         
+        /* V60.2 Enhanced Budget Styles */
+        .total-card {
+            background: linear-gradient(135deg, var(--primary), #1e3a8a); /* Gradient Background */
+            color: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(46, 75, 113, 0.3);
+            margin-bottom: 24px;
+        }
+        .total-card .label {
+            font-size: 0.7rem; font-weight: bold; letter-spacing: 0.15em; opacity: 0.8; text-transform: uppercase; margin-bottom: 8px;
+        }
+        .total-card .amount {
+            font-family: "Zen Old Mincho", serif; font-weight: 900; font-size: 2.2rem; line-height: 1.2;
+        }
+        .converter-card {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; margin-bottom: 24px;
+            display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+        
         /* V60.1 Improved Budget Input */
         .budget-input-group {
             display: flex; align-items: center; background: var(--input-bg);
-            border: 1px solid var(--border); border-radius: 16px; padding: 5px 15px;
-            transition: 0.2s;
+            border: 1px solid var(--border); border-radius: 12px; padding: 8px 15px;
+            transition: 0.2s; margin-bottom: 15px;
         }
         .budget-input-group:focus-within {
             border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 75, 113, 0.1);
         }
         .budget-currency-select {
             background: transparent; border: none; font-weight: bold; color: var(--primary);
-            font-size: 1.1rem; outline: none; padding-right: 10px; border-right: 1px solid #eee; margin-right: 10px; margin-bottom: 0 !important;
-            padding-left: 0 !important;
-            width: auto !important;
+            font-size: 1rem; outline: none; padding-right: 10px; border-right: 1px solid #eee; margin-right: 10px; margin-bottom: 0 !important;
+            padding-left: 0 !important; width: auto !important;
         }
         .budget-amount-input {
             border: none !important; background: transparent !important; box-shadow: none !important;
-            font-size: 1.5rem !important; font-weight: 900 !important; color: var(--text-main);
+            font-size: 1.4rem !important; font-weight: 900 !important; color: var(--text-main);
             padding: 5px !important; margin: 0 !important; width: 100%;
         }
         .budget-amount-input:focus { outline: none !important; box-shadow: none !important; }
+        
+        /* V60.2 Date Input */
+        .date-input {
+            width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+            border-radius: 12px; padding: 10px 15px; margin-bottom: 15px; font-family: sans-serif;
+            font-size: 14px; color: var(--text-main); outline: none;
+        }
     </style>
 </head>
 <body class="default-bg">
@@ -469,8 +495,38 @@
         function toggleSimulate() { data.config.simulate = !data.config.simulate; save(); render(); alert(data.config.simulate ? "Simulation ON (Day 1 Highlighted)" : "Simulation OFF"); }
         function editTitle() { const t = prompt("Title", data.config.title); if(t) { data.config.title = t; data.config.subtitle = prompt("Subtitle", data.config.subtitle)||data.config.subtitle; save(); applySettings(); } }
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
-        function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 800 / img.width; cvs.width = 800; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.4)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
+        // V53.1: Stronger Image Compression
+        function handleImgUpload(file, callback) { 
+            if(!file) return; 
+            const reader = new FileReader(); 
+            reader.onload = (e) => { 
+                const img = new Image(); 
+                img.onload = () => { 
+                    const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); 
+                    const maxWidth = 400; const scale = maxWidth / img.width; 
+                    cvs.width = maxWidth; cvs.height = img.height * scale; 
+                    ctx.drawImage(img, 0, 0, cvs.width, cvs.height); 
+                    // V58.1 Fix: Specify format for compression
+                    callback(cvs.toDataURL('image/jpeg', 0.4)); 
+                }; 
+                img.src = e.target.result; 
+            }; 
+            reader.readAsDataURL(file); 
+        }
+
+        // V59: Added shopImg Binding
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
+        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
+            document.getElementById('previewImg').src=url; 
+            document.getElementById('previewImg').classList.add('show'); 
+            document.getElementById('editImgContainer').classList.add('show'); 
+        });
+        document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
+            document.getElementById('shopPreview').src = url; 
+            document.getElementById('shopPreview').classList.add('show'); 
+            document.getElementById('shopImgContainer').classList.add('show'); 
+        });
+
         function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v60.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
@@ -518,16 +574,7 @@
                 if(obj.img) { img.src=obj.img; img.classList.add('show'); cont.classList.add('show'); } else { img.src=''; img.classList.remove('show'); cont.classList.remove('show'); } 
             } 
         }
-        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
-            document.getElementById('previewImg').src=url; 
-            document.getElementById('previewImg').classList.add('show'); 
-            document.getElementById('editImgContainer').classList.add('show'); 
-        });
-        document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
-            document.getElementById('shopPreview').src = url; 
-            document.getElementById('shopPreview').classList.add('show'); 
-            document.getElementById('shopImgContainer').classList.add('show'); 
-        });
+
         function removeImg(type) {
             if(type === 'edit') {
                 document.getElementById('previewImg').src = "";
