@@ -338,7 +338,7 @@
                 btnDel: '刪除', btnSave: '儲存變更', btnCancel: '取消',
                 shopTitle: '新增購物清單', shopUpload: '商品照片', phShopName: '商品名稱', phShopNote: '備註', btnAddShop: '加入清單',
                 sDrug: '藥妝', sSnack: '零食', sWear: '服飾', sGift: '雜貨', tabToBuy: '未完成', tabBought: '已完成',
-                totalSpent: '總花費', converter: '匯率換算', newExp: '新增支出', phItem: '項目', phAmt: '¥ 金額', btnAddExp: '記帳',
+                totalSpent: '總花費', converter: '匯率換算', newExp: '新增支出', phItem: '項目', phAmt: '金額', btnAddExp: '記帳',
                 flights: '航班資訊', hotels: '住宿資訊', noInfo: '行程中未找到資訊。',
                 phSplit: '兩人分帳 (一人: ¥', currency: '/人)', editAppTitle: '修改標題',
                 infoTitle: '旅遊手冊', entryCard: '住宿 / 入境卡', flightCard: '航班',
@@ -355,7 +355,7 @@
                 btnDel: 'Delete', btnSave: 'Save', btnCancel: 'Cancel',
                 shopTitle: 'Add Shopping Item', shopUpload: 'Product Photo', phShopName: 'Item Name', phShopNote: 'Notes', btnAddShop: 'Add to List',
                 sDrug: 'Meds', sSnack: 'Food', sWear: 'Wear', sGift: 'Gift', tabToBuy: 'To Buy', tabBought: 'Bought',
-                totalSpent: 'Total Spent', converter: 'Converter', newExp: 'New Expense', phItem: 'Item', phAmt: '¥ Amount', btnAddExp: 'Add',
+                totalSpent: 'Total Spent', converter: 'Converter', newExp: 'New Expense', phItem: 'Item', phAmt: 'Amount', btnAddExp: 'Add',
                 phSplit: 'Split by 2 (Per person: ¥', currency: ')', editAppTitle: 'Edit Title',
                 infoTitle: 'Travel Wallet', entryCard: 'Accommodation', flightCard: 'Flights',
                 addr: 'Address', tel: 'Tel', pnr: 'PNR', ticket: 'Ticket No.', copied: 'Copied', noInfo: 'No info added.',
@@ -386,7 +386,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v59_cloud');
+            const localSaved = localStorage.getItem('trip_v60_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             // V57 Safety Init
@@ -415,7 +415,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v59_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v60_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -447,39 +447,9 @@
         function toggleSimulate() { data.config.simulate = !data.config.simulate; save(); render(); alert(data.config.simulate ? "Simulation ON (Day 1 Highlighted)" : "Simulation OFF"); }
         function editTitle() { const t = prompt("Title", data.config.title); if(t) { data.config.title = t; data.config.subtitle = prompt("Subtitle", data.config.subtitle)||data.config.subtitle; save(); applySettings(); } }
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
-        // V53.1: Stronger Image Compression
-        function handleImgUpload(file, callback) { 
-            if(!file) return; 
-            const reader = new FileReader(); 
-            reader.onload = (e) => { 
-                const img = new Image(); 
-                img.onload = () => { 
-                    const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); 
-                    const maxWidth = 400; const scale = maxWidth / img.width; 
-                    cvs.width = maxWidth; cvs.height = img.height * scale; 
-                    ctx.drawImage(img, 0, 0, cvs.width, cvs.height); 
-                    // V58.1 Fix: Specify format for compression
-                    callback(cvs.toDataURL('image/jpeg', 0.4)); 
-                }; 
-                img.src = e.target.result; 
-            }; 
-            reader.readAsDataURL(file); 
-        }
-
-        // V59: Added shopImg Binding
+        function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 800 / img.width; cvs.width = 800; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.4)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
-            document.getElementById('previewImg').src=url; 
-            document.getElementById('previewImg').classList.add('show'); 
-            document.getElementById('editImgContainer').classList.add('show'); 
-        });
-        document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
-            document.getElementById('shopPreview').src = url; 
-            document.getElementById('shopPreview').classList.add('show'); 
-            document.getElementById('shopImgContainer').classList.add('show'); 
-        });
-
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v59_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v60_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -526,6 +496,16 @@
                 if(obj.img) { img.src=obj.img; img.classList.add('show'); cont.classList.add('show'); } else { img.src=''; img.classList.remove('show'); cont.classList.remove('show'); } 
             } 
         }
+        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
+            document.getElementById('previewImg').src=url; 
+            document.getElementById('previewImg').classList.add('show'); 
+            document.getElementById('editImgContainer').classList.add('show'); 
+        });
+        document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
+            document.getElementById('shopPreview').src = url; 
+            document.getElementById('shopPreview').classList.add('show'); 
+            document.getElementById('shopImgContainer').classList.add('show'); 
+        });
         function removeImg(type) {
             if(type === 'edit') {
                 document.getElementById('previewImg').src = "";
@@ -625,20 +605,74 @@
         function openLightbox(src) { document.getElementById('lightbox').classList.add('active'); document.getElementById('lightbox-img').src = src; }
         function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
 
+        // V60: Multi-Currency Logic
         function renderBudget(box) { 
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; 
-            const total = data.budget.reduce((a,c)=>a+c.amt,0); const rate = data.config.rate; 
-            let manPaid = 0; let womanPaid = 0;
-            data.budget.forEach(b => { if(b.payer === 'man') manPaid += b.amt; else if(b.payer === 'woman') womanPaid += b.amt; else { manPaid += b.amt/2; womanPaid += b.amt/2; } });
-            const diff = (manPaid - womanPaid) / 2;
-            let balanceText = diff === 0 ? "All Clear" : diff > 0 ? `${t.woman} ${t.owes} ${t.man} ¥${Math.abs(diff).toLocaleString()}` : `${t.man} ${t.owes} ${t.woman} ¥${Math.abs(diff).toLocaleString()}`;
             
-            let html = `<div class="glass-card p-6 text-center mb-6"><div class="text-xs text-gray-500 mb-2 font-bold tracking-widest uppercase">${t.totalSpent}</div><div class="text-4xl font-black jp-font text-[var(--primary)]">¥${total.toLocaleString()}</div><div class="mt-4 pt-4 border-t border-gray-100 text-sm font-bold text-[var(--accent)]">${t.balance}: ${balanceText}</div></div>
+            // 1. Calculate stats per currency
+            const stats = {};
+            data.budget.forEach(b => {
+                const c = b.currency || 'JPY';
+                if(!stats[c]) stats[c] = { total: 0, man: 0, woman: 0 };
+                stats[c].total += b.amt;
+                if(b.payer === 'man') stats[c].man += b.amt;
+                else if(b.payer === 'woman') stats[c].woman += b.amt;
+                else { stats[c].man += b.amt/2; stats[c].woman += b.amt/2; }
+            });
+
+            // 2. Generate Summary HTML
+            let summaryHTML = '';
+            let totalHTML = '';
+            for(const [c, s] of Object.entries(stats)) {
+                totalHTML += `<div class="text-2xl">${c} ${s.total.toLocaleString()}</div>`;
+                const diff = (s.man - s.woman) / 2;
+                if(diff !== 0) {
+                    const txt = diff > 0 
+                        ? `${t.woman} ${t.owes} ${t.man} ${c} ${Math.abs(diff).toLocaleString()}`
+                        : `${t.man} ${t.owes} ${t.woman} ${c} ${Math.abs(diff).toLocaleString()}`;
+                    const color = diff > 0 ? 'text-blue-500' : 'text-pink-500';
+                    summaryHTML += `<div class="text-sm font-bold ${color} mt-1">${txt}</div>`;
+                }
+            }
+            if(totalHTML === '') totalHTML = '<div class="text-2xl">¥0</div>';
+            if(summaryHTML === '') summaryHTML = '<div class="text-sm text-gray-400 mt-2">All Clear</div>';
+            
+            const rate = data.config.rate; 
+            
+            let html = `<div class="glass-card p-6 text-center mb-6"><div class="text-xs text-gray-500 mb-2 font-bold tracking-widest uppercase">${t.totalSpent}</div><div class="font-black jp-font text-[var(--primary)] flex flex-col gap-1">${totalHTML}</div><div class="mt-4 pt-4 border-t border-gray-100">${summaryHTML}</div></div>
             <div class="glass-card p-4 mb-6 bg-blue-50/50"><div class="flex justify-between items-center mb-2"><h3 class="text-sm font-bold text-[var(--primary)]"><i class="fas fa-exchange-alt"></i> ${t.converter}</h3><input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center text-xs p-1 h-6 mb-0" title="Rate"></div><div class="flex gap-2 items-center"><input type="number" id="convJpy" placeholder="JPY" oninput="calcTwd(this.value)" class="jpy-input mb-0 text-center font-bold"><span class="text-gray-400">=</span><div id="convTwd" class="flex-1 text-center font-bold text-xl text-[var(--accent)] jp-font">NT$ 0</div></div></div>
-            <div class="glass-card p-5 mb-4"><h3 class="font-bold text-sm mb-3 tracking-widest">${t.newExp}</h3><div class="payer-toggle"><div class="payer-btn active" id="pay-man" onclick="setPayer('man')">${t.man}</div><div class="payer-btn" id="pay-woman" onclick="setPayer('woman')">${t.woman}</div></div><input type="hidden" id="bPayer" value="man"><input id="bItem" placeholder="${t.phItem}"><input type="number" id="bAmt" placeholder="${t.phAmt}"><button onclick="addBudget()" class="btn-primary py-2 text-sm">${t.btnAddExp}</button></div><div class="space-y-3">${data.budget.slice().reverse().map((b,i) => `<div class="swipe-container"><div class="swipe-actions" onclick="delBudget(${b.id})"><i class="fas fa-trash"></i></div><div class="swipe-content glass-card p-4 flex justify-between items-center border-l-4 border-${b.payer==='man'?'blue-500':b.payer==='woman'?'pink-500':'gray-400'}" ontouchstart="touchStart(event)" ontouchend="touchEnd(event, this)"><div><div class="font-bold jp-font">${b.item}</div><div class="text-xs text-gray-500">${b.payer==='man'?t.man:b.payer==='woman'?t.woman:'Split'} ${t.paid}</div></div><div class="flex items-center gap-3"><span class="font-bold text-lg jp-font">¥${b.amt.toLocaleString()}</span></div></div></div>`).join('')}</div>`; box.innerHTML = html; 
+            
+            <div class="glass-card p-5 mb-4">
+                <h3 class="font-bold text-sm mb-3 tracking-widest">${t.newExp}</h3>
+                <div class="payer-toggle"><div class="payer-btn active" id="pay-man" onclick="setPayer('man')">${t.man}</div><div class="payer-btn" id="pay-woman" onclick="setPayer('woman')">${t.woman}</div></div>
+                <input type="hidden" id="bPayer" value="man">
+                <div class="flex gap-2 mb-0">
+                    <select id="bCurr" class="bg-[var(--input-bg)] border border-[var(--border)] rounded-lg px-2 py-3 text-sm font-bold w-1/3 outline-none" style="height: 54px; margin-bottom: 20px;">
+                        <option value="JPY">JPY ¥</option>
+                        <option value="TWD">TWD $</option>
+                        <option value="USD">USD $</option>
+                    </select>
+                    <input type="number" id="bAmt" placeholder="${t.phAmt}" class="w-2/3">
+                </div>
+                <input id="bItem" placeholder="${t.phItem}">
+                <button onclick="addBudget()" class="btn-primary py-2 text-sm">${t.btnAddExp}</button>
+            </div>
+            
+            <div class="space-y-3">${data.budget.slice().reverse().map((b,i) => `<div class="swipe-container"><div class="swipe-actions" onclick="delBudget(${b.id})"><i class="fas fa-trash"></i></div><div class="swipe-content glass-card p-4 flex justify-between items-center border-l-4 border-${b.payer==='man'?'blue-500':b.payer==='woman'?'pink-500':'gray-400'}" ontouchstart="touchStart(event)" ontouchend="touchEnd(event, this)"><div><div class="font-bold jp-font">${b.item}</div><div class="text-xs text-gray-500">${b.payer==='man'?t.man:b.payer==='woman'?t.woman:'Split'} ${t.paid}</div></div><div class="flex items-center gap-3"><span class="font-bold text-lg jp-font">${b.currency||'JPY'} ${b.amt.toLocaleString()}</span></div></div></div>`).join('')}</div>`; box.innerHTML = html; 
         }
         function setPayer(p) { document.getElementById('bPayer').value = p; document.querySelectorAll('.payer-btn').forEach(b=>b.classList.remove('active')); document.getElementById('pay-'+p).classList.add('active'); }
-        function addBudget() { const item = document.getElementById('bItem').value; const amt = parseInt(document.getElementById('bAmt').value); const payer = document.getElementById('bPayer').value; if(item && amt) { data.budget.push({id:Date.now(), item, amt, payer}); save(); render(); } }
+        
+        function addBudget() { 
+            const item = document.getElementById('bItem').value; 
+            const amt = parseInt(document.getElementById('bAmt').value); 
+            const payer = document.getElementById('bPayer').value; 
+            const curr = document.getElementById('bCurr').value;
+            if(item && amt) { 
+                data.budget.push({id:Date.now(), item, amt, payer, currency: curr}); 
+                save(); render(); 
+            } 
+        }
+
         function delBudget(id) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); }
         function calcTwd(val) {
             const jpy = parseFloat(val);
@@ -683,7 +717,7 @@
             });
 
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V58.1 (Final Fix)</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V60.0 (Multi-Currency)</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
