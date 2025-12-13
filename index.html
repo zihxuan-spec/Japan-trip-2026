@@ -73,7 +73,7 @@
         .list-item-card:active { transform: scale(0.98); }
         .img-box { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; display: none; }
         .img-box.show { display: block; }
-        /* Photo Delete Btn */
+        
         .img-container { position: relative; display: none; }
         .img-container.show { display: block; }
         .btn-remove-img { 
@@ -708,12 +708,29 @@
             
             const rate = data.config.rate; 
             
-            let html = `<div class="glass-card p-6 text-center mb-6"><div class="text-xs text-gray-500 mb-2 font-bold tracking-widest uppercase">${t.totalSpent}</div><div class="font-black jp-font text-[var(--primary)] flex flex-col gap-1">${totalHTML}</div><div class="mt-4 pt-4 border-t border-gray-100">${summaryHTML}</div></div>
-            <div class="glass-card p-4 mb-6 bg-blue-50/50"><div class="flex justify-between items-center mb-2"><h3 class="text-sm font-bold text-[var(--primary)]"><i class="fas fa-exchange-alt"></i> ${t.converter}</h3><input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center text-xs p-1 h-6 mb-0" title="Rate"></div><div class="flex gap-2 items-center"><input type="number" id="convJpy" placeholder="JPY" oninput="calcTwd(this.value)" class="jpy-input mb-0 text-center font-bold"><span class="text-gray-400">=</span><div id="convTwd" class="flex-1 text-center font-bold text-xl text-[var(--accent)] jp-font">NT$ 0</div></div></div>
+            let html = `<div class="total-card text-center mb-6">
+                            <div class="label">${t.totalSpent}</div>
+                            <div class="flex flex-col gap-1">${totalHTML}</div>
+                            <div class="mt-4 pt-4 border-t border-white/20">${summaryHTML}</div>
+                        </div>
+
+            <div class="converter-card">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-bold text-[var(--primary)]">Rate:</span>
+                    <input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input w-16 text-center bg-gray-50 border border-gray-200 rounded p-1 text-sm font-bold">
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="number" id="convJpy" placeholder="JPY" oninput="calcTwd(this.value)" class="w-20 text-center font-bold border-b border-gray-300 outline-none text-lg">
+                    <span class="text-gray-400">=</span>
+                    <div id="convTwd" class="font-bold text-lg text-[var(--accent)]">NT$ 0</div>
+                </div>
+            </div>
             
             <div class="glass-card p-6 mb-20">
                 <div class="text-sm font-bold text-gray-400 mb-4 tracking-widest uppercase text-center">New Expense</div>
                 
+                <input type="date" id="bDate" class="date-input">
+
                 <div class="payer-toggle mb-5">
                     <div class="payer-btn active" id="pay-man" onclick="setPayer('man')">${t.man}</div>
                     <div class="payer-btn" id="pay-woman" onclick="setPayer('woman')">${t.woman}</div>
@@ -736,9 +753,28 @@
                 </button>
             </div>
             
-            <div class="space-y-3 pb-20">${data.budget.slice().reverse().map((b,i) => `<div class="swipe-container"><div class="swipe-actions" onclick="delBudget(${b.id})"><i class="fas fa-trash"></i></div><div class="swipe-content glass-card p-4 flex justify-between items-center border-l-4 border-${b.payer==='man'?'blue-500':b.payer==='woman'?'pink-500':'gray-400'}" ontouchstart="touchStart(event)" ontouchend="touchEnd(event, this)"><div><div class="font-bold jp-font">${b.item}</div><div class="text-xs text-gray-500">${b.payer==='man'?t.man:b.payer==='woman'?t.woman:'Split'} ${t.paid}</div></div><div class="flex items-center gap-3"><span class="font-bold text-lg jp-font">${b.currency||'JPY'} ${b.amt.toLocaleString()}</span></div></div></div>`).join('')}</div>`; 
+            <div class="space-y-3 pb-20">
+                ${data.budget.slice().reverse().map((b,i) => `
+                <div class="swipe-container">
+                    <div class="swipe-actions" onclick="delBudget(${b.id})"><i class="fas fa-trash"></i></div>
+                    <div class="swipe-content glass-card p-4 flex justify-between items-center border-l-4 border-${b.payer==='man'?'blue-500':b.payer==='woman'?'pink-500':'gray-400'}" ontouchstart="touchStart(event)" ontouchend="touchEnd(event, this)">
+                        <div>
+                            <div class="font-bold jp-font text-lg">${b.item}</div>
+                            <div class="text-xs text-gray-400 mt-1">${b.date || ''} | ${b.payer==='man'?t.man:b.payer==='woman'?t.woman:'Split'}</div>
+                        </div>
+                        <div class="font-black text-xl jp-font text-[var(--primary)]">${b.currency||'JPY'} ${b.amt.toLocaleString()}</div>
+                    </div>
+                </div>`).join('')}
+            </div>`; 
             
             box.innerHTML = html; 
+            
+            // Set Today's Date
+            setTimeout(() => {
+                const today = new Date().toISOString().split('T')[0];
+                const dateInput = document.getElementById('bDate');
+                if(dateInput) dateInput.value = today;
+            }, 100);
         }
         function setPayer(p) { document.getElementById('bPayer').value = p; document.querySelectorAll('.payer-btn').forEach(b=>b.classList.remove('active')); document.getElementById('pay-'+p).classList.add('active'); }
         
@@ -747,8 +783,17 @@
             const amt = parseFloat(document.getElementById('bAmt').value); 
             const payer = document.getElementById('bPayer').value; 
             const curr = document.getElementById('bCurr').value;
+            const date = document.getElementById('bDate').value;
+
             if(item && amt) { 
-                data.budget.push({id:Date.now(), item, amt, payer, currency: curr}); 
+                data.budget.push({
+                    id: Date.now(), 
+                    item, 
+                    amt, 
+                    payer, 
+                    currency: curr,
+                    date: date 
+                }); 
                 save(); render(); 
             } 
         }
@@ -797,7 +842,7 @@
             });
 
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V60.1 (UI Polish)</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V60.2 (Final UI)</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
