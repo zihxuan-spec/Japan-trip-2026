@@ -161,7 +161,7 @@
         .total-amount { font-family: "Zen Old Mincho", serif; font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 2px; }
         .total-sub { font-size: 0.9rem; opacity: 0.9; margin-bottom: 10px; }
         
-        /* V63.0 FIXED Converter Styles */
+        /* V63.1 FIXED Converter Styles */
         .converter-card {
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; 
             padding: 20px 0; /* Remove horizontal padding */
@@ -254,7 +254,7 @@
         </div>
         
         <div id="settingsMenu" class="settings-menu">
-            <div class="settings-item" onclick="toggleSimulate()"><i class="fas fa-magic"></i> <span id="txt-sim">模擬旅程中</span></div>
+            <div class="settings-item" onclick="toggleSimulate()"><i class="fas fa-magic"></i> <span id="txt-sim">模擬旅程中 (Simulate)</span></div>
             <div class="settings-item" onclick="editTitle()"><i class="fas fa-pen"></i> <span id="txt-edit-title">修改標題</span></div>
             <div class="settings-item" onclick="toggleDarkMode()"><i class="fas fa-moon"></i> <span id="txt-dark">深色模式</span></div>
             <div class="settings-item" onclick="triggerBgUpload()"><i class="fas fa-image"></i> <span id="txt-bg">更換背景</span></div>
@@ -415,9 +415,9 @@
                 phSplit: '兩人分帳 (一人: ¥', currency: '/人)', editAppTitle: '修改標題',
                 infoTitle: '旅遊手冊', entryCard: '住宿 / 入境卡', flightCard: '航班',
                 addr: '地址', tel: '電話', pnr: '訂位代號', ticket: '票號', copied: '已複製', noInfo: '尚未新增資訊',
-                outbound: '去程 (Outbound)', inbound: '回程 (Inbound)', addHotel: '＋ 新增住宿',
+                outbound: '去程', inbound: '回程', addHotel: '＋ 新增住宿',
                 simMode: '模擬旅程中 (On/Off)', man: '👦 Dylan', woman: '👧 Alyshia', balance: '結算', owes: '應給', paid: '已付',
-                rateLabel: '匯率', convJpy: '日幣', convTwd: '台幣'
+                rateLabel: '匯率', convJpy: '日幣 (JPY)', convTwd: '台幣 (TWD)'
             },
             'en': {
                 navSched: 'Schedule', navShop: 'Shopping', navBudget: 'Budget', navInfo: 'Info',
@@ -460,7 +460,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v63_cloud');
+            const localSaved = localStorage.getItem('trip_v63.1_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             // V57 Safety Init
@@ -489,7 +489,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v63_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v63.1_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -553,7 +553,7 @@
             document.getElementById('shopImgContainer').classList.add('show'); 
         });
 
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v63_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v63.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -704,8 +704,6 @@
         let currentCurrency = 'JPY'; 
         function renderBudget(box) { 
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; 
-            
-            // 1. Calculate stats per currency
             const stats = {}; 
             data.budget.forEach(b => { 
                 const c = b.currency || 'JPY'; 
@@ -830,7 +828,7 @@
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V63.0 (Localized & Fixed)</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V63.1 (Localized & Fixed)</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
