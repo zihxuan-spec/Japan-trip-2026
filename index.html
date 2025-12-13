@@ -70,17 +70,9 @@
         .list-item-card:active { transform: scale(0.98); }
         .img-box { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; display: none; }
         .img-box.show { display: block; }
-        /* Photo Delete Btn */
         .img-container { position: relative; display: none; }
         .img-container.show { display: block; }
-        .btn-remove-img { 
-            position: absolute; top: 10px; right: 10px; 
-            width: 30px; height: 30px; border-radius: 50%; 
-            background: rgba(239, 68, 68, 0.9); color: white;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 10;
-        }
+        .btn-remove-img { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: rgba(239, 68, 68, 0.9); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 10; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .page-transition { animation: fadeIn 0.4s ease; }
@@ -137,8 +129,6 @@
         .shop-grid-info { padding: 10px; }
         .shop-grid-check { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border-radius: 50%; padding: 4px; }
         .info-card { background: var(--bg-card); border-left: 5px solid var(--primary); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.04); position: relative; }
-        
-        /* V57 Fixed Styles */
         .info-label { font-size: 0.7rem; color: var(--text-sub); font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
         .info-val { font-size: 1.15rem; font-weight: 700; color: var(--text-main); font-family: "Zen Old Mincho", serif; margin-bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; word-break: break-all;}
         .copy-btn { font-size: 0.6rem; padding: 2px 8px; border: 1px solid #ddd; border-radius: 12px; color: #999; cursor: pointer; background: white; white-space: nowrap; margin-left: 4px; }
@@ -148,11 +138,10 @@
         #lightbox.active { display: flex; } #lightbox.active img { transform: scale(1); }
         .highlight-card { border: 2px solid var(--highlight-border) !important; box-shadow: var(--highlight-glow) !important; position: relative; overflow: hidden; }
         .highlight-card::after { content: "NOW"; position: absolute; top: 0; right: 0; background: var(--highlight-border); color: white; font-size: 0.6rem; font-weight: bold; padding: 2px 8px; border-bottom-left-radius: 8px; }
-        .payer-toggle { display: flex; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 25px; }
-        .payer-btn { flex: 1; padding: 12px; text-align: center; font-size: 15px; cursor: pointer; transition: 0.2s; color: #999; }
+        .payer-toggle { display: flex; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+        .payer-btn { flex: 1; padding: 10px; text-align: center; font-size: 14px; cursor: pointer; transition: 0.2s; color: #999; }
         .payer-btn.active { background: var(--primary); color: white; font-weight: bold; }
         
-        /* V62.0 Updated Budget UI */
         .total-card {
             background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
             color: white; border-radius: 20px; padding: 25px 20px;
@@ -167,20 +156,22 @@
         .total-amount { font-family: "Zen Old Mincho", serif; font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 2px; }
         .total-sub { font-size: 0.9rem; opacity: 0.9; margin-bottom: 10px; }
         
-        /* V62.0 Independent Converter */
         .converter-card {
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 25px;
             display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.03);
             font-size: 1.1rem;
         }
+        
+        /* V62.1 Fix: Expanded width for input */
         .converter-input-box {
             background: transparent; border: none; border-bottom: 2px solid #e2e8f0; 
-            font-weight: 900; text-align: center; width: 80px; padding: 5px; font-size: 1.2rem;
+            font-weight: 900; text-align: center; width: 100%; padding: 5px; font-size: 1.2rem;
             color: var(--text-main); border-radius: 0; outline: none; transition: 0.3s;
         }
         .converter-input-box:focus { border-color: var(--primary); }
 
-        /* Currency Caps */
+        .converter-input { padding: 4px 8px !important; margin-bottom: 0 !important; height: 32px !important; font-size: 14px !important; border-radius: 6px !important; width: auto !important; }
+
         .currency-caps { display: flex; gap: 8px; margin-bottom: 15px; justify-content: center; }
         .curr-cap { 
             padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; 
@@ -189,7 +180,6 @@
         }
         .curr-cap.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(46, 75, 113, 0.2); transform: translateY(-2px); }
 
-        /* Calculator Input */
         .calc-input { 
             width: 100%; border: none !important; background: transparent !important; 
             font-size: 3.5rem !important; font-weight: 900 !important; text-align: center !important; 
@@ -198,10 +188,8 @@
         }
         .calc-input::placeholder { color: #e2e8f0; }
 
-        /* V62.0 Fix: Relative positioning for date container */
         .mini-date { 
-            position: relative; /* CRITICAL FIX */
-            text-align: center; color: var(--text-sub); font-size: 0.85rem; 
+            position: relative; text-align: center; color: var(--text-sub); font-size: 0.85rem; 
             font-weight: bold; cursor: pointer; display: flex; 
             align-items: center; justify-content: flex-end; gap: 5px; width: 140px;
         }
@@ -209,7 +197,6 @@
             position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer; 
         }
         
-        /* Modern List */
         .budget-item { display: flex; align-items: center; padding: 15px; background: var(--bg-card); border-bottom: 1px solid var(--border); transition: 0.2s; }
         .budget-item:last-child { border-bottom: none; }
         .budget-avatar { 
@@ -220,11 +207,16 @@
         .budget-date { font-size: 0.65rem; color: #94a3b8; font-weight: bold; letter-spacing: 0.05em; margin-bottom: 2px; }
         .budget-title { font-weight: bold; color: var(--text-main); font-size: 1rem; }
         .budget-amt { font-weight: 900; font-size: 1.1rem; color: var(--text-main); font-family: "Zen Old Mincho", serif; }
+        
+        /* V62.1 Fix: Hotel Card Buttons */
+        .info-card-del { position: absolute; top: 12px; right: 12px; color: #ccc; cursor: pointer; font-size: 16px; padding: 8px; z-index: 10; }
+        .info-card-edit { position: absolute; top: 12px; right: 45px; color: #9ca3af; cursor: pointer; font-size: 14px; padding: 8px; z-index: 10; }
     </style>
 </head>
 <body class="default-bg">
     
     <div id="error-log"></div>
+
     <div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img"></div>
     <div id="splash-screen"><h1 class="splash-title">JAPAN</h1><p class="splash-sub">2026.02.19 - 02.24</p></div>
     <div id="loadingScreen" style="display:none"></div>
@@ -349,7 +341,7 @@
                 phSplit: '兩人分帳 (一人: ¥', currency: '/人)', editAppTitle: '修改標題',
                 infoTitle: '旅遊手冊', entryCard: '住宿 / 入境卡', flightCard: '航班',
                 addr: '地址', tel: '電話', pnr: '訂位代號', ticket: '票號', copied: '已複製', noInfo: '尚未新增資訊',
-                outbound: '去程 (Outbound)', inbound: '回程 (Inbound)', addHotel: '＋ 新增住宿',
+                outbound: '去程', inbound: '回程', addHotel: '＋ 新增住宿',
                 simMode: '模擬旅程中 (On/Off)', man: '👦 Dylan', woman: '👧 Alyshia', balance: '結算', owes: '應給', paid: '已付'
             },
             'en': {
@@ -392,7 +384,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v62_cloud');
+            const localSaved = localStorage.getItem('trip_v62.1_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             // V57 Safety Init
@@ -421,7 +413,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v62_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v62.1_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -485,7 +477,7 @@
             document.getElementById('shopImgContainer').classList.add('show'); 
         });
 
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v62_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v62.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -658,7 +650,7 @@
             
             let html = `
             <div class="total-card">
-                <div class="total-label">TOTAL SPENT</div>
+                <div class="total-label">總花費 (TOTAL SPENT)</div>
                 ${totalHTML}
                 <div style="margin-top:15px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.2)">
                     ${summaryHTML || '<div class="total-sub">All Clear</div>'}
@@ -666,7 +658,7 @@
             </div>
 
             <div class="converter-card">
-                <div style="font-weight:bold; color:var(--primary); font-size:0.9rem;">CONVERTER</div>
+                <div style="font-weight:bold; color:var(--primary); font-size:0.9rem;">匯率換算 (CONVERTER)</div>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <div style="text-align:right;">
                         <input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center w-16 bg-gray-50 border border-gray-200 rounded p-1 font-bold text-gray-500 mb-1 block ml-auto">
@@ -674,21 +666,22 @@
                     </div>
                 </div>
             </div>
-            <div class="converter-card" style="margin-top:-15px;">
-                <div style="flex:1; border-right:1px solid #eee; padding-right:10px;">
+            
+            <div class="converter-card" style="margin-top:-15px; padding: 25px 15px;">
+                <div style="flex:1; border-right:1px solid #eee; padding-right:10px; display:flex; flex-direction:column; align-items:center;">
                     <input type="number" id="convJpy" placeholder="JPY" oninput="calcTwd(this.value)" class="converter-input-box" inputmode="decimal">
-                    <span style="display:block; text-align:center; font-size:0.7rem; color:#999; font-weight:bold;">JPY</span>
+                    <span style="font-size:0.8rem; color:#999; font-weight:bold; margin-top:5px;">JPY (日幣)</span>
                 </div>
-                <div style="padding:0 10px; color:#ccc;"><i class="fas fa-arrow-right"></i></div>
-                <div style="flex:1; padding-left:10px; text-align:center;">
-                    <div id="convTwd" style="font-weight:900; font-size:1.2rem; color:var(--accent);">0</div>
-                    <span style="display:block; text-align:center; font-size:0.7rem; color:#999; font-weight:bold;">TWD</span>
+                <div style="padding:0 15px; color:#ccc; font-size:1.2rem;"><i class="fas fa-arrow-right"></i></div>
+                <div style="flex:1; padding-left:10px; display:flex; flex-direction:column; align-items:center;">
+                    <div id="convTwd" style="font-weight:900; font-size:1.4rem; color:var(--accent); min-height:30px; display:flex; align-items:center;">0</div>
+                    <span style="font-size:0.8rem; color:#999; font-weight:bold; margin-top:5px;">TWD (台幣)</span>
                 </div>
             </div>
 
             <div class="glass-card p-6 mb-20" style="background:var(--modal-bg)">
                 <div class="flex justify-between items-center mb-4">
-                    <div class="text-sm font-bold text-gray-400 tracking-widest uppercase">NEW EXPENSE</div>
+                    <div class="text-sm font-bold text-gray-400 tracking-widest uppercase">新增花費 (NEW EXPENSE)</div>
                     
                     <div class="mini-date" onclick="document.getElementById('bDate').showPicker()">
                         <span id="dateDisplay">${new Date().toISOString().split('T')[0]}</span> 
@@ -749,14 +742,22 @@
         }
         function delBudget(id) { if(confirm("Delete?")) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); } }
         function updateRate(val) { const r = parseFloat(val); if(!isNaN(r)) { data.config.rate = r; save(); } }
-        function calcTwd(val) { const jpy = parseFloat(val); const r = data.config.rate || 0.22; document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : Math.round(jpy * r).toLocaleString(); }
+        
+        // V62.1 Fix: 3 Decimal Places
+        function calcTwd(val) { 
+            const jpy = parseFloat(val); 
+            const r = data.config.rate || 0.22; 
+            const result = jpy * r;
+            // Show up to 3 decimal places if needed, remove trailing zeros
+            document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : parseFloat(result.toFixed(3)).toLocaleString(); 
+        }
         
         let editHotelIdx = null;
         function renderInfo(box) {
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V62.0 (Date Fix)</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V62.1 (TC & Converter Fix)</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
