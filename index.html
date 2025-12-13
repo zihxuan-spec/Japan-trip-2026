@@ -154,6 +154,28 @@
         .payer-toggle { display: flex; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
         .payer-btn { flex: 1; padding: 10px; text-align: center; font-size: 14px; cursor: pointer; transition: 0.2s; color: #999; }
         .payer-btn.active { background: var(--primary); color: white; font-weight: bold; }
+        
+        /* V60.1 Improved Budget Input */
+        .budget-input-group {
+            display: flex; align-items: center; background: var(--input-bg);
+            border: 1px solid var(--border); border-radius: 16px; padding: 5px 15px;
+            transition: 0.2s;
+        }
+        .budget-input-group:focus-within {
+            border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 75, 113, 0.1);
+        }
+        .budget-currency-select {
+            background: transparent; border: none; font-weight: bold; color: var(--primary);
+            font-size: 1.1rem; outline: none; padding-right: 10px; border-right: 1px solid #eee; margin-right: 10px; margin-bottom: 0 !important;
+            padding-left: 0 !important;
+            width: auto !important;
+        }
+        .budget-amount-input {
+            border: none !important; background: transparent !important; box-shadow: none !important;
+            font-size: 1.5rem !important; font-weight: 900 !important; color: var(--text-main);
+            padding: 5px !important; margin: 0 !important; width: 100%;
+        }
+        .budget-amount-input:focus { outline: none !important; box-shadow: none !important; }
     </style>
 </head>
 <body class="default-bg">
@@ -386,7 +408,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v60_cloud');
+            const localSaved = localStorage.getItem('trip_v60.1_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             // V57 Safety Init
@@ -415,7 +437,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v60_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v60.1_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -449,7 +471,7 @@
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
         function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 800 / img.width; cvs.width = 800; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.4)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v60_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v60.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -605,7 +627,7 @@
         function openLightbox(src) { document.getElementById('lightbox').classList.add('active'); document.getElementById('lightbox-img').src = src; }
         function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
 
-        // V60: Multi-Currency Logic
+        // V60.1: Multi-Currency Logic + UI Fixes
         function renderBudget(box) { 
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; 
             
@@ -642,29 +664,40 @@
             let html = `<div class="glass-card p-6 text-center mb-6"><div class="text-xs text-gray-500 mb-2 font-bold tracking-widest uppercase">${t.totalSpent}</div><div class="font-black jp-font text-[var(--primary)] flex flex-col gap-1">${totalHTML}</div><div class="mt-4 pt-4 border-t border-gray-100">${summaryHTML}</div></div>
             <div class="glass-card p-4 mb-6 bg-blue-50/50"><div class="flex justify-between items-center mb-2"><h3 class="text-sm font-bold text-[var(--primary)]"><i class="fas fa-exchange-alt"></i> ${t.converter}</h3><input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center text-xs p-1 h-6 mb-0" title="Rate"></div><div class="flex gap-2 items-center"><input type="number" id="convJpy" placeholder="JPY" oninput="calcTwd(this.value)" class="jpy-input mb-0 text-center font-bold"><span class="text-gray-400">=</span><div id="convTwd" class="flex-1 text-center font-bold text-xl text-[var(--accent)] jp-font">NT$ 0</div></div></div>
             
-            <div class="glass-card p-5 mb-4">
-                <h3 class="font-bold text-sm mb-3 tracking-widest">${t.newExp}</h3>
-                <div class="payer-toggle"><div class="payer-btn active" id="pay-man" onclick="setPayer('man')">${t.man}</div><div class="payer-btn" id="pay-woman" onclick="setPayer('woman')">${t.woman}</div></div>
-                <input type="hidden" id="bPayer" value="man">
-                <div class="flex gap-2 mb-0">
-                    <select id="bCurr" class="bg-[var(--input-bg)] border border-[var(--border)] rounded-lg px-2 py-3 text-sm font-bold w-1/3 outline-none" style="height: 54px; margin-bottom: 20px;">
-                        <option value="JPY">JPY ¥</option>
-                        <option value="TWD">TWD $</option>
-                        <option value="USD">USD $</option>
-                    </select>
-                    <input type="number" id="bAmt" placeholder="${t.phAmt}" class="w-2/3">
+            <div class="glass-card p-6 mb-20">
+                <div class="text-sm font-bold text-gray-400 mb-4 tracking-widest uppercase text-center">New Expense</div>
+                
+                <div class="payer-toggle mb-5">
+                    <div class="payer-btn active" id="pay-man" onclick="setPayer('man')">${t.man}</div>
+                    <div class="payer-btn" id="pay-woman" onclick="setPayer('woman')">${t.woman}</div>
                 </div>
-                <input id="bItem" placeholder="${t.phItem}">
-                <button onclick="addBudget()" class="btn-primary py-2 text-sm">${t.btnAddExp}</button>
+                <input type="hidden" id="bPayer" value="man">
+
+                <div class="budget-input-group mb-5">
+                    <select id="bCurr" class="budget-currency-select">
+                        <option value="JPY">JPY</option>
+                        <option value="TWD">TWD</option>
+                        <option value="USD">USD</option>
+                    </select>
+                    <input type="number" id="bAmt" placeholder="0" class="budget-amount-input" inputmode="decimal">
+                </div>
+
+                <input id="bItem" placeholder="${t.phItem}" style="margin-bottom: 20px;">
+                
+                <button onclick="addBudget()" class="btn-primary py-3 text-lg shadow-lg hover:opacity-90 active:scale-95 transition">
+                    <i class="fas fa-plus mr-2"></i> ${t.btnAddExp}
+                </button>
             </div>
             
-            <div class="space-y-3">${data.budget.slice().reverse().map((b,i) => `<div class="swipe-container"><div class="swipe-actions" onclick="delBudget(${b.id})"><i class="fas fa-trash"></i></div><div class="swipe-content glass-card p-4 flex justify-between items-center border-l-4 border-${b.payer==='man'?'blue-500':b.payer==='woman'?'pink-500':'gray-400'}" ontouchstart="touchStart(event)" ontouchend="touchEnd(event, this)"><div><div class="font-bold jp-font">${b.item}</div><div class="text-xs text-gray-500">${b.payer==='man'?t.man:b.payer==='woman'?t.woman:'Split'} ${t.paid}</div></div><div class="flex items-center gap-3"><span class="font-bold text-lg jp-font">${b.currency||'JPY'} ${b.amt.toLocaleString()}</span></div></div></div>`).join('')}</div>`; box.innerHTML = html; 
+            <div class="space-y-3 pb-20">${data.budget.slice().reverse().map((b,i) => `<div class="swipe-container"><div class="swipe-actions" onclick="delBudget(${b.id})"><i class="fas fa-trash"></i></div><div class="swipe-content glass-card p-4 flex justify-between items-center border-l-4 border-${b.payer==='man'?'blue-500':b.payer==='woman'?'pink-500':'gray-400'}" ontouchstart="touchStart(event)" ontouchend="touchEnd(event, this)"><div><div class="font-bold jp-font">${b.item}</div><div class="text-xs text-gray-500">${b.payer==='man'?t.man:b.payer==='woman'?t.woman:'Split'} ${t.paid}</div></div><div class="flex items-center gap-3"><span class="font-bold text-lg jp-font">${b.currency||'JPY'} ${b.amt.toLocaleString()}</span></div></div></div>`).join('')}</div>`; 
+            
+            box.innerHTML = html; 
         }
         function setPayer(p) { document.getElementById('bPayer').value = p; document.querySelectorAll('.payer-btn').forEach(b=>b.classList.remove('active')); document.getElementById('pay-'+p).classList.add('active'); }
         
         function addBudget() { 
             const item = document.getElementById('bItem').value; 
-            const amt = parseInt(document.getElementById('bAmt').value); 
+            const amt = parseFloat(document.getElementById('bAmt').value); 
             const payer = document.getElementById('bPayer').value; 
             const curr = document.getElementById('bCurr').value;
             if(item && amt) { 
@@ -717,7 +750,7 @@
             });
 
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V60.0 (Multi-Currency)</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V60.1 (UI Polish)</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
