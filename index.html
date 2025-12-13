@@ -58,9 +58,6 @@
         }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 75, 113, 0.1); }
         
-        .converter-input { padding: 2px 6px !important; margin-bottom: 0 !important; height: 28px !important; font-size: 12px !important; border-radius: 6px !important; width: 60px !important; display: inline-block; background: rgba(255,255,255,0.2) !important; color: white !important; border: 1px solid rgba(255,255,255,0.3) !important; }
-        .jpy-input { padding: 8px 12px !important; margin-bottom: 0 !important; height: 44px !important; font-size: 18px !important; font-weight: bold !important; text-align: center !important; }
-
         .btn-primary { background-color: var(--primary); color: #fff; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; letter-spacing: 0.1em; }
         .btn-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: var(--primary); border: 1px solid var(--border); transition: 0.2s; }
         .btn-circle:active { transform: scale(0.9); background: var(--primary); color: #fff; }
@@ -73,9 +70,17 @@
         .list-item-card:active { transform: scale(0.98); }
         .img-box { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; display: none; }
         .img-box.show { display: block; }
+        /* Photo Delete Btn */
         .img-container { position: relative; display: none; }
         .img-container.show { display: block; }
-        .btn-remove-img { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: rgba(239, 68, 68, 0.9); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 10; }
+        .btn-remove-img { 
+            position: absolute; top: 10px; right: 10px; 
+            width: 30px; height: 30px; border-radius: 50%; 
+            background: rgba(239, 68, 68, 0.9); color: white;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .page-transition { animation: fadeIn 0.4s ease; }
@@ -132,6 +137,8 @@
         .shop-grid-info { padding: 10px; }
         .shop-grid-check { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border-radius: 50%; padding: 4px; }
         .info-card { background: var(--bg-card); border-left: 5px solid var(--primary); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.04); position: relative; }
+        
+        /* V57 Fixed Styles */
         .info-label { font-size: 0.7rem; color: var(--text-sub); font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
         .info-val { font-size: 1.15rem; font-weight: 700; color: var(--text-main); font-family: "Zen Old Mincho", serif; margin-bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; word-break: break-all;}
         .copy-btn { font-size: 0.6rem; padding: 2px 8px; border: 1px solid #ddd; border-radius: 12px; color: #999; cursor: pointer; background: white; white-space: nowrap; margin-left: 4px; }
@@ -145,7 +152,7 @@
         .payer-btn { flex: 1; padding: 12px; text-align: center; font-size: 15px; cursor: pointer; transition: 0.2s; color: #999; }
         .payer-btn.active { background: var(--primary); color: white; font-weight: bold; }
         
-        /* V61.0 Modern Budget UI */
+        /* V62.0 Updated Budget UI */
         .total-card {
             background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
             color: white; border-radius: 20px; padding: 25px 20px;
@@ -159,15 +166,24 @@
         .total-label { font-size: 0.75rem; letter-spacing: 0.1em; opacity: 0.7; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
         .total-amount { font-family: "Zen Old Mincho", serif; font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 2px; }
         .total-sub { font-size: 0.9rem; opacity: 0.9; margin-bottom: 10px; }
-        .converter-mini { 
-            background: rgba(255,255,255,0.15); backdrop-filter: blur(5px);
-            padding: 8px 15px; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem;
-        }
         
+        /* V62.0 Independent Converter */
+        .converter-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 25px;
+            display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            font-size: 1.1rem;
+        }
+        .converter-input-box {
+            background: transparent; border: none; border-bottom: 2px solid #e2e8f0; 
+            font-weight: 900; text-align: center; width: 80px; padding: 5px; font-size: 1.2rem;
+            color: var(--text-main); border-radius: 0; outline: none; transition: 0.3s;
+        }
+        .converter-input-box:focus { border-color: var(--primary); }
+
         /* Currency Caps */
         .currency-caps { display: flex; gap: 8px; margin-bottom: 15px; justify-content: center; }
         .curr-cap { 
-            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; 
+            padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; 
             background: var(--input-bg); color: var(--text-sub); border: 1px solid var(--border); 
             cursor: pointer; transition: 0.2s; 
         }
@@ -182,11 +198,12 @@
         }
         .calc-input::placeholder { color: #e2e8f0; }
 
-        /* Minimal Date */
+        /* V62.0 Fix: Relative positioning for date container */
         .mini-date { 
+            position: relative; /* CRITICAL FIX */
             text-align: center; color: var(--text-sub); font-size: 0.85rem; 
-            margin-bottom: 20px; font-weight: bold; cursor: pointer; display: flex; 
-            align-items: center; justify-content: center; gap: 5px; 
+            font-weight: bold; cursor: pointer; display: flex; 
+            align-items: center; justify-content: flex-end; gap: 5px; width: 140px;
         }
         .mini-date input { 
             position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer; 
@@ -353,12 +370,20 @@
             }
         };
 
-        const defItin = [{day:1, date:"02/19 (四)", loc:"東京・淺草", weather:"sunny", events:[{id:1, time:"22:00", title:"抵達 NRT (CI 104)", type:"transport", desc:"Skyliner 直奔淺草", map:"Narita Airport"}, {id:2, time:"23:30", title:"Check-in: 御宿野乃", type:"hotel", desc:"拉麵", map:"Onyado"}]}, {day:2, date:"02/20 (五)", loc:"舞濱", weather:"sunny", events:[{id:3, time:"ALL DAY", title:"迪士尼", type:"sightseeing", desc:"玩", map:"Disney"}]}, {day:3, date:"02/21 (六)", loc:"東京", weather:"sunny", events:[{id:4, time:"09:00", title:"築地", type:"food", desc:"海鮮", map:"Tsukiji"}, {id:5, time:"13:00", title:"秋葉原", type:"sightseeing", desc:"購", map:"Akihabara"}, {id:6, time:"17:00", title:"鐵塔", type:"sightseeing", desc:"夜", map:"Tokyo Tower"}]}, {day:4, date:"02/22 (日)", loc:"新宿", weather:"sunny", events:[{id:7, time:"10:00", title:"搬家", type:"transport", desc:"宿", map:"Shinjuku"}, {id:8, time:"14:00", title:"Shibuya Sky", type:"sightseeing", desc:"景", map:"SHIBUYA SKY"}]}, {day:5, date:"02/23 (一)", loc:"河口湖", weather:"sunny", events:[{id:9, time:"07:30", title:"河口湖", type:"transport", desc:"巴", map:"Busta"}, {id:10, time:"10:30", title:"大石", type:"sightseeing", desc:"山", map:"Oishi"}]}, {day:6, date:"02/24 (二)", loc:"返國", weather:"sunny", events:[{id:11, time:"11:00", title:"原宿", type:"sightseeing", desc:"購", map:"Harajuku"}, {id:12, time:"18:00", title:"機場 (CI 105)", type:"transport", desc:"返", map:"Narita"}]}];
+        const defItin = [
+            {day:1, date:"02/19 (四)", loc:"東京・淺草", weather:"sunny", events:[{id:1, time:"22:00", title:"抵達 NRT (CI 104)", type:"transport", desc:"Skyliner 直奔淺草", map:"Narita Airport"}, {id:2, time:"23:30", title:"Check-in: 御宿野乃", type:"hotel", desc:"拉麵", map:"Onyado"}]},
+            {day:2, date:"02/20 (五)", loc:"舞濱", weather:"sunny", events:[{id:3, time:"ALL DAY", title:"迪士尼", type:"sightseeing", desc:"玩", map:"Disney"}]},
+            {day:3, date:"02/21 (六)", loc:"東京", weather:"sunny", events:[{id:4, time:"09:00", title:"築地", type:"food", desc:"海鮮", map:"Tsukiji"}, {id:5, time:"13:00", title:"秋葉原", type:"sightseeing", desc:"購", map:"Akihabara"}, {id:6, time:"17:00", title:"鐵塔", type:"sightseeing", desc:"夜", map:"Tokyo Tower"}]},
+            {day:4, date:"02/22 (日)", loc:"新宿", weather:"sunny", events:[{id:7, time:"10:00", title:"搬家", type:"transport", desc:"宿", map:"Shinjuku"}, {id:8, time:"14:00", title:"Shibuya Sky", type:"sightseeing", desc:"景", map:"SHIBUYA SKY"}]},
+            {day:5, date:"02/23 (一)", loc:"河口湖", weather:"sunny", events:[{id:9, time:"07:30", title:"河口湖", type:"transport", desc:"巴", map:"Busta"}, {id:10, time:"10:30", title:"大石", type:"sightseeing", desc:"山", map:"Oishi"}]},
+            {day:6, date:"02/24 (二)", loc:"返國", weather:"sunny", events:[{id:11, time:"11:00", title:"原宿", type:"sightseeing", desc:"購", map:"Harajuku"}, {id:12, time:"18:00", title:"機場 (CI 105)", type:"transport", desc:"返", map:"Narita"}]}
+        ];
 
         let data = { 
             config: { title: "JAPAN", subtitle: "2026.02.19 - 02.24", lang: "zh-TW", darkMode: false, bg: null, rate: 0.22, simulate: false }, 
             itinerary: JSON.parse(JSON.stringify(defItin)), 
-            budget: [], shopping: [],
+            budget: [], 
+            shopping: [],
             info: { hotels: [{name: "御宿 野乃 淺草別邸", addr: "2-7-20 Asakusa, Taito-ku, Tokyo 111-0032", tel: "+81-3-0000-0000"}, {name: "新宿/澀谷飯店", addr: "Shinjuku-ku, Tokyo", tel: "+81-3-1111-1111"}], flightOut: { code: "CI 104", pnr: "ABCDEF", ticket: "297-0001" }, flightIn: { code: "CI 105", pnr: "ABCDEF", ticket: "297-0002" } },
             updatedAt: 0
         };
@@ -367,22 +392,42 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v61_cloud');
+            const localSaved = localStorage.getItem('trip_v62_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
-            if(!data.shopping) data.shopping = []; if(!data.info) data.info = { hotels: [] };
+            // V57 Safety Init
+            if(!data.shopping) data.shopping = [];
+            if(!data.info) data.info = { hotels: [] };
 
             db.collection("trips").doc(TRIP_DOC_ID).onSnapshot((doc) => {
                 const statusDot = document.getElementById('dbStatus');
                 statusDot.className = 'status-dot online'; 
                 const txt = document.getElementById('status-text'); if(txt) { txt.classList.add('show'); setTimeout(()=>txt.classList.remove('show'), 3000); }
-                if (doc.exists) { const cloudData = doc.data(); data = cloudData; saveLocal(); applySettings(); render(); updateLangUI(); } 
-                else { saveToCloud(); }
+
+                if (doc.exists) {
+                    const cloudData = doc.data();
+                    console.log("Cloud update received");
+                    data = cloudData;
+                    // V57 Safety Re-check
+                    if(!data.shopping) data.shopping = [];
+                    if(!data.info) data.info = { hotels: [] };
+                    
+                    saveLocal(); 
+                    applySettings(); render(); updateLangUI();
+                } else { saveToCloud(); }
             }, (error) => { console.error(error); document.getElementById('dbStatus').className = 'status-dot error'; });
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { try { localStorage.setItem('trip_v61_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
+        function saveLocal() { 
+            try {
+                localStorage.setItem('trip_v62_cloud', JSON.stringify(data)); 
+            } catch(e) {
+                if(e.name === 'QuotaExceededError') {
+                    alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
+                }
+            }
+        }
         function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
         
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
@@ -405,19 +450,42 @@
         document.addEventListener('click', (e) => { if(!e.target.closest('.btn-circle') && !e.target.closest('.settings-menu')) document.getElementById('settingsMenu').classList.remove('show'); });
         function toggleDarkMode() { data.config.darkMode = !data.config.darkMode; save(); applySettings(); }
         function toggleLang() { data.config.lang = data.config.lang === 'zh-TW' ? 'en' : 'zh-TW'; save(); applySettings(); render(); updateLangUI(); }
-        function toggleSimulate() { data.config.simulate = !data.config.simulate; save(); render(); alert(data.config.simulate ? "Simulation ON" : "Simulation OFF"); }
+        function toggleSimulate() { data.config.simulate = !data.config.simulate; save(); render(); alert(data.config.simulate ? "Simulation ON (Day 1 Highlighted)" : "Simulation OFF"); }
         function editTitle() { const t = prompt("Title", data.config.title); if(t) { data.config.title = t; data.config.subtitle = prompt("Subtitle", data.config.subtitle)||data.config.subtitle; save(); applySettings(); } }
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
+        // V53.1: Stronger Image Compression
         function handleImgUpload(file, callback) { 
-            if(!file) return; const reader = new FileReader(); 
-            reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const maxWidth = 400; const scale = maxWidth / img.width; cvs.width = maxWidth; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.4)); }; img.src = e.target.result; }; reader.readAsDataURL(file); 
+            if(!file) return; 
+            const reader = new FileReader(); 
+            reader.onload = (e) => { 
+                const img = new Image(); 
+                img.onload = () => { 
+                    const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); 
+                    const maxWidth = 400; const scale = maxWidth / img.width; 
+                    cvs.width = maxWidth; cvs.height = img.height * scale; 
+                    ctx.drawImage(img, 0, 0, cvs.width, cvs.height); 
+                    // V58.1 Fix: Specify format for compression
+                    callback(cvs.toDataURL('image/jpeg', 0.4)); 
+                }; 
+                img.src = e.target.result; 
+            }; 
+            reader.readAsDataURL(file); 
         }
 
+        // V59: Added shopImg Binding
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); document.getElementById('editImgContainer').classList.add('show'); });
-        document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('shopPreview').src = url; document.getElementById('shopPreview').classList.add('show'); document.getElementById('shopImgContainer').classList.add('show'); });
+        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
+            document.getElementById('previewImg').src=url; 
+            document.getElementById('previewImg').classList.add('show'); 
+            document.getElementById('editImgContainer').classList.add('show'); 
+        });
+        document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
+            document.getElementById('shopPreview').src = url; 
+            document.getElementById('shopPreview').classList.add('show'); 
+            document.getElementById('shopImgContainer').classList.add('show'); 
+        });
 
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v61_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v62_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -431,7 +499,7 @@
             return dateStr.includes(todayFormatted) && year === 2026;
         }
 
-        // V48 Fixed Sorting
+        // V48: Sorting Fix & Time Input Fix
         function renderSchedule(box) {
             const t = i18n[data.config.lang];
             if(viewState.mode === 'list') {
@@ -454,17 +522,28 @@
         function getDotColor(t) { return t==='food'?'#D68F4D':t==='transport'?'#5D7C9D':t==='hotel'?'#8A6B9E':'#6D8C6F'; }
         let editIdx = null; function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); } function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:""}); } function setType(type) { document.getElementById('eType').value = type; document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + type).classList.add('active'); }
         
+        // V55: Image logic + Remove
         function fillModal(id, obj) { 
             document.getElementById(id).classList.add('active'); 
             if(id === 'editModal') { 
                 document.getElementById('eTime').value = obj.time; document.getElementById('eTitle').value = obj.title; document.getElementById('eDesc').value = obj.desc; document.getElementById('eMap').value = obj.map||""; setType(obj.type || 'sightseeing'); 
-                const img = document.getElementById('previewImg'); const cont = document.getElementById('editImgContainer');
+                const img = document.getElementById('previewImg'); 
+                const cont = document.getElementById('editImgContainer');
                 if(obj.img) { img.src=obj.img; img.classList.add('show'); cont.classList.add('show'); } else { img.src=''; img.classList.remove('show'); cont.classList.remove('show'); } 
             } 
         }
         function removeImg(type) {
-            if(type === 'edit') { document.getElementById('previewImg').src = ""; document.getElementById('previewImg').classList.remove('show'); document.getElementById('editImgContainer').classList.remove('show'); document.getElementById('editImg').value = ""; }
-            else if (type === 'shop') { document.getElementById('shopPreview').src = ""; document.getElementById('shopPreview').classList.remove('show'); document.getElementById('shopImgContainer').classList.remove('show'); document.getElementById('shopImg').value = ""; }
+            if(type === 'edit') {
+                document.getElementById('previewImg').src = "";
+                document.getElementById('previewImg').classList.remove('show');
+                document.getElementById('editImgContainer').classList.remove('show');
+                document.getElementById('editImg').value = ""; // clear input
+            } else if (type === 'shop') {
+                document.getElementById('shopPreview').src = "";
+                document.getElementById('shopPreview').classList.remove('show');
+                document.getElementById('shopImgContainer').classList.remove('show');
+                document.getElementById('shopImg').value = "";
+            }
         }
 
         function saveEvent() { 
@@ -472,7 +551,10 @@
             const evt = { id: Date.now(), time: document.getElementById('eTime').value, title: document.getElementById('eTitle').value, type: document.getElementById('eType').value, desc: document.getElementById('eDesc').value, map: document.getElementById('eMap').value, img: hasImg ? document.getElementById('previewImg').src : "" }; 
             if(!evt.title) return; 
             const events = data.itinerary[viewState.dayIdx].events; 
-            if(editIdx !== null) { events[editIdx] = { ...events[editIdx], ...evt, id: events[editIdx].id }; } else events.push(evt); 
+            if(editIdx !== null) {
+                 // update existing logic keeping ID
+                 events[editIdx] = { ...events[editIdx], ...evt, id: events[editIdx].id }; 
+            } else events.push(evt); 
             events.sort((a,b) => (a.time || "00:00").localeCompare(b.time || "00:00"));
             save(); closeModal('editModal'); render(); 
         }
@@ -480,12 +562,26 @@
         function toggleShopView() { viewState.shopMode = viewState.shopMode === 'list' ? 'grid' : 'list'; render(); }
         function setShopType(type) { document.getElementById('sType').value = type; document.querySelectorAll('#shopModal .type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-shop-' + type).classList.add('active'); }
         
+        // V56 Fix: Ensure data.shopping exists
         function saveShopItem() { 
             if(!data.shopping) data.shopping = [];
             const item = { id: Date.now(), name: document.getElementById('sName').value, note: document.getElementById('sNote').value, type: document.getElementById('sType').value, checked: false, img: document.getElementById('shopPreview').classList.contains('show') ? document.getElementById('shopPreview').src : "" }; if(item.name) { data.shopping.push(item); save(); closeModal('shopModal'); render(); } 
         }
-        function toggleShop(idx) { const item = data.shopping[idx]; if (item) { item.checked = !item.checked; save(); render(); } }
-        function delShop(idx) { if(confirm("Delete item?")) { data.shopping.splice(idx,1); save(); render(); } }
+
+        // V58 Fix: Missing Functions Restored!
+        function toggleShop(idx) { 
+            const item = data.shopping[idx];
+            if (item) {
+                item.checked = !item.checked; 
+                save(); render(); 
+            }
+        }
+        function delShop(idx) { 
+            if(confirm("Delete item?")) { 
+                data.shopping.splice(idx,1); 
+                save(); render(); 
+            } 
+        }
 
         function renderShopping(box) { 
             const t = i18n[data.config.lang]; const isToBuy = viewState.shopTab === 'tobuy';
@@ -502,28 +598,57 @@
                         if (viewState.shopMode === 'grid') { html += `<div class="shop-grid">`; itemsOfType.forEach(item => { const originalIdx = data.shopping.findIndex(i => i.id === item.id); const imgDisplay = item.img ? item.img : 'https://placehold.co/300x300/eee/999?text=No+Img'; html += `<div class="shop-grid-item"><img src="${imgDisplay}" class="shop-grid-img" onclick="openLightbox('${imgDisplay}')"><div class="shop-grid-check" onclick="toggleShop(${originalIdx})"><i class="fas fa-${isToBuy ? 'circle' : 'check-circle'} text-${isToBuy?'gray-300':'green-500'}"></i></div><div class="shop-grid-info"><div class="font-bold text-sm truncate">${item.name}</div><div class="text-xs text-gray-500 truncate">${item.note}</div></div></div>`; }); html += `</div>`; } 
                         else { 
                             html += `<div class="space-y-3">`; 
-                            itemsOfType.forEach(item => { const originalIdx = data.shopping.findIndex(i => i.id === item.id); const checkClass = item.checked ? 'checked' : ''; const hasImg = item.img && item.img.length > 100; const img = hasImg ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="openLightbox('${item.img}')">` : ''; html += `<div class="glass-card p-3 flex items-center justify-between ${checkClass}"><div class="flex items-center flex-1" onclick="toggleShop(${originalIdx})"><div class="custom-checkbox mr-3 flex-shrink-0"><i class="fas fa-check text-xs"></i></div>${img}<div><div class="font-bold item-name text-lg">${item.name}</div><div class="text-xs text-gray-500">${item.note}</div></div></div><div class="text-gray-300 p-3 cursor-pointer" onclick="event.stopPropagation(); delShop(${originalIdx})"><i class="fas fa-trash-alt"></i></div></div>`; }); 
+                            itemsOfType.forEach(item => { 
+                                const originalIdx = data.shopping.findIndex(i => i.id === item.id); const checkClass = item.checked ? 'checked' : ''; 
+                                
+                                // V58.1 Fix: Only show image if valid data exists
+                                const hasImg = item.img && item.img.length > 100;
+                                const img = hasImg ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="openLightbox('${item.img}')">` : ''; 
+                                
+                                html += `
+                                <div class="glass-card p-3 flex items-center justify-between ${checkClass}">
+                                    <div class="flex items-center flex-1" onclick="toggleShop(${originalIdx})">
+                                        <div class="custom-checkbox mr-3 flex-shrink-0"><i class="fas fa-check text-xs"></i></div>
+                                        ${img}
+                                        <div>
+                                            <div class="font-bold item-name text-lg">${item.name}</div>
+                                            <div class="text-xs text-gray-500">${item.note}</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-gray-300 p-3 cursor-pointer" onclick="event.stopPropagation(); delShop(${originalIdx})">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </div>
+                                </div>`; 
+                            }); 
                             html += `</div>`; 
                         }
                     }
                 });
             } box.innerHTML = html; 
         }
+        let touchStartX = 0; window.touchStart = function(e) { touchStartX = e.changedTouches[0].screenX; }
+        window.touchEnd = function(e, el) { if(touchStartX - e.changedTouches[0].screenX > 50) el.parentElement.classList.add('swiped-left'); else el.parentElement.classList.remove('swiped-left'); }
         function openLightbox(src) { document.getElementById('lightbox').classList.add('active'); document.getElementById('lightbox-img').src = src; }
         function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
 
-        // V61 Modern Budget Logic
-        let currentCurrency = 'JPY'; // Default
+        // V62.0: Modern Budget & Converter
+        let currentCurrency = 'JPY'; 
         function renderBudget(box) { 
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; 
-            const stats = {}; data.budget.forEach(b => { const c = b.currency || 'JPY'; if(!stats[c]) stats[c] = { total: 0, man: 0, woman: 0 }; stats[c].total += b.amt; if(b.payer === 'man') stats[c].man += b.amt; else if(b.payer === 'woman') stats[c].woman += b.amt; else { stats[c].man += b.amt/2; stats[c].woman += b.amt/2; } });
+            const stats = {}; 
+            data.budget.forEach(b => { 
+                const c = b.currency || 'JPY'; 
+                if(!stats[c]) stats[c] = { total: 0, man: 0, woman: 0 }; 
+                stats[c].total += b.amt; 
+                if(b.payer === 'man') stats[c].man += b.amt; else if(b.payer === 'woman') stats[c].woman += b.amt; else { stats[c].man += b.amt/2; stats[c].woman += b.amt/2; } 
+            });
 
             let totalHTML = ''; let summaryHTML = '';
             for(const [c, s] of Object.entries(stats)) {
                 totalHTML += `<div class="total-amount">${c} ${s.total.toLocaleString()}</div>`;
                 const diff = (s.man - s.woman) / 2;
                 if(diff !== 0) {
-                    const txt = diff > 0 ? `${t.woman} -> ${t.man}: ${c} ${Math.abs(diff).toLocaleString()}` : `${t.man} -> ${t.woman}: ${c} ${Math.abs(diff).toLocaleString()}`;
+                    const txt = diff > 0 ? `${t.woman} → ${t.man}: ${c} ${Math.abs(diff).toLocaleString()}` : `${t.man} → ${t.woman}: ${c} ${Math.abs(diff).toLocaleString()}`;
                     summaryHTML += `<div class="total-sub">${txt}</div>`;
                 }
             }
@@ -537,18 +662,37 @@
                 ${totalHTML}
                 <div style="margin-top:15px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.2)">
                     ${summaryHTML || '<div class="total-sub">All Clear</div>'}
-                    <div class="converter-mini mt-2">
-                        <i class="fas fa-exchange-alt"></i> Rate: <input type="number" value="${rate}" onchange="updateRate(this.value)" class="bg-transparent border-b border-white/50 text-center w-12 text-white font-bold outline-none">
-                        <span style="opacity:0.7">JPY -> TWD</span>
+                </div>
+            </div>
+
+            <div class="converter-card">
+                <div style="font-weight:bold; color:var(--primary); font-size:0.9rem;">CONVERTER</div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="text-align:right;">
+                        <input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center w-16 bg-gray-50 border border-gray-200 rounded p-1 font-bold text-gray-500 mb-1 block ml-auto">
+                        <span style="font-size:0.7rem; color:#999; display:block;">Rate (JPY/TWD)</span>
                     </div>
+                </div>
+            </div>
+            <div class="converter-card" style="margin-top:-15px;">
+                <div style="flex:1; border-right:1px solid #eee; padding-right:10px;">
+                    <input type="number" id="convJpy" placeholder="JPY" oninput="calcTwd(this.value)" class="converter-input-box" inputmode="decimal">
+                    <span style="display:block; text-align:center; font-size:0.7rem; color:#999; font-weight:bold;">JPY</span>
+                </div>
+                <div style="padding:0 10px; color:#ccc;"><i class="fas fa-arrow-right"></i></div>
+                <div style="flex:1; padding-left:10px; text-align:center;">
+                    <div id="convTwd" style="font-weight:900; font-size:1.2rem; color:var(--accent);">0</div>
+                    <span style="display:block; text-align:center; font-size:0.7rem; color:#999; font-weight:bold;">TWD</span>
                 </div>
             </div>
 
             <div class="glass-card p-6 mb-20" style="background:var(--modal-bg)">
                 <div class="flex justify-between items-center mb-4">
                     <div class="text-sm font-bold text-gray-400 tracking-widest uppercase">NEW EXPENSE</div>
+                    
                     <div class="mini-date" onclick="document.getElementById('bDate').showPicker()">
-                        <span id="dateDisplay">${new Date().toISOString().split('T')[0]}</span> <i class="fas fa-calendar-alt"></i>
+                        <span id="dateDisplay">${new Date().toISOString().split('T')[0]}</span> 
+                        <i class="fas fa-calendar-alt text-gray-400"></i>
                         <input type="date" id="bDate" onchange="document.getElementById('dateDisplay').innerText=this.value">
                     </div>
                 </div>
@@ -559,7 +703,7 @@
                     <div class="curr-cap ${currentCurrency==='USD'?'active':''}" onclick="setCurr('USD')">USD</div>
                 </div>
 
-                <div class="mb-6 text-center">
+                <div class="mb-6 text-center border-b border-gray-100 pb-2">
                     <input type="number" id="bAmt" placeholder="0" class="calc-input" inputmode="decimal">
                 </div>
 
@@ -570,7 +714,7 @@
                 <input type="hidden" id="bPayer" value="man">
 
                 <div class="relative mb-6">
-                    <input id="bItem" placeholder="${t.phItem}" style="border:none; border-bottom:1px solid #eee; border-radius:0; padding:10px 5px !important; background:transparent;">
+                    <input id="bItem" placeholder="${t.phItem}" style="width:100%; padding:12px; border:1px solid #eee; border-radius:12px; background:var(--input-bg);">
                 </div>
                 
                 <button onclick="addBudget()" class="btn-primary py-3 text-lg shadow-lg hover:opacity-90 active:scale-95 transition" style="border-radius:30px">
@@ -584,7 +728,7 @@
                     <div class="budget-avatar">${b.payer==='man'?'👦':'👧'}</div>
                     <div class="budget-info">
                         <div class="budget-title">${b.item}</div>
-                        <div class="budget-date">${b.date || 'No Date'}</div>
+                        <div class="budget-date">${b.date || ''}</div>
                     </div>
                     <div class="budget-amt ${b.payer==='man'?'text-blue-500':'text-pink-500'}">${b.currency||'JPY'} ${b.amt.toLocaleString()}</div>
                     <div class="text-gray-300 ml-3 cursor-pointer" onclick="delBudget(${b.id})"><i class="fas fa-times"></i></div>
@@ -597,7 +741,7 @@
             }, 100);
         }
         function setPayer(p) { document.getElementById('bPayer').value = p; document.querySelectorAll('.payer-btn').forEach(b=>b.classList.remove('active')); document.getElementById('pay-'+p).classList.add('active'); }
-        function setCurr(c) { currentCurrency = c; renderBudget(document.getElementById('app-content')); } // Re-render to update tabs
+        function setCurr(c) { currentCurrency = c; renderBudget(document.getElementById('app-content')); } 
 
         function addBudget() { 
             const item = document.getElementById('bItem').value; const amt = parseFloat(document.getElementById('bAmt').value); const payer = document.getElementById('bPayer').value; const date = document.getElementById('bDate').value;
@@ -605,17 +749,28 @@
         }
         function delBudget(id) { if(confirm("Delete?")) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); } }
         function updateRate(val) { const r = parseFloat(val); if(!isNaN(r)) { data.config.rate = r; save(); } }
+        function calcTwd(val) { const jpy = parseFloat(val); const r = data.config.rate || 0.22; document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : Math.round(jpy * r).toLocaleString(); }
         
         let editHotelIdx = null;
         function renderInfo(box) {
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V61.0 (Modern Zen)</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V62.0 (Date Fix)</div>`; box.innerHTML = html;
         }
+
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
         function editHotel(idx) { editHotelIdx = idx; const h = data.info.hotels[idx]; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = h.name; document.getElementById('hAddr').value = h.addr; document.getElementById('hTel').value = h.tel; }
-        function saveHotel() { const h = { name: document.getElementById('hName').value, addr: document.getElementById('hAddr').value, tel: document.getElementById('hTel').value }; if(h.name) { if(!data.info) data.info = { hotels: [] }; if(!data.info.hotels) data.info.hotels = []; if(editHotelIdx !== null) data.info.hotels[editHotelIdx] = h; else data.info.hotels.push(h); save(); closeModal('hotelModal'); render(); } }
+        
+        function saveHotel() { 
+            const h = { name: document.getElementById('hName').value, addr: document.getElementById('hAddr').value, tel: document.getElementById('hTel').value }; 
+            if(h.name) { 
+                if(!data.info) data.info = { hotels: [] }; if(!data.info.hotels) data.info.hotels = []; 
+                if(editHotelIdx !== null) data.info.hotels[editHotelIdx] = h;
+                else data.info.hotels.push(h); 
+                save(); closeModal('hotelModal'); render(); 
+            } 
+        }
         function delHotel(idx) { if(confirm("Delete Hotel?")) { data.info.hotels.splice(idx, 1); save(); render(); } }
         function editFlight(type) { document.getElementById('flightModal').classList.add('active'); const f = (type === 'out') ? (data.info.flightOut || {}) : (data.info.flightIn || {}); document.getElementById('fType').value = type; document.getElementById('fCode').value = f.code || ''; document.getElementById('fPnr').value = f.pnr || ''; document.getElementById('fTicket').value = f.ticket || ''; }
         function saveFlight() { const type = document.getElementById('fType').value; const f = { code: document.getElementById('fCode').value, pnr: document.getElementById('fPnr').value, ticket: document.getElementById('fTicket').value }; if(!data.info) data.info = {}; if(type === 'out') data.info.flightOut = f; else data.info.flightIn = f; save(); closeModal('flightModal'); render(); }
