@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V67.2</title>
+    <title>Japan Trip V67.3</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -829,74 +829,59 @@
         function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); } 
         function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:"", transIcon:'train'}); } 
         
-        // V67.1 Logic Update: Explicitly control visibility of input groups
         function setType(type) { 
             document.getElementById('eType').value = type; 
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); 
             document.getElementById('btn-' + type).classList.add('active'); 
             
-            if(type === 'transport') {
-                document.getElementById('transportSubSelector').classList.add('show');
-                // Trigger icon logic to decide inputs
-                setTransIcon(document.getElementById('eTransIcon').value || 'train');
-            } else {
-                document.getElementById('transportSubSelector').classList.remove('show');
-                // FORCE SHOW Standard Inputs, FORCE HIDE Transfer Inputs
-                document.getElementById('standardInputs').style.display = 'block';
-                document.getElementById('transferInputs').classList.remove('show');
-            }
+            if(type === 'transport') document.getElementById('transportSubSelector').classList.add('show');
+            else document.getElementById('transportSubSelector').classList.remove('show');
         }
-
         function setTransIcon(icon) {
             document.getElementById('eTransIcon').value = icon;
             document.querySelectorAll('.trans-btn').forEach(b => b.classList.remove('active'));
-            
-            // Only highlight icon if we are in transport mode
-            if(document.getElementById('eType').value === 'transport') {
-                // Find button with this icon
-                document.querySelectorAll('.trans-btn').forEach(btn => {
-                    if(btn.innerHTML.includes(icon) || (icon==='transfer' && btn.innerHTML.includes('exchange'))) btn.classList.add('active');
-                });
-            }
+            event.currentTarget.classList.add('active');
 
-            // V67.1 Strict Visibility Logic
-            if(document.getElementById('eType').value === 'transport' && icon === 'transfer') {
+            if(icon === 'transfer') {
                 document.getElementById('transferInputs').classList.add('show');
-                document.getElementById('standardInputs').style.display = 'none'; 
+                document.getElementById('eTitle').style.display = 'none'; 
+                document.getElementById('eTimeEndContainer').style.display = 'block';
             } else {
                 document.getElementById('transferInputs').classList.remove('show');
-                document.getElementById('standardInputs').style.display = 'block'; 
+                document.getElementById('eTitle').style.display = 'block';
+                document.getElementById('eTimeEndContainer').style.display = 'none';
             }
         }
         
         function fillModal(id, obj) { 
             document.getElementById(id).classList.add('active'); 
             if(id === 'editModal') { 
-                // Common fields
+                document.getElementById('eTime').value = obj.time; 
+                document.getElementById('eTimeEnd').value = obj.endTime || ""; 
+                document.getElementById('eDesc').value = obj.desc; 
                 document.getElementById('eMap').value = obj.map||""; 
                 
-                // 1. Set Type & Transport Icon state
-                document.getElementById('eType').value = obj.type || 'sightseeing';
-                document.getElementById('eTransIcon').value = obj.transIcon || 'train';
-                
-                // 2. Refresh UI based on state
-                setType(obj.type || 'sightseeing');
-                if(obj.type === 'transport') setTransIcon(obj.transIcon || 'train');
-
-                // 3. Populate Fields
-                if(obj.transIcon === 'transfer') {
-                    const parts = obj.title && obj.title.includes("|") ? obj.title.split("|") : ["", ""];
-                    document.getElementById('eFrom').value = parts[0];
-                    document.getElementById('eTo').value = parts[1];
-                    document.getElementById('eFromNote').value = obj.depNote || "";
-                    document.getElementById('eToNote').value = obj.arrNote || "";
-                    document.getElementById('eTransTimeDep').value = obj.time;
-                    document.getElementById('eTransTimeArr').value = obj.endTime || "";
+                if(obj.title && obj.title.includes("|")) {
+                     const parts = obj.title.split("|");
+                     document.getElementById('eFrom').value = parts[0];
+                     document.getElementById('eTo').value = parts[1];
+                     document.getElementById('eTitle').value = obj.title; 
                 } else {
-                    document.getElementById('eTime').value = obj.time; 
-                    document.getElementById('eTimeEnd').value = obj.endTime || ""; 
                     document.getElementById('eTitle').value = obj.title;
-                    document.getElementById('eDesc').value = obj.desc;
+                    document.getElementById('eFrom').value = "";
+                    document.getElementById('eTo').value = "";
+                }
+
+                setType(obj.type || 'sightseeing'); 
+                
+                if(obj.type === 'transport') {
+                    setTransIcon(obj.transIcon || 'train'); 
+                    const icon = obj.transIcon || 'train';
+                    document.querySelectorAll('.trans-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                        if(btn.innerHTML.includes(icon) || (icon==='transfer' && btn.innerHTML.includes('exchange'))) btn.classList.add('active');
+                    });
+                     document.getElementById('eTransIcon').value = icon;
                 }
 
                 const img = document.getElementById('previewImg'); const cont = document.getElementById('editImgContainer');
@@ -920,37 +905,23 @@
 
         function saveEvent() { 
             const hasImg = document.getElementById('previewImg').classList.contains('show');
-            const isTransfer = document.getElementById('eType').value === 'transport' && document.getElementById('eTransIcon').value === 'transfer';
+            let finalTitle = document.getElementById('eTitle').value;
             
-            let finalTitle, finalTime, finalEndTime, finalDesc, depNote, arrNote;
-
-            if (isTransfer) {
+            if (document.getElementById('eTransIcon').value === 'transfer') {
                 const from = document.getElementById('eFrom').value;
                 const to = document.getElementById('eTo').value;
-                finalTitle = (from && to) ? `${from}|${to}` : from;
-                finalTime = document.getElementById('eTransTimeDep').value;
-                finalEndTime = document.getElementById('eTransTimeArr').value;
-                depNote = document.getElementById('eFromNote').value;
-                arrNote = document.getElementById('eToNote').value;
-                finalDesc = ""; 
-            } else {
-                finalTitle = document.getElementById('eTitle').value;
-                finalTime = document.getElementById('eTime').value;
-                finalEndTime = document.getElementById('eTimeEnd').value;
-                finalDesc = document.getElementById('eDesc').value;
-                depNote = ""; arrNote = "";
+                if(from && to) finalTitle = `${from}|${to}`;
+                else if (from) finalTitle = from; 
             }
 
             const evt = { 
                 id: Date.now(), 
-                time: finalTime, 
-                endTime: finalEndTime,
+                time: document.getElementById('eTime').value, 
+                endTime: document.getElementById('eTimeEnd').value,
                 title: finalTitle, 
-                depNote: depNote, 
-                arrNote: arrNote,
                 type: document.getElementById('eType').value, 
                 transIcon: document.getElementById('eTransIcon').value, 
-                desc: finalDesc, 
+                desc: document.getElementById('eDesc').value, 
                 map: document.getElementById('eMap').value, 
                 img: hasImg ? document.getElementById('previewImg').src : "" 
             }; 
