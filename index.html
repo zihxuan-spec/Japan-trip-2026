@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip </title>
+    <title>Japan Trip V64.2</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -101,7 +101,7 @@
         .type-btn span { font-size: 0.75rem; font-weight: bold; }
         .type-btn.active { background-color: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(46, 75, 113, 0.25); transform: translateY(-2px); }
         
-        /* Transport Sub-selector */
+        /* V64.1 Transport Sub-selector */
         .transport-selector { display: none; gap: 8px; margin-bottom: 20px; justify-content: center; }
         .transport-selector.show { display: flex; animation: fadeIn 0.2s; }
         .trans-btn { 
@@ -169,22 +169,25 @@
         .total-amount { font-family: "Zen Old Mincho", serif; font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 2px; }
         .total-sub { font-size: 0.9rem; opacity: 0.9; margin-bottom: 10px; }
         
+        /* V63.4 FIXED Converter Layout (Vertical Stack for Mobile) */
         .converter-card {
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; 
-            padding: 20px 10px; margin-bottom: 25px;
-            display: grid; grid-template-columns: 1fr 40px 1fr; align-items: center; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden;
+            padding: 20px; margin-bottom: 25px;
+            display: flex; flex-direction: column; align-items: center; gap: 15px; /* Vertical Stack */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
-        .converter-section {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 100%; min-width: 0; 
+        
+        .converter-row {
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
         }
+
         .converter-input-box {
             background: transparent; border: none; border-bottom: 2px solid #e2e8f0; 
-            font-weight: 900; text-align: center; width: 100%; padding: 5px 0; font-size: 1.3rem; 
+            font-weight: 900; text-align: center; width: 100%; padding: 5px 0; font-size: 1.8rem; /* Larger Font */
             color: var(--text-main); border-radius: 0; outline: none; transition: 0.3s;
         }
         .converter-input-box:focus { border-color: var(--primary); }
+
         .converter-input { padding: 4px 8px !important; margin-bottom: 0 !important; height: 32px !important; font-size: 14px !important; border-radius: 6px !important; width: auto !important; }
 
         .currency-caps { display: flex; gap: 8px; margin-bottom: 15px; justify-content: center; }
@@ -223,6 +226,7 @@
         .budget-title { font-weight: bold; color: var(--text-main); font-size: 1rem; }
         .budget-amt { font-weight: 900; font-size: 1.1rem; color: var(--text-main); font-family: "Zen Old Mincho", serif; }
         
+        /* V62.1 Fix: Hotel Card Buttons */
         .info-card-del { position: absolute; top: 12px; right: 12px; color: #ccc; cursor: pointer; font-size: 16px; padding: 8px; z-index: 10; }
         .info-card-edit { position: absolute; top: 12px; right: 45px; color: #9ca3af; cursor: pointer; font-size: 14px; padding: 8px; z-index: 10; }
 
@@ -300,6 +304,7 @@
             <button id="viewToggleBtn" onclick="toggleShopView()" class="btn-circle hidden"><i class="fas fa-th-large"></i></button>
             <button onclick="toggleSettings()" class="btn-circle"><i class="fas fa-cog"></i></button>
         </div>
+        
         <div id="settingsMenu" class="settings-menu">
             <div class="settings-item" onclick="toggleSimulate()"><i class="fas fa-magic"></i> <span id="txt-sim">模擬旅程中</span></div>
             <div class="settings-item" onclick="editTitle()"><i class="fas fa-pen"></i> <span id="txt-edit-title">修改標題</span></div>
@@ -459,7 +464,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v64.1_cloud');
+            const localSaved = localStorage.getItem('trip_v64.2_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             // V57 Safety Init
@@ -488,7 +493,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v64.1_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v64.2_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -520,9 +525,24 @@
         function toggleSimulate() { data.config.simulate = !data.config.simulate; save(); render(); alert(data.config.simulate ? "Simulation ON (Day 1 Highlighted)" : "Simulation OFF"); }
         function editTitle() { const t = prompt("Title", data.config.title); if(t) { data.config.title = t; data.config.subtitle = prompt("Subtitle", data.config.subtitle)||data.config.subtitle; save(); applySettings(); } }
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
-        function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 800 / img.width; cvs.width = 800; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.6)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
+        function handleImgUpload(file, callback) { 
+            if(!file) return; const reader = new FileReader(); 
+            reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const maxWidth = 400; const scale = maxWidth / img.width; cvs.width = maxWidth; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.4)); }; img.src = e.target.result; }; reader.readAsDataURL(file); 
+        }
+
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v64.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
+            document.getElementById('previewImg').src=url; 
+            document.getElementById('previewImg').classList.add('show'); 
+            document.getElementById('editImgContainer').classList.add('show'); 
+        });
+        document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
+            document.getElementById('shopPreview').src = url; 
+            document.getElementById('shopPreview').classList.add('show'); 
+            document.getElementById('shopImgContainer').classList.add('show'); 
+        });
+
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v64.2_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -737,11 +757,8 @@
                             html += `<div class="space-y-3">`; 
                             itemsOfType.forEach(item => { 
                                 const originalIdx = data.shopping.findIndex(i => i.id === item.id); const checkClass = item.checked ? 'checked' : ''; 
-                                
-                                // V58.1 Fix: Only show image if valid data exists
                                 const hasImg = item.img && item.img.length > 100;
                                 const img = hasImg ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="openLightbox('${item.img}')">` : ''; 
-                                
                                 html += `
                                 <div class="glass-card p-3 flex items-center justify-between ${checkClass}">
                                     <div class="flex items-center flex-1" onclick="toggleShop(${originalIdx})">
@@ -768,7 +785,6 @@
         function openLightbox(src) { document.getElementById('lightbox').classList.add('active'); document.getElementById('lightbox-img').src = src; }
         function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
 
-        // V62.0: Modern Budget & Converter
         let currentCurrency = 'JPY'; 
         function renderBudget(box) { 
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; 
@@ -803,21 +819,18 @@
             </div>
 
             <div class="converter-card">
-                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                    <div style="font-weight:bold; color:var(--primary); font-size:0.9rem;">${t.rateLabel}</div>
-                    <input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center w-16 bg-gray-50 border border-gray-200 rounded p-1 font-bold text-gray-500 my-1">
-                </div>
-                
-                <div style="width:100%; padding: 10px 0; border-bottom:1px solid #eee;">
+                <div class="converter-section" style="border-right:1px solid #eee;">
                     <input type="number" id="convJpy" placeholder="0" oninput="calcTwd(this.value)" class="converter-input-box" inputmode="decimal">
-                    <div style="font-size:0.8rem; color:#999; font-weight:bold; text-align:center; margin-top:5px;">${t.convJpy}</div>
+                    <span style="font-size:0.8rem; color:#999; font-weight:bold; margin-top:5px;">${t.convJpy}</span>
                 </div>
-                
-                <div style="color:#ccc; font-size:1.2rem; margin: 5px 0;"><i class="fas fa-arrow-down"></i></div>
-                
-                <div style="width:100%;">
-                    <div id="convTwd" style="font-weight:900; font-size:1.8rem; color:var(--accent); text-align:center;">0</div>
-                    <div style="font-size:0.8rem; color:#999; font-weight:bold; text-align:center; margin-top:5px;">${t.convTwd}</div>
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <div style="font-size:0.7rem; color:#999; font-weight:bold;">${t.rateLabel}</div>
+                    <input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center w-16 bg-gray-50 border border-gray-200 rounded p-1 font-bold text-gray-500 my-1">
+                    <i class="fas fa-arrow-right text-gray-300"></i>
+                </div>
+                <div class="converter-section" style="padding-left:10px;">
+                    <div id="convTwd" style="font-weight:900; font-size:1.4rem; color:var(--accent); min-height:30px; display:flex; align-items:center; justify-content:center;">0</div>
+                    <span style="font-size:0.8rem; color:#999; font-weight:bold; margin-top:5px;">${t.convTwd}</span>
                 </div>
             </div>
 
@@ -884,15 +897,7 @@
         }
         function delBudget(id) { if(confirm("Delete?")) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); } }
         function updateRate(val) { const r = parseFloat(val); if(!isNaN(r)) { data.config.rate = r; save(); } }
-        
-        // V62.1 Fix: 3 Decimal Places
-        function calcTwd(val) { 
-            const jpy = parseFloat(val); 
-            const r = data.config.rate || 0.22; 
-            const result = jpy * r;
-            // Show up to 3 decimal places if needed, remove trailing zeros
-            document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : parseFloat(result.toFixed(3)).toLocaleString(); 
-        }
+        function calcTwd(val) { const jpy = parseFloat(val); const r = data.config.rate || 0.22; document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : parseFloat((jpy * r).toFixed(3)).toLocaleString(); }
         
         let editHotelIdx = null;
         function renderInfo(box) {
