@@ -1028,15 +1028,7 @@
         }
         function delBudget(id) { if(confirm("Delete?")) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); } }
         function updateRate(val) { const r = parseFloat(val); if(!isNaN(r)) { data.config.rate = r; save(); } }
-        
-        // V62.1 Fix: 3 Decimal Places
-        function calcTwd(val) { 
-            const jpy = parseFloat(val); 
-            const r = data.config.rate || 0.22; 
-            const result = jpy * r;
-            // Show up to 3 decimal places if needed, remove trailing zeros
-            document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : parseFloat(result.toFixed(3)).toLocaleString(); 
-        }
+        function calcTwd(val) { const jpy = parseFloat(val); const r = data.config.rate || 0.22; document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : parseFloat((jpy * r).toFixed(3)).toLocaleString(); }
         
         let editHotelIdx = null;
         function renderInfo(box) {
