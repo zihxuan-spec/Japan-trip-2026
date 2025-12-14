@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V69.1</title>
+    <title>Japan Trip V70.0</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -64,7 +64,7 @@
         .btn-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: var(--primary); border: 1px solid var(--border); transition: 0.2s; }
         .btn-circle:active { transform: scale(0.9); background: var(--primary); color: #fff; }
 
-        /* V69.0: Bottom Sheet Modal Styles */
+        /* Bottom Sheet Modal Styles */
         .modal-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.6); z-index: 100; 
@@ -84,7 +84,6 @@
         }
         .modal-overlay.active .modal-content { transform: translateY(0); }
 
-        /* Modal Handle */
         .modal-handle {
             width: 40px; height: 5px; background: #e2e8f0; border-radius: 10px;
             margin: 0 auto 25px auto; 
@@ -462,7 +461,7 @@
         body.dark-mode .pill-transport { background: #1e293b; color: #cbd5e1; border-color: #334155; }
         body.dark-mode .pill-hotel { background: #581c87; color: #e9d5ff; border-color: #6b21a8; }
         
-        /* V69.1: Swipe to Delete Styles (Hide Red by default) */
+        /* V70.0: Swipe to Delete Styles (Fixed Red Peek) */
         .swipe-container {
             display: flex;
             overflow-x: auto;
@@ -474,9 +473,9 @@
         
         .swipe-content {
             min-width: 100%;
+            flex-shrink: 0; /* V70.0 Force Full Width */
             scroll-snap-align: start;
             background: transparent;
-            /* No margin-right to hide red area */
         }
         
         .swipe-action-delete {
@@ -490,8 +489,8 @@
             font-size: 1.2rem;
             margin-bottom: 15px; 
             border-radius: 0 12px 12px 0;
-            /* V69.1: Ensure it's hidden initially */
-            margin-left: -1px; 
+            flex-shrink: 0; /* V70.0 Prevent shrink */
+            margin-left: -1px; /* Overlap to hide seam */
         }
     </style>
 </head>
@@ -738,7 +737,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v69.1_cloud');
+            const localSaved = localStorage.getItem('trip_v70.0_cloud');
             if(localSaved) { 
                 data = JSON.parse(localSaved); 
                 const todayIdx = data.itinerary.findIndex(d => isToday(d.date));
@@ -766,7 +765,7 @@
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { try { localStorage.setItem('trip_v69.1_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
+        function saveLocal() { try { localStorage.setItem('trip_v70.0_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
         function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
         
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
@@ -784,7 +783,7 @@
         document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); document.getElementById('editImgContainer').classList.add('show'); });
         document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('shopPreview').src = url; document.getElementById('shopPreview').classList.add('show'); document.getElementById('shopImgContainer').classList.add('show'); });
 
-        function resetAllData() { openConfirm("Clear All Data?", () => { haptic('error'); localStorage.removeItem('trip_v69.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); }); }
+        function resetAllData() { openConfirm("Clear All Data?", () => { haptic('error'); localStorage.removeItem('trip_v70.0_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); }); }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -995,49 +994,85 @@
             closeConfirm();
         };
 
+        // V70.0: Fixed renderShopping Logic - Distinct Grid vs List
         function renderShopping(box) { 
             const t = i18n[data.config.lang]; const isToBuy = viewState.shopTab === 'tobuy';
-            setTimeout(() => { const btn = document.getElementById('viewToggleBtn'); if(btn) { btn.classList.remove('hidden'); btn.innerHTML = viewState.shopMode === 'list' ? '<i class="fas fa-th-large"></i>' : '<i class="fas fa-bars"></i>'; } }, 50);
+            
+            // Toggle view button icon
+            setTimeout(() => { 
+                const btn = document.getElementById('viewToggleBtn'); 
+                if(btn) { 
+                    btn.classList.remove('hidden'); 
+                    btn.innerHTML = viewState.shopMode === 'list' ? '<i class="fas fa-th-large"></i>' : '<i class="fas fa-bars"></i>'; 
+                } 
+            }, 50);
+
             let html = `<div class="shop-tabs"><div class="shop-tab ${isToBuy ? 'active' : ''}" onclick="switchShopTab('tobuy')">${t.tabToBuy}</div><div class="shop-tab ${!isToBuy ? 'active' : ''}" onclick="switchShopTab('bought')">${t.tabBought}</div></div><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold jp-font text-[var(--primary)]">${t.navShop}</h2><button onclick="window.openShopModal()" class="text-sm bg-[var(--primary)] text-white px-3 py-1 rounded shadow">＋</button></div>`;
             const filteredList = data.shopping.filter(item => isToBuy ? !item.checked : item.checked);
-            if(filteredList.length === 0) { html += `<div class="text-center text-gray-400 py-10">Empty List</div>`; } else {
+            
+            if(filteredList.length === 0) { 
+                html += `<div class="text-center text-gray-400 py-10">Empty List</div>`; 
+            } else {
                 const types = { 'drug': {label: t.sDrug, icon: 'pills'}, 'snack': {label: t.sSnack, icon: 'cookie-bite'}, 'wear': {label: t.sWear, icon: 'tshirt'}, 'gift': {label: t.sGift, icon: 'gift'} };
                 const typeKeys = ['drug', 'snack', 'wear', 'gift'];
+                
                 typeKeys.forEach(typeKey => {
                     const itemsOfType = filteredList.filter(i => (i.type === typeKey) || (!i.type && typeKey === 'drug'));
                     if (itemsOfType.length > 0) {
                         html += `<div class="text-xs font-bold text-gray-400 mt-4 mb-3 pl-2 tracking-widest uppercase border-b border-gray-100 pb-1"><i class="fas fa-${types[typeKey].icon} mr-1"></i> ${types[typeKey].label}</div>`;
-                        // V69.0: Swipe to delete wrapper
-                        html += `<div class="space-y-3">`; 
-                        itemsOfType.forEach(item => { 
-                            const originalIdx = data.shopping.findIndex(i => i.id === item.id); const checkClass = item.checked ? 'checked' : ''; 
-                            const hasImg = item.img && item.img.length > 100;
-                            const img = hasImg ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="openLightbox('${item.img}')">` : ''; 
-                            
-                            // V69.0: Scroll Snap Swipe Structure
-                            html += `
-                            <div class="swipe-container">
-                                <div class="swipe-content">
-                                    <div class="glass-card p-3 flex items-center justify-between ${checkClass}">
-                                        <div class="flex items-center flex-1" onclick="toggleShop(${originalIdx})">
-                                            <div class="custom-checkbox mr-3 flex-shrink-0"><i class="fas fa-check text-xs"></i></div>
-                                            ${img}
-                                            <div>
-                                                <div class="font-bold item-name text-lg">${item.name}</div>
-                                                <div class="text-xs text-gray-500">${item.note}</div>
+                        
+                        if (viewState.shopMode === 'grid') {
+                            // GRID MODE: Simple Card Layout (No Swipe)
+                            html += `<div class="shop-grid">`;
+                            itemsOfType.forEach(item => {
+                                const originalIdx = data.shopping.findIndex(i => i.id === item.id);
+                                const imgDisplay = item.img ? item.img : 'https://placehold.co/300x300/eee/999?text=No+Img';
+                                html += `
+                                <div class="shop-grid-item">
+                                    <img src="${imgDisplay}" class="shop-grid-img" onclick="openLightbox('${imgDisplay}')">
+                                    <div class="shop-grid-check" onclick="toggleShop(${originalIdx})">
+                                        <i class="fas fa-${isToBuy ? 'circle' : 'check-circle'} text-${isToBuy?'gray-300':'green-500'}"></i>
+                                    </div>
+                                    <div class="shop-grid-info">
+                                        <div class="font-bold text-sm truncate">${item.name}</div>
+                                        <div class="text-xs text-gray-500 truncate">${item.note}</div>
+                                    </div>
+                                </div>`;
+                            });
+                            html += `</div>`;
+                        } else {
+                            // LIST MODE: Swipe to Delete Structure
+                            html += `<div class="space-y-3">`; 
+                            itemsOfType.forEach(item => { 
+                                const originalIdx = data.shopping.findIndex(i => i.id === item.id); const checkClass = item.checked ? 'checked' : ''; 
+                                const hasImg = item.img && item.img.length > 100;
+                                const img = hasImg ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="openLightbox('${item.img}')">` : ''; 
+                                
+                                html += `
+                                <div class="swipe-container">
+                                    <div class="swipe-content">
+                                        <div class="glass-card p-3 flex items-center justify-between ${checkClass}">
+                                            <div class="flex items-center flex-1" onclick="toggleShop(${originalIdx})">
+                                                <div class="custom-checkbox mr-3 flex-shrink-0"><i class="fas fa-check text-xs"></i></div>
+                                                ${img}
+                                                <div>
+                                                    <div class="font-bold item-name text-lg">${item.name}</div>
+                                                    <div class="text-xs text-gray-500">${item.note}</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="swipe-action-delete" onclick="delShop(${originalIdx})">
-                                    <i class="fas fa-trash-alt"></i>
-                                </div>
-                            </div>`; 
-                        }); 
-                        html += `</div>`; 
+                                    <div class="swipe-action-delete" onclick="delShop(${originalIdx})">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </div>
+                                </div>`; 
+                            }); 
+                            html += `</div>`; 
+                        }
                     }
                 });
-            } box.innerHTML = html; 
+            } 
+            box.innerHTML = html; 
         }
 
         function switchShopTab(tab) {
@@ -1180,7 +1215,7 @@
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V69.1</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V70.0</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
