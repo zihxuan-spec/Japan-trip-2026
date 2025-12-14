@@ -981,21 +981,18 @@
             </div>
 
             <div class="converter-card">
-                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                    <div style="font-weight:bold; color:var(--primary); font-size:0.9rem;">${t.rateLabel}</div>
-                    <input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center w-16 bg-gray-50 border border-gray-200 rounded p-1 font-bold text-gray-500 my-1">
-                </div>
-                
-                <div style="width:100%; padding: 10px 0; border-bottom:1px solid #eee;">
+                <div class="converter-section" style="border-right:1px solid #eee;">
                     <input type="number" id="convJpy" placeholder="0" oninput="calcTwd(this.value)" class="converter-input-box" inputmode="decimal">
-                    <div style="font-size:0.8rem; color:#999; font-weight:bold; text-align:center; margin-top:5px;">${t.convJpy}</div>
+                    <span style="font-size:0.8rem; color:#999; font-weight:bold; margin-top:5px;">${t.convJpy}</span>
                 </div>
-                
-                <div style="color:#ccc; font-size:1.2rem; margin: 5px 0;"><i class="fas fa-arrow-down"></i></div>
-                
-                <div style="width:100%;">
-                    <div id="convTwd" style="font-weight:900; font-size:1.8rem; color:var(--accent); text-align:center;">0</div>
-                    <div style="font-size:0.8rem; color:#999; font-weight:bold; text-align:center; margin-top:5px;">${t.convTwd}</div>
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <div style="font-size:0.7rem; color:#999; font-weight:bold;">${t.rateLabel}</div>
+                    <input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center w-16 bg-gray-50 border border-gray-200 rounded p-1 font-bold text-gray-500 my-1">
+                    <i class="fas fa-arrow-right text-gray-300"></i>
+                </div>
+                <div class="converter-section" style="padding-left:10px;">
+                    <div id="convTwd" style="font-weight:900; font-size:1.4rem; color:var(--accent); min-height:30px; display:flex; align-items:center; justify-content:center;">0</div>
+                    <span style="font-size:0.8rem; color:#999; font-weight:bold; margin-top:5px;">${t.convTwd}</span>
                 </div>
             </div>
 
