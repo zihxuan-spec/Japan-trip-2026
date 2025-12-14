@@ -101,7 +101,7 @@
         .type-btn span { font-size: 0.75rem; font-weight: bold; }
         .type-btn.active { background-color: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(46, 75, 113, 0.25); transform: translateY(-2px); }
         
-        /* V64.1 Transport Sub-selector */
+        /* Transport Sub-selector */
         .transport-selector { display: none; gap: 8px; margin-bottom: 20px; justify-content: center; }
         .transport-selector.show { display: flex; animation: fadeIn 0.2s; }
         .trans-btn { 
@@ -142,7 +142,6 @@
         .shop-grid-check { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border-radius: 50%; padding: 4px; }
         .info-card { background: var(--bg-card); border-left: 5px solid var(--primary); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.04); position: relative; }
         
-        /* V57 Fixed Styles */
         .info-label { font-size: 0.7rem; color: var(--text-sub); font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
         .info-val { font-size: 1.15rem; font-weight: 700; color: var(--text-main); font-family: "Zen Old Mincho", serif; margin-bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; word-break: break-all;}
         .copy-btn { font-size: 0.6rem; padding: 2px 8px; border: 1px solid #ddd; border-radius: 12px; color: #999; cursor: pointer; background: white; white-space: nowrap; margin-left: 4px; }
@@ -152,8 +151,8 @@
         #lightbox.active { display: flex; } #lightbox.active img { transform: scale(1); }
         .highlight-card { border: 2px solid var(--highlight-border) !important; box-shadow: var(--highlight-glow) !important; position: relative; overflow: hidden; }
         .highlight-card::after { content: "NOW"; position: absolute; top: 0; right: 0; background: var(--highlight-border); color: white; font-size: 0.6rem; font-weight: bold; padding: 2px 8px; border-bottom-left-radius: 8px; }
-        .payer-toggle { display: flex; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
-        .payer-btn { flex: 1; padding: 10px; text-align: center; font-size: 14px; cursor: pointer; transition: 0.2s; color: #999; }
+        .payer-toggle { display: flex; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 25px; }
+        .payer-btn { flex: 1; padding: 12px; text-align: center; font-size: 15px; cursor: pointer; transition: 0.2s; color: #999; }
         .payer-btn.active { background: var(--primary); color: white; font-weight: bold; }
         
         .total-card {
@@ -170,27 +169,22 @@
         .total-amount { font-family: "Zen Old Mincho", serif; font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 2px; }
         .total-sub { font-size: 0.9rem; opacity: 0.9; margin-bottom: 10px; }
         
-        /* V63.3 FIXED Converter Layout - GRID SYSTEM */
         .converter-card {
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; 
             padding: 20px 10px; margin-bottom: 25px;
-            display: grid; grid-template-columns: 1fr 40px 1fr; align-items: center; /* 3 Columns: Input - Arrow - Output */
+            display: grid; grid-template-columns: 1fr 40px 1fr; align-items: center; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden;
         }
-        
         .converter-section {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 100%; /* Fill Grid Cell */
-            min-width: 0; /* Prevent Overflow */
+            width: 100%; min-width: 0; 
         }
-        
         .converter-input-box {
             background: transparent; border: none; border-bottom: 2px solid #e2e8f0; 
             font-weight: 900; text-align: center; width: 100%; padding: 5px 0; font-size: 1.3rem; 
             color: var(--text-main); border-radius: 0; outline: none; transition: 0.3s;
         }
         .converter-input-box:focus { border-color: var(--primary); }
-
         .converter-input { padding: 4px 8px !important; margin-bottom: 0 !important; height: 32px !important; font-size: 14px !important; border-radius: 6px !important; width: auto !important; }
 
         .currency-caps { display: flex; gap: 8px; margin-bottom: 15px; justify-content: center; }
@@ -229,57 +223,57 @@
         .budget-title { font-weight: bold; color: var(--text-main); font-size: 1rem; }
         .budget-amt { font-weight: 900; font-size: 1.1rem; color: var(--text-main); font-family: "Zen Old Mincho", serif; }
         
-        /* V63.4 Timeline CSS */
-        /* Container line */
+        .info-card-del { position: absolute; top: 12px; right: 12px; color: #ccc; cursor: pointer; font-size: 16px; padding: 8px; z-index: 10; }
+        .info-card-edit { position: absolute; top: 12px; right: 45px; color: #9ca3af; cursor: pointer; font-size: 14px; padding: 8px; z-index: 10; }
+
+        /* V64.2 Timeline Styles */
         .timeline-container { position: relative; padding-left: 24px; }
-        /* The vertical line */
+        /* Vertical Dotted Line for whole day */
         .timeline-container::before {
             content: ''; position: absolute; left: 6px; top: 10px; bottom: -20px;
-            width: 2px; background: var(--line-color); z-index: 0;
+            width: 2px; border-left: 2px dotted var(--line-color); z-index: 0;
         }
-        .timeline-container:last-child::before { display: none; } /* No line after last item */
         
-        /* Standard Card Event */
-        .timeline-event {
-            position: relative; margin-bottom: 25px;
-        }
+        .timeline-event { position: relative; margin-bottom: 25px; }
+        /* Solid dot for main events */
         .timeline-dot {
             position: absolute; left: -23px; top: 20px;
-            width: 10px; height: 10px; border-radius: 50%;
+            width: 12px; height: 12px; border-radius: 50%;
             background: var(--primary); border: 2px solid #fff; z-index: 1;
             box-shadow: 0 0 0 2px rgba(46, 75, 113, 0.1);
         }
 
-        /* V64 Transport Connector (The Indented Style) */
-        .timeline-transport {
-            position: relative; margin: 15px 0; padding-left: 15px; /* Indent */
-            display: flex; align-items: center; gap: 12px;
+        /* V64.2 Merged Transport Style */
+        .timeline-group {
+            position: relative; margin-bottom: 20px;
+            background: #f8fafc; border-radius: 12px;
+            border: 1px solid #e2e8f0; padding: 10px;
+            margin-left: -10px; /* Slight indent */
         }
-        .timeline-transport-icon {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: #f1f5f9; color: var(--text-sub);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px; border: 1px solid #e2e8f0; z-index: 2;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .timeline-transport-content {
-            flex: 1; background: transparent; padding: 5px 0;
-        }
-        .transport-time { font-size: 0.75rem; font-weight: bold; color: var(--primary); }
-        .transport-title { font-size: 0.9rem; font-weight: bold; color: var(--text-sub); }
-        /* Dotted line specifically for transport segment */
-        .timeline-transport::before {
-            content: ''; position: absolute; left: -19px; top: -10px; bottom: -10px;
-            width: 2px; border-left: 2px dashed var(--line-color); z-index: 0;
-        }
+        body.dark-mode .timeline-group { background: #1e293b; border-color: #334155; }
 
-        /* V64 Edit Modal Fix */
+        .timeline-transport-row {
+            display: flex; align-items: center; padding: 8px 0;
+            position: relative;
+        }
+        .timeline-transport-row:not(:last-child)::after {
+            content: ''; position: absolute; left: 15px; top: 32px; bottom: -10px;
+            width: 2px; background: #cbd5e1; z-index: 0;
+        }
+        .t-icon-box {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: white; border: 1px solid #cbd5e1;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; color: var(--text-sub); z-index: 1;
+            margin-right: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        body.dark-mode .t-icon-box { background: #0f172a; border-color: #475569; }
+        
+        .t-time { font-size: 0.75rem; font-weight: bold; color: var(--primary); margin-right: 8px; min-width: 45px; }
+        .t-title { font-size: 0.9rem; font-weight: bold; color: var(--text-main); }
+
         .edit-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 20px; }
         .edit-grid input { margin-bottom: 0 !important; }
-        
-        /* V62.1 Fix: Hotel Card Buttons */
-        .info-card-del { position: absolute; top: 12px; right: 12px; color: #ccc; cursor: pointer; font-size: 16px; padding: 8px; z-index: 10; }
-        .info-card-edit { position: absolute; top: 12px; right: 45px; color: #9ca3af; cursor: pointer; font-size: 14px; padding: 8px; z-index: 10; }
     </style>
 </head>
 <body class="default-bg">
@@ -306,7 +300,6 @@
             <button id="viewToggleBtn" onclick="toggleShopView()" class="btn-circle hidden"><i class="fas fa-th-large"></i></button>
             <button onclick="toggleSettings()" class="btn-circle"><i class="fas fa-cog"></i></button>
         </div>
-        
         <div id="settingsMenu" class="settings-menu">
             <div class="settings-item" onclick="toggleSimulate()"><i class="fas fa-magic"></i> <span id="txt-sim">模擬旅程中</span></div>
             <div class="settings-item" onclick="editTitle()"><i class="fas fa-pen"></i> <span id="txt-edit-title">修改標題</span></div>
@@ -527,23 +520,8 @@
         function toggleSimulate() { data.config.simulate = !data.config.simulate; save(); render(); alert(data.config.simulate ? "Simulation ON (Day 1 Highlighted)" : "Simulation OFF"); }
         function editTitle() { const t = prompt("Title", data.config.title); if(t) { data.config.title = t; data.config.subtitle = prompt("Subtitle", data.config.subtitle)||data.config.subtitle; save(); applySettings(); } }
         function triggerBgUpload() { document.getElementById('bgInput').click(); }
-        function handleImgUpload(file, callback) { 
-            if(!file) return; const reader = new FileReader(); 
-            reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const maxWidth = 400; const scale = maxWidth / img.width; cvs.width = maxWidth; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.4)); }; img.src = e.target.result; }; reader.readAsDataURL(file); 
-        }
-
+        function handleImgUpload(file, callback) { if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); const scale = 800 / img.width; cvs.width = 800; cvs.height = img.height * scale; ctx.drawImage(img, 0, 0, cvs.width, cvs.height); callback(cvs.toDataURL('image/jpeg', 0.6)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
         document.getElementById('bgInput').onchange = (e) => handleImgUpload(e.target.files[0], (url) => { data.config.bg = url; save(); applySettings(); });
-        document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
-            document.getElementById('previewImg').src=url; 
-            document.getElementById('previewImg').classList.add('show'); 
-            document.getElementById('editImgContainer').classList.add('show'); 
-        });
-        document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { 
-            document.getElementById('shopPreview').src = url; 
-            document.getElementById('shopPreview').classList.add('show'); 
-            document.getElementById('shopImgContainer').classList.add('show'); 
-        });
-
         function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v64.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
@@ -573,24 +551,39 @@
                 
                 let html = `<div onclick="viewState.mode='list'; render()" class="back-btn mb-4 inline-flex items-center text-primary cursor-pointer font-bold"><i class="fas fa-arrow-left mr-2"></i></div><div class="flex items-end justify-between mb-6 border-l-4 border-[var(--primary)] pl-4"><div><h2 class="text-4xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</h2><p class="text-sm text-gray-500 font-bold">${day.date}</p></div><div class="text-xl font-bold jp-font">${day.loc}</div></div><a href="${mapUrl}" target="_blank" class="map-route-btn"><i class="fas fa-map-marked-alt"></i> ${t.viewMap}</a><div class="space-y-0 timeline-container">`;
                 
+                // V64.2: Group consecutive transports
+                let transportGroup = [];
+                
                 day.events.forEach((evt, eIdx) => { 
                     const img = evt.img ? `<img src="${evt.img}" class="w-full h-48 object-cover rounded-lg mb-3">` : ''; 
                     const nav = evt.map ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(evt.map)}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] border border-[var(--primary)] text-[var(--primary)] px-2 py-0.5 rounded font-bold ml-2">NAV</a>` : ''; 
+                    const iconMap = { 'train': 'train', 'bus': 'bus', 'taxi': 'taxi', 'walking': 'walking' };
+                    const icon = iconMap[evt.transIcon] || 'arrow-down';
                     
                     if (evt.type === 'transport') {
-                        // V64.1 Dynamic Transport Icon
-                        const iconMap = { 'train': 'train', 'bus': 'bus', 'taxi': 'taxi', 'walking': 'walking' };
-                        const icon = iconMap[evt.transIcon] || 'arrow-down'; // Default arrow
-                        
-                        html += `
-                        <div class="timeline-transport" onclick="editEvent(${eIdx})">
-                            <div class="timeline-transport-icon"><i class="fas fa-${icon}"></i></div>
-                            <div class="timeline-transport-content">
-                                <div class="transport-time"><i class="fas fa-clock mr-1"></i>${evt.time}</div>
-                                <div class="transport-title">${evt.title} ${nav}</div>
-                            </div>
-                        </div>`;
+                        transportGroup.push({ ...evt, eIdx, nav, icon });
                     } else {
+                        // Render accumulated transport group first
+                        if (transportGroup.length > 0) {
+                            html += `<div class="timeline-group">`;
+                            transportGroup.forEach((tEvt, idx) => {
+                                html += `
+                                <div class="timeline-transport-row" onclick="editEvent(${tEvt.eIdx})">
+                                    <div class="t-icon-box"><i class="fas fa-${tEvt.icon}"></i></div>
+                                    <div style="flex:1">
+                                        <div class="flex items-center">
+                                            <span class="t-time">${tEvt.time}</span>
+                                            <span class="t-title">${tEvt.title} ${tEvt.nav}</span>
+                                        </div>
+                                        <div class="text-xs text-gray-400 pl-1">${tEvt.desc}</div>
+                                    </div>
+                                </div>`;
+                            });
+                            html += `</div>`;
+                            transportGroup = []; // Reset
+                        }
+
+                        // Render Standard Card
                         html += `
                         <div class="timeline-event" onclick="editEvent(${eIdx})">
                             <div class="timeline-dot"></div>
@@ -609,6 +602,25 @@
                         </div>`; 
                     }
                 });
+
+                // Render remaining transport if any at the end
+                if (transportGroup.length > 0) {
+                    html += `<div class="timeline-group">`;
+                    transportGroup.forEach((tEvt, idx) => {
+                        html += `
+                        <div class="timeline-transport-row" onclick="editEvent(${tEvt.eIdx})">
+                            <div class="t-icon-box"><i class="fas fa-${tEvt.icon}"></i></div>
+                            <div style="flex:1">
+                                <div class="flex items-center">
+                                    <span class="t-time">${tEvt.time}</span>
+                                    <span class="t-title">${tEvt.title} ${tEvt.nav}</span>
+                                </div>
+                                <div class="text-xs text-gray-400 pl-1">${tEvt.desc}</div>
+                            </div>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                }
                 
                 html += `<div onclick="newEvent()" class="text-center py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 cursor-pointer font-bold bg-white/30 text-sm hover:bg-white transition mt-8" style="margin-left:-24px;">${t.addEvent}</div></div>`; box.innerHTML = html;
             }
@@ -725,8 +737,11 @@
                             html += `<div class="space-y-3">`; 
                             itemsOfType.forEach(item => { 
                                 const originalIdx = data.shopping.findIndex(i => i.id === item.id); const checkClass = item.checked ? 'checked' : ''; 
+                                
+                                // V58.1 Fix: Only show image if valid data exists
                                 const hasImg = item.img && item.img.length > 100;
                                 const img = hasImg ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="openLightbox('${item.img}')">` : ''; 
+                                
                                 html += `
                                 <div class="glass-card p-3 flex items-center justify-between ${checkClass}">
                                     <div class="flex items-center flex-1" onclick="toggleShop(${originalIdx})">
@@ -753,6 +768,7 @@
         function openLightbox(src) { document.getElementById('lightbox').classList.add('active'); document.getElementById('lightbox-img').src = src; }
         function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
 
+        // V62.0: Modern Budget & Converter
         let currentCurrency = 'JPY'; 
         function renderBudget(box) { 
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; 
@@ -787,18 +803,21 @@
             </div>
 
             <div class="converter-card">
-                <div class="converter-section" style="border-right:1px solid #eee;">
-                    <input type="number" id="convJpy" placeholder="0" oninput="calcTwd(this.value)" class="converter-input-box" inputmode="decimal">
-                    <span style="font-size:0.8rem; color:#999; font-weight:bold; margin-top:5px;">${t.convJpy}</span>
-                </div>
-                <div style="display:flex; flex-direction:column; align-items:center;">
-                    <div style="font-size:0.7rem; color:#999; font-weight:bold;">${t.rateLabel}</div>
+                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                    <div style="font-weight:bold; color:var(--primary); font-size:0.9rem;">${t.rateLabel}</div>
                     <input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center w-16 bg-gray-50 border border-gray-200 rounded p-1 font-bold text-gray-500 my-1">
-                    <i class="fas fa-arrow-right text-gray-300"></i>
                 </div>
-                <div class="converter-section" style="padding-left:10px;">
-                    <div id="convTwd" style="font-weight:900; font-size:1.4rem; color:var(--accent); min-height:30px; display:flex; align-items:center; justify-content:center;">0</div>
-                    <span style="font-size:0.8rem; color:#999; font-weight:bold; margin-top:5px;">${t.convTwd}</span>
+                
+                <div style="width:100%; padding: 10px 0; border-bottom:1px solid #eee;">
+                    <input type="number" id="convJpy" placeholder="0" oninput="calcTwd(this.value)" class="converter-input-box" inputmode="decimal">
+                    <div style="font-size:0.8rem; color:#999; font-weight:bold; text-align:center; margin-top:5px;">${t.convJpy}</div>
+                </div>
+                
+                <div style="color:#ccc; font-size:1.2rem; margin: 5px 0;"><i class="fas fa-arrow-down"></i></div>
+                
+                <div style="width:100%;">
+                    <div id="convTwd" style="font-weight:900; font-size:1.8rem; color:var(--accent); text-align:center;">0</div>
+                    <div style="font-size:0.8rem; color:#999; font-weight:bold; text-align:center; margin-top:5px;">${t.convTwd}</div>
                 </div>
             </div>
 
@@ -865,14 +884,22 @@
         }
         function delBudget(id) { if(confirm("Delete?")) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); } }
         function updateRate(val) { const r = parseFloat(val); if(!isNaN(r)) { data.config.rate = r; save(); } }
-        function calcTwd(val) { const jpy = parseFloat(val); const r = data.config.rate || 0.22; document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : parseFloat((jpy * r).toFixed(3)).toLocaleString(); }
+        
+        // V62.1 Fix: 3 Decimal Places
+        function calcTwd(val) { 
+            const jpy = parseFloat(val); 
+            const r = data.config.rate || 0.22; 
+            const result = jpy * r;
+            // Show up to 3 decimal places if needed, remove trailing zeros
+            document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : parseFloat(result.toFixed(3)).toLocaleString(); 
+        }
         
         let editHotelIdx = null;
         function renderInfo(box) {
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V64.1 (Transport Fix)</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V64.2 (Merged Transport)</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
