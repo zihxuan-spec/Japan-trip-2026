@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V66.3</title>
+    <title>Japan Trip V66.4</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -34,7 +34,7 @@
             font-size: 17px; line-height: 1.75; letter-spacing: 0.06em; -webkit-tap-highlight-color: transparent;
             padding-bottom: 140px; min-height: 100vh; overflow-x: hidden;
             transition: background-color 0.5s, color 0.5s;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         body.has-custom-bg { background-image: none; background-size: cover; background-position: center; background-attachment: fixed; }
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); z-index: -1; pointer-events: none; transition: 0.3s; }
@@ -231,12 +231,12 @@
             width: 2px; border-left: 2px dotted var(--line-color); z-index: 0;
         }
         
-        /* Unified Margin Bottom for Consistent Spacing */
-        .timeline-event { position: relative; margin-bottom: 35px; } /* V66.3: Increased spacing */
+        /* Unified Margin Bottom */
+        .timeline-event { position: relative; margin-bottom: 30px; } 
 
-        /* V66.3: Unified Transport Group Style & Spacing */
+        /* Unified Transport Group Style */
         .timeline-group {
-            position: relative; margin-bottom: 35px; /* V66.3: Increased spacing */
+            position: relative; margin-bottom: 30px; 
             background: var(--bg-card);
             backdrop-filter: blur(10px);
             border-radius: 12px;
@@ -501,7 +501,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v66.3_cloud');
+            const localSaved = localStorage.getItem('trip_v66.4_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             if(!data.shopping) data.shopping = [];
@@ -528,7 +528,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v66.3_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v66.4_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -577,7 +577,7 @@
             document.getElementById('shopImgContainer').classList.add('show'); 
         });
 
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v66.3_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v66.4_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -591,7 +591,7 @@
             return dateStr.includes(todayFormatted) && year === 2026;
         }
 
-        // V66.3: Integrated Transport Grouping with Adjusted Spacing
+        // V66.4: Explicit Spacing with Inline Styles & Spacer Div
         function renderSchedule(box) {
             const t = i18n[data.config.lang];
             if(viewState.mode === 'list') {
@@ -608,14 +608,12 @@
                 
                 let transportGroup = [];
                 
-                // Helper to render the group and clear it
                 const renderGroup = () => {
                     if (transportGroup.length === 0) return '';
-                    let gHtml = `<div class="timeline-group">`;
+                    // V66.4 Force margin bottom 30px via inline style
+                    let gHtml = `<div class="timeline-group" style="margin-bottom: 30px;">`;
                     transportGroup.forEach(tEvt => {
-                        // V66.0: Check if it's a Transfer to render special visual
                         if(tEvt.icon === 'exchange-alt') {
-                            // Transfer visual logic
                             let display = '';
                              if (tEvt.title.includes("|")) {
                                 const parts = tEvt.title.split("|");
@@ -647,7 +645,6 @@
                                 </div>
                             </div>`;
                         } else {
-                            // Standard Transport
                             gHtml += `
                             <div class="timeline-transport-row" onclick="editEvent(${tEvt.eIdx})">
                                 <div class="t-icon-box"><i class="fas fa-${tEvt.icon}"></i></div>
@@ -672,16 +669,13 @@
                     const iconMap = { 'train': 'train', 'bus': 'bus', 'taxi': 'taxi', 'walking': 'walking', 'transfer': 'exchange-alt' };
                     const icon = iconMap[evt.transIcon] || 'arrow-down';
                     
-                    // V66.0 Logic: Group if it's Transport OR Transfer
                     if (evt.type === 'transport' || evt.transIcon === 'transfer') {
                         transportGroup.push({ ...evt, eIdx, nav, icon });
                     } else {
-                        // Render any accumulated group first
                         html += renderGroup();
-
-                        // Render Standard Card
+                        // V66.4 Force margin bottom 30px via inline style
                         html += `
-                        <div class="timeline-event" onclick="editEvent(${eIdx})">
+                        <div class="timeline-event" style="margin-bottom: 30px;" onclick="editEvent(${eIdx})">
                             <div class="timeline-dot"></div>
                             <div class="glass-card p-5">
                                 <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-100">
@@ -699,11 +693,12 @@
                     }
                 });
 
-                // Render remaining group at the end
                 html += renderGroup();
                 
-                // V66.3 Fix: Increased top margin to mt-12 (was mt-6) for better spacing
-                html += `<div onclick="newEvent()" class="text-center py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 cursor-pointer font-bold bg-white/30 text-sm hover:bg-white transition mt-12" style="margin-left:0;">${t.addEvent}</div></div>`; box.innerHTML = html;
+                // V66.4 Fix: Spacer Div (40px) + Clean Button
+                html += `<div style="height: 40px; width:100%;"></div><div onclick="newEvent()" class="text-center py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 cursor-pointer font-bold bg-white/30 text-sm hover:bg-white transition" style="margin-left:0;">${t.addEvent}</div></div>`; 
+                
+                box.innerHTML = html;
             }
         }
         function toggleWeather(idx) { const states = ['sunny', 'cloudy', 'rainy']; const curr = data.itinerary[idx].weather || 'sunny'; const next = states[(states.indexOf(curr) + 1) % states.length]; data.itinerary[idx].weather = next; save(); render(); }
@@ -1000,7 +995,7 @@
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V66.3</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V66.4</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
