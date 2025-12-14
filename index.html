@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V67.0</title>
+    <title>Japan Trip V67.1</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -306,11 +306,12 @@
         /* Station Badge Style */
         .station-badge {
             display: inline-flex; align-items: center; justify-content: center;
-            width: 20px; height: 20px; border-radius: 50%;
+            padding: 0 5px; min-width: 20px; height: 20px; border-radius: 10px; /* pill shape for double letters */
             font-size: 9px; font-weight: 900; color: white;
             margin-right: 4px; border: 1px solid rgba(0,0,0,0.05);
             font-family: sans-serif; letter-spacing: -0.5px;
         }
+        .station-badge-circle { border-radius: 50%; width: 20px; padding: 0; } /* pure circle for single letter */
         .badge-dark-text { color: #333 !important; }
 
         .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
@@ -539,7 +540,7 @@
         };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list', shopTab: 'tobuy', shopMode: 'list' }; 
 
-        // V67.0: Tokyo Metro Line Colors
+        // V67.1: Tokyo Metro Line Colors + JR Lines (JE/JY/JB/J)
         const LINE_COLORS = {
             'A': '#ec6d71', // Asakusa
             'G': '#f39700', // Ginza
@@ -554,13 +555,17 @@
             'S': '#b0ca71', // Shinjuku (Toei)
             'E': '#c44768', // Oedo (Toei)
             'I': '#00508e', // Mita (Toei)
-            'J': '#b0ca71'  // Generic/Other
+            'JE': '#c9242f', // Keiyo (Red)
+            'JY': '#8cc63e', // Yamanote (Green)
+            'JB': '#fcc800', // Chuo-Sobu (Yellow)
+            'JC': '#d93a2f', // Chuo Rapid (Orange)
+            'J': '#c9242f'   // Generic JR/Keiyo if user types 'J'
         };
 
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v67.0_cloud');
+            const localSaved = localStorage.getItem('trip_v67.1_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             if(!data.shopping) data.shopping = [];
@@ -587,7 +592,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v67.0_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v67.1_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -636,7 +641,7 @@
             document.getElementById('shopImgContainer').classList.add('show'); 
         });
 
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v67.0_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v67.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -664,22 +669,23 @@
             return `${h} hr ${m} min`;
         }
 
-        // V67.0 Helper: Format Station Name with Color Badges
+        // V67.1 Helper: Format Station Name with Color Badges (Now supports 1-2 letters)
         function formatTextWithBadges(text) {
             if (!text) return "";
-            // Regex to find patterns like A14, H12, G09, M08
-            // Group 1: Letter, Group 2: Number
-            return text.replace(/([A-Z])(\d{1,2})/g, (match, code, num) => {
+            // Regex match 1-2 letters + optional space + 1-2 digits
+            return text.replace(/([A-Z]{1,2})\s?(\d{1,2})/g, (match, code, num) => {
                 const color = LINE_COLORS[code] || '#999';
-                const textColor = (code === 'H' || code === 'Y') ? 'color:#333' : 'color:white'; // Hibiya/Yurakucho need dark text
-                return `<span class="station-badge" style="background:${color}; ${textColor}">${code}${num}</span>`;
+                const textColor = (code === 'H' || code === 'Y') ? 'color:#333' : 'color:white';
+                // Adjust shape for 2 letters
+                const shapeClass = code.length > 1 ? 'station-badge' : 'station-badge station-badge-circle';
+                return `<span class="${shapeClass}" style="background:${color}; ${textColor}">${code}${num}</span>`;
             });
         }
         
-        // V67.0 Helper: Extract Line Color from Text
+        // V67.1 Helper: Extract Line Color from Text
         function getLineColorFromText(text) {
             if (!text) return 'var(--accent)';
-            const match = text.match(/([A-Z])\d{1,2}/);
+            const match = text.match(/([A-Z]{1,2})\d{1,2}/);
             if (match && LINE_COLORS[match[1]]) return LINE_COLORS[match[1]];
             return 'var(--accent)';
         }
@@ -816,25 +822,43 @@
         function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); } 
         function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:"", transIcon:'train'}); } 
         
+        // V67.1 Logic Update: Explicitly control visibility of input groups
         function setType(type) { 
             document.getElementById('eType').value = type; 
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); 
             document.getElementById('btn-' + type).classList.add('active'); 
             
-            if(type === 'transport') document.getElementById('transportSubSelector').classList.add('show');
-            else document.getElementById('transportSubSelector').classList.remove('show');
+            if(type === 'transport') {
+                document.getElementById('transportSubSelector').classList.add('show');
+                // Trigger icon logic to decide inputs
+                setTransIcon(document.getElementById('eTransIcon').value || 'train');
+            } else {
+                document.getElementById('transportSubSelector').classList.remove('show');
+                // FORCE SHOW Standard Inputs, FORCE HIDE Transfer Inputs
+                document.getElementById('standardInputs').style.display = 'block';
+                document.getElementById('transferInputs').classList.remove('show');
+            }
         }
+
         function setTransIcon(icon) {
             document.getElementById('eTransIcon').value = icon;
             document.querySelectorAll('.trans-btn').forEach(b => b.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            
+            // Only highlight icon if we are in transport mode
+            if(document.getElementById('eType').value === 'transport') {
+                // Find button with this icon
+                document.querySelectorAll('.trans-btn').forEach(btn => {
+                    if(btn.innerHTML.includes(icon) || (icon==='transfer' && btn.innerHTML.includes('exchange'))) btn.classList.add('active');
+                });
+            }
 
-            if(icon === 'transfer') {
+            // V67.1 Strict Visibility Logic
+            if(document.getElementById('eType').value === 'transport' && icon === 'transfer') {
                 document.getElementById('transferInputs').classList.add('show');
-                document.getElementById('standardInputs').style.display = 'none'; // Hide standard inputs
+                document.getElementById('standardInputs').style.display = 'none'; 
             } else {
                 document.getElementById('transferInputs').classList.remove('show');
-                document.getElementById('standardInputs').style.display = 'block'; // Show standard inputs
+                document.getElementById('standardInputs').style.display = 'block'; 
             }
         }
         
@@ -844,22 +868,16 @@
                 // Common fields
                 document.getElementById('eMap').value = obj.map||""; 
                 
-                // Set Type first to trigger UI
-                setType(obj.type || 'sightseeing'); 
+                // 1. Set Type & Transport Icon state
+                document.getElementById('eType').value = obj.type || 'sightseeing';
+                document.getElementById('eTransIcon').value = obj.transIcon || 'train';
                 
-                if(obj.type === 'transport') {
-                    setTransIcon(obj.transIcon || 'train'); 
-                    const icon = obj.transIcon || 'train';
-                    document.querySelectorAll('.trans-btn').forEach(btn => {
-                        btn.classList.remove('active');
-                        if(btn.innerHTML.includes(icon) || (icon==='transfer' && btn.innerHTML.includes('exchange'))) btn.classList.add('active');
-                    });
-                     document.getElementById('eTransIcon').value = icon;
-                }
+                // 2. Refresh UI based on state
+                setType(obj.type || 'sightseeing');
+                if(obj.type === 'transport') setTransIcon(obj.transIcon || 'train');
 
-                // Handle Transfer vs Standard
+                // 3. Populate Fields
                 if(obj.transIcon === 'transfer') {
-                    // Populate Transfer fields
                     const parts = obj.title && obj.title.includes("|") ? obj.title.split("|") : ["", ""];
                     document.getElementById('eFrom').value = parts[0];
                     document.getElementById('eTo').value = parts[1];
@@ -868,7 +886,6 @@
                     document.getElementById('eTransTimeDep').value = obj.time;
                     document.getElementById('eTransTimeArr').value = obj.endTime || "";
                 } else {
-                    // Populate Standard fields
                     document.getElementById('eTime').value = obj.time; 
                     document.getElementById('eTimeEnd').value = obj.endTime || ""; 
                     document.getElementById('eTitle').value = obj.title;
@@ -896,7 +913,7 @@
 
         function saveEvent() { 
             const hasImg = document.getElementById('previewImg').classList.contains('show');
-            const isTransfer = document.getElementById('eTransIcon').value === 'transfer';
+            const isTransfer = document.getElementById('eType').value === 'transport' && document.getElementById('eTransIcon').value === 'transfer';
             
             let finalTitle, finalTime, finalEndTime, finalDesc, depNote, arrNote;
 
@@ -908,7 +925,7 @@
                 finalEndTime = document.getElementById('eTransTimeArr').value;
                 depNote = document.getElementById('eFromNote').value;
                 arrNote = document.getElementById('eToNote').value;
-                finalDesc = ""; // Description unused in transfer mode (replaced by notes)
+                finalDesc = ""; 
             } else {
                 finalTitle = document.getElementById('eTitle').value;
                 finalTime = document.getElementById('eTime').value;
@@ -1119,7 +1136,7 @@
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V67.0</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V67.1</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
