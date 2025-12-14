@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V67.1</title>
+    <title>Japan Trip V67.2</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -268,11 +268,12 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 12px; color: var(--text-sub); z-index: 1;
             margin-right: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0;
+            transition: 0.3s;
         }
         body.dark-mode .t-icon-box { background: #0f172a; border-color: #475569; }
         
         .t-time { font-size: 0.75rem; font-weight: bold; color: var(--primary); margin-right: 8px; min-width: 45px; margin-top: 6px;}
-        .t-title { font-size: 0.9rem; font-weight: bold; color: var(--text-main); margin-top: 4px; }
+        .t-title { font-size: 0.9rem; font-weight: bold; color: var(--text-main); margin-top: 4px; display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
         
         /* V67.0 Transfer Card Styling - Enhanced with Color Stripes & Duration */
         .transfer-inner-block {
@@ -540,7 +541,7 @@
         };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list', shopTab: 'tobuy', shopMode: 'list' }; 
 
-        // V67.1: Tokyo Metro Line Colors + JR Lines (JE/JY/JB/J)
+        // V67.2: Tokyo Metro Line Colors + JR Lines (JE/JY/JB/J)
         const LINE_COLORS = {
             'A': '#ec6d71', // Asakusa
             'G': '#f39700', // Ginza
@@ -565,7 +566,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v67.1_cloud');
+            const localSaved = localStorage.getItem('trip_v67.2_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             if(!data.shopping) data.shopping = [];
@@ -592,7 +593,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v67.1_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v67.2_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -641,7 +642,7 @@
             document.getElementById('shopImgContainer').classList.add('show'); 
         });
 
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v67.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v67.2_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -669,23 +670,23 @@
             return `${h} hr ${m} min`;
         }
 
-        // V67.1 Helper: Format Station Name with Color Badges (Now supports 1-2 letters)
+        // V67.2 Helper: Format Station Name with Color Badges (Supports 1-2 letters, including J/JE)
         function formatTextWithBadges(text) {
             if (!text) return "";
             // Regex match 1-2 letters + optional space + 1-2 digits
             return text.replace(/([A-Z]{1,2})\s?(\d{1,2})/g, (match, code, num) => {
                 const color = LINE_COLORS[code] || '#999';
-                const textColor = (code === 'H' || code === 'Y') ? 'color:#333' : 'color:white';
+                const textColor = (code === 'H' || code === 'Y' || code === 'JB') ? 'color:#333' : 'color:white';
                 // Adjust shape for 2 letters
                 const shapeClass = code.length > 1 ? 'station-badge' : 'station-badge station-badge-circle';
                 return `<span class="${shapeClass}" style="background:${color}; ${textColor}">${code}${num}</span>`;
             });
         }
         
-        // V67.1 Helper: Extract Line Color from Text
+        // V67.2 Helper: Extract Line Color from Text
         function getLineColorFromText(text) {
             if (!text) return 'var(--accent)';
-            const match = text.match(/([A-Z]{1,2})\d{1,2}/);
+            const match = text.match(/([A-Z]{1,2})\s?\d{1,2}/);
             if (match && LINE_COLORS[match[1]]) return LINE_COLORS[match[1]];
             return 'var(--accent)';
         }
@@ -761,13 +762,19 @@
                                 </div>
                             </div>`;
                         } else {
+                            // V67.2: Standard Transport Visual Upgrade
+                            const formattedTitle = formatTextWithBadges(tEvt.title);
+                            const lineColor = getLineColorFromText(tEvt.title);
+                            // Only style icon if we found a line color
+                            const iconStyle = (lineColor !== 'var(--accent)') ? `border-color:${lineColor}; color:${lineColor};` : '';
+
                             gHtml += `
                             <div class="timeline-transport-row" onclick="editEvent(${tEvt.eIdx})">
-                                <div class="t-icon-box"><i class="fas fa-${tEvt.icon}"></i></div>
+                                <div class="t-icon-box" style="${iconStyle}"><i class="fas fa-${tEvt.icon}"></i></div>
                                 <div style="flex:1">
                                     <div class="flex items-center">
-                                        <span class="t-time">${tEvt.time}</span>
-                                        <span class="t-title">${tEvt.title} ${tEvt.nav}</span>
+                                        <span class="t-time" style="${iconStyle ? 'color:'+lineColor : ''}">${tEvt.time}</span>
+                                        <span class="t-title">${formattedTitle} ${tEvt.nav}</span>
                                     </div>
                                     <div class="text-xs text-gray-400 pl-1 ml-[44px]">${tEvt.desc}</div>
                                 </div>
@@ -1136,7 +1143,7 @@
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V67.1</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V67.2</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
