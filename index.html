@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V68.1</title>
+    <title>Japan Trip V68.2</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -666,7 +666,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v68.1_cloud');
+            const localSaved = localStorage.getItem('trip_v68.2_cloud');
             if(localSaved) { 
                 data = JSON.parse(localSaved); 
                 const todayIdx = data.itinerary.findIndex(d => isToday(d.date));
@@ -694,7 +694,7 @@
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { try { localStorage.setItem('trip_v68.1_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
+        function saveLocal() { try { localStorage.setItem('trip_v68.2_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
         function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
         
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
@@ -712,7 +712,7 @@
         document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); document.getElementById('editImgContainer').classList.add('show'); });
         document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('shopPreview').src = url; document.getElementById('shopPreview').classList.add('show'); document.getElementById('shopImgContainer').classList.add('show'); });
 
-        function resetAllData() { openConfirm("Clear All Data?", () => { localStorage.removeItem('trip_v68.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); }); }
+        function resetAllData() { openConfirm("Clear All Data?", () => { localStorage.removeItem('trip_v68.2_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); }); }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -732,17 +732,21 @@
             box.classList.add('page-transition'); 
             
             const dayNav = document.getElementById('dayNavContainer');
-            // V68.1: Toggle FAB visibility
             const fab = document.getElementById('fabAdd');
             
+            // V68.2: Show FAB ONLY in Detail Mode
+            if(viewState.tab === 'schedule' && viewState.mode === 'detail') {
+                fab.classList.remove('hidden'); 
+            } else {
+                fab.classList.add('hidden');
+            }
+
             if(viewState.tab === 'schedule' && viewState.mode === 'list') {
                 renderDayNav(dayNav);
                 dayNav.classList.remove('hidden');
-                fab.classList.remove('hidden'); // Show FAB
                 renderSchedule(box); 
             } else {
                 dayNav.classList.add('hidden');
-                fab.classList.add('hidden'); // Hide FAB
                 if(viewState.tab === 'schedule') renderSchedule(box); 
                 else if(viewState.tab === 'shopping') renderShopping(box); 
                 else if(viewState.tab === 'budget') renderBudget(box); 
@@ -817,12 +821,9 @@
                     } else {
                         const highlightClass = isToday(day.date) ? 'highlight-card' : '';
                         html += `<div class="glass-card list-item-card ${highlightClass} mb-6" onclick="openDay(${idx})"><div><div class="flex items-center gap-2"><div class="text-3xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</div><button class="weather-btn" onclick="event.stopPropagation(); toggleWeather(${idx})"><i class="fas fa-${wIcon} weather-icon"></i></button></div><div class="text-xs text-gray-500 font-bold tracking-wider">${day.date}</div></div><div class="text-right"><div class="text-base font-bold jp-font mb-1 editable-location" onclick="event.stopPropagation(); editLoc(${idx})">${day.loc} <i class="fas fa-pen text-[10px] text-gray-300"></i></div><div class="view-btn">${t.view} <i class="fas fa-chevron-right"></i></div></div></div>`;
-                        
-                        // Render Events directly in Accordion view? No, keeping detail view separate as per architecture.
                     }
                 }); 
-                // V68.1: Removed old bottom button, using FAB instead
-                html += `<div style="height: 100px;"></div>`; // Spacer for FAB
+                html += `<div style="height: 100px;"></div>`; 
                 box.innerHTML = html;
             } else {
                 const day = data.itinerary[viewState.dayIdx]; let mapUrl = "https://www.google.com/maps/dir/"; day.events.forEach(e => { if(e.map) mapUrl += encodeURIComponent(e.map) + "/"; });
@@ -863,12 +864,10 @@
                     if (evt.type === 'transport' || evt.transIcon === 'transfer') { transportGroup.push({ ...evt, eIdx, nav, icon: (evt.transIcon === 'transfer' ? 'exchange-alt' : (evt.transIcon || 'train')) }); } 
                     else { 
                         html += renderGroup(); 
-                        // V68.1: Insert Category Pill
                         html += `<div class="timeline-event" style="margin-bottom: 30px;" onclick="editEvent(${eIdx})"><div class="timeline-dot"></div><div class="glass-card p-5">${getCategoryPill(evt.type)}<div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-100"><span class="font-black jp-font text-[var(--primary)] text-lg">${evt.time}</span>${nav}</div>${img}<div class="flex items-center mb-1"><h3 class="text-lg font-bold jp-font">${evt.title}</h3></div><p class="text-sm text-gray-500 leading-relaxed">${evt.desc}</p></div></div>`; 
                     }
                 });
                 html += renderGroup();
-                // V68.1: Removed old button here too
                 html += `<div style="height: 100px; width:100%;"></div></div>`; 
                 box.innerHTML = html;
             }
@@ -1096,7 +1095,7 @@
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V68.1</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V68.2</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
@@ -1111,11 +1110,7 @@
                 save(); closeModal('hotelModal'); render(); 
             } 
         }
-        function delHotel(idx) { 
-            openConfirm("刪除此住宿？", () => {
-                data.info.hotels.splice(idx, 1); save(); render();
-            });
-        }
+        function delHotel(idx) { if(confirm("Delete Hotel?")) { data.info.hotels.splice(idx, 1); save(); render(); } }
         function editFlight(type) { document.getElementById('flightModal').classList.add('active'); const f = (type === 'out') ? (data.info.flightOut || {}) : (data.info.flightIn || {}); document.getElementById('fType').value = type; document.getElementById('fCode').value = f.code || ''; document.getElementById('fPnr').value = f.pnr || ''; document.getElementById('fTicket').value = f.ticket || ''; }
         function saveFlight() { const type = document.getElementById('fType').value; const f = { code: document.getElementById('fCode').value, pnr: document.getElementById('fPnr').value, ticket: document.getElementById('fTicket').value }; if(!data.info) data.info = {}; if(type === 'out') data.info.flightOut = f; else data.info.flightIn = f; save(); closeModal('flightModal'); render(); }
         function copyToClip(str) { if(!str) return; navigator.clipboard.writeText(str).then(() => alert('Copied!')); }
