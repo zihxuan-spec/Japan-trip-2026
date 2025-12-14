@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V64.2</title>
+    <title>Japan Trip V65 (Transfer Node)</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -275,6 +275,19 @@
         
         .t-time { font-size: 0.75rem; font-weight: bold; color: var(--primary); margin-right: 8px; min-width: 45px; }
         .t-title { font-size: 0.9rem; font-weight: bold; color: var(--text-main); }
+        
+        /* V65.0 Transfer Node */
+        .timeline-transfer-node {
+            display: flex; align-items: center; justify-content: center;
+            margin: 15px 0; position: relative;
+            background: var(--input-bg); border: 1px dashed var(--border);
+            border-radius: 20px; padding: 8px 20px;
+            width: fit-content; margin-left: auto; margin-right: auto;
+        }
+        .transfer-icon { color: var(--text-sub); margin-right: 8px; font-size: 0.9rem; }
+        .transfer-info { text-align: center; }
+        .transfer-time { font-size: 0.7rem; color: var(--primary); font-weight: bold; }
+        .transfer-detail { font-size: 0.85rem; font-weight: bold; color: var(--text-main); }
 
         .edit-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 20px; }
         .edit-grid input { margin-bottom: 0 !important; }
@@ -349,6 +362,7 @@
                 <div class="trans-btn" onclick="setTransIcon('bus')"><i class="fas fa-bus"></i></div>
                 <div class="trans-btn" onclick="setTransIcon('taxi')"><i class="fas fa-taxi"></i></div>
                 <div class="trans-btn" onclick="setTransIcon('walking')"><i class="fas fa-walking"></i></div>
+                <div class="trans-btn" onclick="setTransIcon('transfer')" style="color:var(--accent)"><i class="fas fa-exchange-alt"></i></div>
             </div>
             <input type="hidden" id="eType" value="sightseeing">
             <input type="hidden" id="eTransIcon" value="train">
@@ -464,7 +478,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v64.2_cloud');
+            const localSaved = localStorage.getItem('trip_v65_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             // V57 Safety Init
@@ -493,7 +507,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v64.2_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v65_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -542,7 +556,7 @@
             document.getElementById('shopImgContainer').classList.add('show'); 
         });
 
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v64.2_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v65_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -577,10 +591,21 @@
                 day.events.forEach((evt, eIdx) => { 
                     const img = evt.img ? `<img src="${evt.img}" class="w-full h-48 object-cover rounded-lg mb-3">` : ''; 
                     const nav = evt.map ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(evt.map)}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] border border-[var(--primary)] text-[var(--primary)] px-2 py-0.5 rounded font-bold ml-2">NAV</a>` : ''; 
-                    const iconMap = { 'train': 'train', 'bus': 'bus', 'taxi': 'taxi', 'walking': 'walking' };
+                    const iconMap = { 'train': 'train', 'bus': 'bus', 'taxi': 'taxi', 'walking': 'walking', 'transfer': 'exchange-alt' };
                     const icon = iconMap[evt.transIcon] || 'arrow-down';
                     
-                    if (evt.type === 'transport') {
+                    // V65: Handle Transfer Node
+                    if (evt.transIcon === 'transfer') {
+                        html += `
+                        <div class="timeline-transfer-node" onclick="editEvent(${eIdx})">
+                            <div class="transfer-icon"><i class="fas fa-exchange-alt"></i></div>
+                            <div class="transfer-info">
+                                <div class="transfer-time">${evt.time}</div>
+                                <div class="transfer-detail">${evt.title}</div>
+                                <div class="text-xs text-gray-400">${evt.desc}</div>
+                            </div>
+                        </div>`;
+                    } else if (evt.type === 'transport') {
                         transportGroup.push({ ...evt, eIdx, nav, icon });
                     } else {
                         // Render accumulated transport group first
@@ -757,8 +782,11 @@
                             html += `<div class="space-y-3">`; 
                             itemsOfType.forEach(item => { 
                                 const originalIdx = data.shopping.findIndex(i => i.id === item.id); const checkClass = item.checked ? 'checked' : ''; 
+                                
+                                // V58.1 Fix: Only show image if valid data exists
                                 const hasImg = item.img && item.img.length > 100;
                                 const img = hasImg ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="openLightbox('${item.img}')">` : ''; 
+                                
                                 html += `
                                 <div class="glass-card p-3 flex items-center justify-between ${checkClass}">
                                     <div class="flex items-center flex-1" onclick="toggleShop(${originalIdx})">
