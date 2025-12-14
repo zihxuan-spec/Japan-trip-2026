@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V66.6</title>
+    <title>Japan Trip V67.0</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -274,15 +274,16 @@
         .t-time { font-size: 0.75rem; font-weight: bold; color: var(--primary); margin-right: 8px; min-width: 45px; margin-top: 6px;}
         .t-title { font-size: 0.9rem; font-weight: bold; color: var(--text-main); margin-top: 4px; }
         
-        /* V66.6 Transfer Card Styling - Time Left, Station Right */
+        /* V67.0 Transfer Card Styling - Enhanced with Color Stripes & Duration */
         .transfer-inner-block {
             background: var(--input-bg);
             border: 1px solid var(--border);
-            border-left: 3px solid var(--accent);
+            /* border-left will be set dynamically via JS now */
             border-radius: 8px;
             padding: 8px 12px;
             margin-top: 4px;
             width: 100%;
+            position: relative;
         }
         .transfer-row {
             display: flex; align-items: baseline; margin-bottom: 6px;
@@ -294,40 +295,46 @@
             flex-shrink: 0;
         }
         .transfer-info-col { flex: 1; display: flex; flex-direction: column; }
-        .transfer-station { font-size: 0.95rem; font-weight: bold; color: var(--text-main); }
+        .transfer-station { font-size: 0.95rem; font-weight: bold; color: var(--text-main); display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
         .transfer-note-sub { font-size: 0.7rem; color: #94a3b8; font-weight: normal; margin-top: -2px; }
         
         .transfer-arrow-row {
-            padding-left: 45px; color: #cbd5e1; font-size: 0.7rem; margin: -2px 0 4px 0;
+            padding-left: 45px; color: #cbd5e1; font-size: 0.7rem; margin: -2px 0 4px 0; display: flex; align-items: center;
         }
+        .duration-pill { font-size: 0.65rem; color: #94a3b8; margin-left: 10px; background: rgba(0,0,0,0.03); padding: 1px 6px; border-radius: 10px; }
+
+        /* Station Badge Style */
+        .station-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 20px; height: 20px; border-radius: 50%;
+            font-size: 9px; font-weight: 900; color: white;
+            margin-right: 4px; border: 1px solid rgba(0,0,0,0.05);
+            font-family: sans-serif; letter-spacing: -0.5px;
+        }
+        .badge-dark-text { color: #333 !important; }
 
         .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         .edit-grid input { margin-bottom: 0 !important; width: 100% !important; }
         
-        /* V66.6: Improved Transfer Inputs with Note fields */
+        /* V67.0: Grouped Transfer Inputs (Block A / Block B) */
         #transferInputs { 
-            display: none; background: rgba(0,0,0,0.03); border-radius: 12px;
-            padding: 15px; 
+            display: none; background: transparent; 
             flex-direction: column; 
-            gap: 15px; /* Increased gap for separating groups */
+            gap: 0; /* Gap handled by margin inside blocks */
             align-items: center; margin-bottom: 20px; 
         }
-        .transfer-group { width: 100%; }
-        .transfer-group label { font-size: 0.7rem; color: #94a3b8; font-weight: bold; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
-        
-        #transferInputs input.main-input { 
-            background: white; border: 1px solid var(--border); text-align: left; font-weight: bold; width: 100%; padding: 12px; margin-bottom: 5px !important; border-radius: 8px;
+        .transfer-block {
+            width: 100%; background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 10px; position: relative;
         }
-        #transferInputs input.sub-input {
-            background: rgba(255,255,255,0.5); border: 1px solid transparent; border-bottom: 1px solid var(--border); 
-            text-align: left; width: 100%; padding: 8px; font-size: 0.8rem !important; color: #666; margin-bottom: 0 !important;
-        }
+        .transfer-block-label { font-size: 0.7rem; color: var(--primary); font-weight: 900; letter-spacing: 0.1em; margin-bottom: 5px; opacity: 0.8; }
         
-        body.dark-mode #transferInputs input.main-input { background: #2b2b36; }
-        body.dark-mode #transferInputs input.sub-input { background: rgba(0,0,0,0.2); }
-        
+        .transfer-time-input { text-align: center; width: 100% !important; font-weight: bold; background: var(--input-bg); border: 1px solid var(--border); padding: 8px; border-radius: 8px; }
+        .transfer-station-input { width: 100% !important; font-weight: bold; padding: 10px; border: 1px solid var(--border); border-radius: 8px; }
+        .transfer-note-input { width: 100% !important; font-size: 0.85rem !important; padding: 8px; border: 1px solid var(--border); border-radius: 8px; color: #666; }
+
         #transferInputs.show { display: flex; }
-        .transfer-arrow { color: #ccc; text-align: center; font-size: 1.2rem; padding: 5px 0; }
+        .transfer-divider { color: #ccc; font-size: 1.2rem; margin: 5px 0; }
         .timeline-transport-row .text-xs { padding-left: 0; }
     </style>
 </head>
@@ -405,28 +412,32 @@
             <input type="hidden" id="eType" value="sightseeing">
             <input type="hidden" id="eTransIcon" value="train">
             
-            <div class="edit-grid" style="grid-template-columns: 1fr 1fr;">
-                <div><label class="text-xs text-gray-400 font-bold block mb-1">開始 (Start)</label><input id="eTime" type="time" class="text-center" style="padding: 10px !important;"></div>
-                <div id="eTimeEndContainer" style="display:none;"><label class="text-xs text-gray-400 font-bold block mb-1">抵達 (Arrival)</label><input id="eTimeEnd" type="time" class="text-center" style="padding: 10px !important;"></div>
+            <div id="standardInputs">
+                <div class="edit-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div><label class="text-xs text-gray-400 font-bold block mb-1">開始 (Start)</label><input id="eTime" type="time" class="text-center" style="padding: 10px !important;"></div>
+                    <div id="eTimeEndContainer" style="display:none;"><label class="text-xs text-gray-400 font-bold block mb-1">抵達 (Arrival)</label><input id="eTimeEnd" type="time" class="text-center" style="padding: 10px !important;"></div>
+                </div>
+                <input id="eTitle" placeholder="標題" class="font-bold">
+                <textarea id="eDesc" rows="3" placeholder="備註..."></textarea>
             </div>
 
             <div id="transferInputs">
-                <div class="transfer-group">
-                    <label>出發 (From)</label>
-                    <input id="eFrom" class="main-input" placeholder="例如：東京站">
-                    <input id="eFromNote" class="sub-input" placeholder="備註：路線/月台 (例如：京葉線)">
+                <div class="transfer-block">
+                    <div class="flex justify-between items-center"><div class="transfer-block-label">DEPARTURE</div><input id="eTransTimeDep" type="time" class="transfer-time-input w-24"></div>
+                    <input id="eFrom" class="transfer-station-input" placeholder="出發站 (例如：A14 人形町)">
+                    <input id="eFromNote" class="transfer-note-input" placeholder="備註：路線/月台">
                 </div>
-                <div class="transfer-arrow"><i class="fas fa-arrow-down"></i></div>
-                <div class="transfer-group">
-                    <label>抵達 (To)</label>
-                    <input id="eTo" class="main-input" placeholder="例如：舞濱站">
-                    <input id="eToNote" class="sub-input" placeholder="備註：出口/轉乘資訊">
+                
+                <div class="transfer-divider"><i class="fas fa-arrow-down"></i></div>
+                
+                <div class="transfer-block">
+                    <div class="flex justify-between items-center"><div class="transfer-block-label">ARRIVAL</div><input id="eTransTimeArr" type="time" class="transfer-time-input w-24"></div>
+                    <input id="eTo" class="transfer-station-input" placeholder="抵達站 (例如：H12 八丁堀)">
+                    <input id="eToNote" class="transfer-note-input" placeholder="備註：出口/轉乘資訊">
                 </div>
             </div>
 
-            <input id="eTitle" placeholder="標題" class="font-bold">
-            <textarea id="eDesc" rows="3" placeholder="備註..."></textarea>
-            <div class="relative"><i class="fas fa-map-marker-alt absolute left-4 top-4 text-red-400 text-lg"></i><input id="eMap" placeholder="地圖連結" style="padding-left: 45px !important;"></div>
+            <div class="relative mt-4"><i class="fas fa-map-marker-alt absolute left-4 top-4 text-red-400 text-lg"></i><input id="eMap" placeholder="地圖連結" style="padding-left: 45px !important;"></div>
             <div class="flex gap-4 mt-4"><button id="btn-delete" onclick="delEvent()" class="flex-1 py-3 rounded-xl border border-red-200 text-red-400 font-bold hover:bg-red-50">刪除</button><button id="btn-save" onclick="saveEvent()" class="flex-[2] btn-primary shadow-lg">儲存</button></div>
             <div class="text-center mt-6"><span id="btn-cancel-edit" onclick="closeModal('editModal')" class="text-sm text-gray-400 font-bold cursor-pointer hover:text-gray-600">取消</span></div>
         </div>
@@ -528,10 +539,28 @@
         };
         let viewState = { tab: 'schedule', dayIdx: null, mode: 'list', shopTab: 'tobuy', shopMode: 'list' }; 
 
+        // V67.0: Tokyo Metro Line Colors
+        const LINE_COLORS = {
+            'A': '#ec6d71', // Asakusa
+            'G': '#f39700', // Ginza
+            'M': '#e60012', // Marunouchi
+            'H': '#b5b5ac', // Hibiya (silver)
+            'T': '#0080c6', // Tozai
+            'C': '#007852', // Chiyoda
+            'Y': '#c1a470', // Yurakucho
+            'Z': '#8f76d6', // Hanzomon
+            'N': '#00ac9b', // Namboku
+            'F': '#9c5e31', // Fukutoshin
+            'S': '#b0ca71', // Shinjuku (Toei)
+            'E': '#c44768', // Oedo (Toei)
+            'I': '#00508e', // Mita (Toei)
+            'J': '#b0ca71'  // Generic/Other
+        };
+
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v66.6_cloud');
+            const localSaved = localStorage.getItem('trip_v67.0_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             if(!data.shopping) data.shopping = [];
@@ -558,7 +587,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v66.6_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v67.0_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -607,7 +636,7 @@
             document.getElementById('shopImgContainer').classList.add('show'); 
         });
 
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v66.6_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v67.0_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -621,7 +650,40 @@
             return dateStr.includes(todayFormatted) && year === 2026;
         }
 
-        // V66.4: Explicit Spacing with Inline Styles & Spacer Div
+        // V67.0 Helper: Calculate Duration in Minutes
+        function getDuration(start, end) {
+            if (!start || !end) return null;
+            const [h1, m1] = start.split(':').map(Number);
+            const [h2, m2] = end.split(':').map(Number);
+            let mins = (h2 * 60 + m2) - (h1 * 60 + m1);
+            if (mins < 0) mins += 1440; // Handle midnight crossing simple
+            
+            if (mins < 60) return `${mins} min`;
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            return `${h} hr ${m} min`;
+        }
+
+        // V67.0 Helper: Format Station Name with Color Badges
+        function formatTextWithBadges(text) {
+            if (!text) return "";
+            // Regex to find patterns like A14, H12, G09, M08
+            // Group 1: Letter, Group 2: Number
+            return text.replace(/([A-Z])(\d{1,2})/g, (match, code, num) => {
+                const color = LINE_COLORS[code] || '#999';
+                const textColor = (code === 'H' || code === 'Y') ? 'color:#333' : 'color:white'; // Hibiya/Yurakucho need dark text
+                return `<span class="station-badge" style="background:${color}; ${textColor}">${code}${num}</span>`;
+            });
+        }
+        
+        // V67.0 Helper: Extract Line Color from Text
+        function getLineColorFromText(text) {
+            if (!text) return 'var(--accent)';
+            const match = text.match(/([A-Z])\d{1,2}/);
+            if (match && LINE_COLORS[match[1]]) return LINE_COLORS[match[1]];
+            return 'var(--accent)';
+        }
+
         function renderSchedule(box) {
             const t = i18n[data.config.lang];
             if(viewState.mode === 'list') {
@@ -642,7 +704,7 @@
                     if (transportGroup.length === 0) return '';
                     let gHtml = `<div class="timeline-group" style="margin-bottom: 30px;">`;
                     transportGroup.forEach(tEvt => {
-                        // V66.6: Improved Transfer Render (Time Left, Detail Right)
+                        // V67.0: Enhanced Transfer Render
                         if(tEvt.icon === 'exchange-alt') {
                             let parts = tEvt.title.includes("|") ? tEvt.title.split("|") : [tEvt.title, ""];
                             const fromStation = parts[0];
@@ -650,21 +712,35 @@
                             const fromNote = tEvt.depNote || "";
                             const toNote = tEvt.arrNote || "";
                             const endTime = tEvt.endTime ? tEvt.endTime : "";
+                            
+                            // Calc duration
+                            const durationStr = getDuration(tEvt.time, endTime);
+                            
+                            // Format badges
+                            const fromFormatted = formatTextWithBadges(fromStation);
+                            const toFormatted = formatTextWithBadges(toStation);
+                            
+                            // Get Line Colors
+                            const fromColor = getLineColorFromText(fromStation);
+                            const toColor = getLineColorFromText(toStation);
 
                             let display = `
-                            <div class="transfer-inner-block">
+                            <div class="transfer-inner-block" style="border-left-color:${fromColor}">
                                 <div class="transfer-row">
-                                    <div class="transfer-time-col">${tEvt.time}</div>
+                                    <div class="transfer-time-col" style="color:${fromColor}">${tEvt.time}</div>
                                     <div class="transfer-info-col">
-                                        <div class="transfer-station">${fromStation}</div>
+                                        <div class="transfer-station">${fromFormatted}</div>
                                         ${fromNote ? `<div class="transfer-note-sub">${fromNote}</div>` : ''}
                                     </div>
                                 </div>
-                                <div class="transfer-arrow-row"><i class="fas fa-arrow-down"></i></div>
+                                <div class="transfer-arrow-row">
+                                    <i class="fas fa-arrow-down"></i>
+                                    ${durationStr ? `<span class="duration-pill">${durationStr}</span>` : ''}
+                                </div>
                                 <div class="transfer-row">
-                                    <div class="transfer-time-col" style="opacity:0.8">${endTime}</div>
+                                    <div class="transfer-time-col" style="color:${toColor}; opacity:0.8">${endTime}</div>
                                     <div class="transfer-info-col">
-                                        <div class="transfer-station">${toStation}</div>
+                                        <div class="transfer-station">${toFormatted}</div>
                                         ${toNote ? `<div class="transfer-note-sub">${toNote}</div>` : ''}
                                     </div>
                                 </div>
@@ -700,11 +776,9 @@
                 day.events.forEach((evt, eIdx) => { 
                     const img = evt.img ? `<img src="${evt.img}" class="w-full h-48 object-cover rounded-lg mb-3">` : ''; 
                     const nav = evt.map ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(evt.map)}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] border border-[var(--primary)] text-[var(--primary)] px-2 py-0.5 rounded font-bold ml-2">NAV</a>` : ''; 
-                    const iconMap = { 'train': 'train', 'bus': 'bus', 'taxi': 'taxi', 'walking': 'walking', 'transfer': 'exchange-alt' };
-                    const icon = iconMap[evt.transIcon] || 'arrow-down';
                     
                     if (evt.type === 'transport' || evt.transIcon === 'transfer') {
-                        transportGroup.push({ ...evt, eIdx, nav, icon });
+                        transportGroup.push({ ...evt, eIdx, nav, icon: (evt.transIcon === 'transfer' ? 'exchange-alt' : (evt.transIcon || 'train')) });
                     } else {
                         html += renderGroup();
                         html += `
@@ -728,7 +802,6 @@
 
                 html += renderGroup();
                 
-                // V66.4 Fix: Spacer Div (40px) + Clean Button
                 html += `<div style="height: 40px; width:100%;"></div><div onclick="newEvent()" class="text-center py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 cursor-pointer font-bold bg-white/30 text-sm hover:bg-white transition" style="margin-left:0;">${t.addEvent}</div></div>`; 
                 
                 box.innerHTML = html;
@@ -758,40 +831,20 @@
 
             if(icon === 'transfer') {
                 document.getElementById('transferInputs').classList.add('show');
-                document.getElementById('eTitle').style.display = 'none'; 
-                document.getElementById('eTimeEndContainer').style.display = 'block';
+                document.getElementById('standardInputs').style.display = 'none'; // Hide standard inputs
             } else {
                 document.getElementById('transferInputs').classList.remove('show');
-                document.getElementById('eTitle').style.display = 'block';
-                document.getElementById('eTimeEndContainer').style.display = 'none';
+                document.getElementById('standardInputs').style.display = 'block'; // Show standard inputs
             }
         }
         
         function fillModal(id, obj) { 
             document.getElementById(id).classList.add('active'); 
             if(id === 'editModal') { 
-                document.getElementById('eTime').value = obj.time; 
-                document.getElementById('eTimeEnd').value = obj.endTime || ""; 
-                document.getElementById('eDesc').value = obj.desc; 
+                // Common fields
                 document.getElementById('eMap').value = obj.map||""; 
                 
-                if(obj.title && obj.title.includes("|")) {
-                     const parts = obj.title.split("|");
-                     document.getElementById('eFrom').value = parts[0];
-                     document.getElementById('eTo').value = parts[1];
-                     // V66.6 Load Notes
-                     document.getElementById('eFromNote').value = obj.depNote || "";
-                     document.getElementById('eToNote').value = obj.arrNote || "";
-                     
-                     document.getElementById('eTitle').value = obj.title; 
-                } else {
-                    document.getElementById('eTitle').value = obj.title;
-                    document.getElementById('eFrom').value = "";
-                    document.getElementById('eTo').value = "";
-                    document.getElementById('eFromNote').value = "";
-                    document.getElementById('eToNote').value = "";
-                }
-
+                // Set Type first to trigger UI
                 setType(obj.type || 'sightseeing'); 
                 
                 if(obj.type === 'transport') {
@@ -802,6 +855,24 @@
                         if(btn.innerHTML.includes(icon) || (icon==='transfer' && btn.innerHTML.includes('exchange'))) btn.classList.add('active');
                     });
                      document.getElementById('eTransIcon').value = icon;
+                }
+
+                // Handle Transfer vs Standard
+                if(obj.transIcon === 'transfer') {
+                    // Populate Transfer fields
+                    const parts = obj.title && obj.title.includes("|") ? obj.title.split("|") : ["", ""];
+                    document.getElementById('eFrom').value = parts[0];
+                    document.getElementById('eTo').value = parts[1];
+                    document.getElementById('eFromNote').value = obj.depNote || "";
+                    document.getElementById('eToNote').value = obj.arrNote || "";
+                    document.getElementById('eTransTimeDep').value = obj.time;
+                    document.getElementById('eTransTimeArr').value = obj.endTime || "";
+                } else {
+                    // Populate Standard fields
+                    document.getElementById('eTime').value = obj.time; 
+                    document.getElementById('eTimeEnd').value = obj.endTime || ""; 
+                    document.getElementById('eTitle').value = obj.title;
+                    document.getElementById('eDesc').value = obj.desc;
                 }
 
                 const img = document.getElementById('previewImg'); const cont = document.getElementById('editImgContainer');
@@ -825,30 +896,37 @@
 
         function saveEvent() { 
             const hasImg = document.getElementById('previewImg').classList.contains('show');
-            let finalTitle = document.getElementById('eTitle').value;
-            let depNote = "";
-            let arrNote = "";
+            const isTransfer = document.getElementById('eTransIcon').value === 'transfer';
             
-            if (document.getElementById('eTransIcon').value === 'transfer') {
+            let finalTitle, finalTime, finalEndTime, finalDesc, depNote, arrNote;
+
+            if (isTransfer) {
                 const from = document.getElementById('eFrom').value;
                 const to = document.getElementById('eTo').value;
+                finalTitle = (from && to) ? `${from}|${to}` : from;
+                finalTime = document.getElementById('eTransTimeDep').value;
+                finalEndTime = document.getElementById('eTransTimeArr').value;
                 depNote = document.getElementById('eFromNote').value;
                 arrNote = document.getElementById('eToNote').value;
-                
-                if(from && to) finalTitle = `${from}|${to}`;
-                else if (from) finalTitle = from; 
+                finalDesc = ""; // Description unused in transfer mode (replaced by notes)
+            } else {
+                finalTitle = document.getElementById('eTitle').value;
+                finalTime = document.getElementById('eTime').value;
+                finalEndTime = document.getElementById('eTimeEnd').value;
+                finalDesc = document.getElementById('eDesc').value;
+                depNote = ""; arrNote = "";
             }
 
             const evt = { 
                 id: Date.now(), 
-                time: document.getElementById('eTime').value, 
-                endTime: document.getElementById('eTimeEnd').value,
+                time: finalTime, 
+                endTime: finalEndTime,
                 title: finalTitle, 
-                depNote: depNote, // V66.6 Save Notes
+                depNote: depNote, 
                 arrNote: arrNote,
                 type: document.getElementById('eType').value, 
                 transIcon: document.getElementById('eTransIcon').value, 
-                desc: document.getElementById('eDesc').value, 
+                desc: finalDesc, 
                 map: document.getElementById('eMap').value, 
                 img: hasImg ? document.getElementById('previewImg').src : "" 
             }; 
@@ -1041,7 +1119,7 @@
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V66.6</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V67.0</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
