@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V65.4</title>
+    <title>Japan Trip V65.5</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -302,11 +302,37 @@
         .transfer-station { font-size: 1rem; font-weight: bold; color: var(--text-main); }
         .transfer-note { font-size: 0.8rem; color: var(--text-sub); margin-top: 2px; }
 
-        .edit-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 20px; }
-        .edit-grid input { margin-bottom: 0 !important; }
+        /* V65.5: Fixed Time Inputs Alignment */
+        .edit-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; /* Force 50% each */
+            gap: 15px; 
+            margin-bottom: 20px; 
+        }
+        .edit-grid input { 
+            margin-bottom: 0 !important; 
+            width: 100% !important; /* Ensure full width inside grid cell */
+        }
         
         /* V65.3 Dual Inputs for Transfer */
-        #transferInputs { display: none; grid-template-columns: 1fr 20px 1fr; gap: 5px; align-items: center; margin-bottom: 15px; }
+        #transferInputs { 
+            display: none; 
+            background: rgba(0,0,0,0.03); /* V65.5: Subtle background to group */
+            border-radius: 12px;
+            padding: 10px;
+            grid-template-columns: 1fr 20px 1fr; 
+            gap: 5px; 
+            align-items: center; 
+            margin-bottom: 15px; 
+        }
+        #transferInputs input {
+            background: white; 
+            border: 1px solid var(--border);
+            text-align: center;
+            font-weight: bold;
+        }
+        body.dark-mode #transferInputs input { background: #2b2b36; }
+        
         #transferInputs.show { display: grid; }
         .transfer-arrow { color: #ccc; text-align: center; }
         
@@ -398,7 +424,7 @@
 
             <div id="transferInputs">
                 <input id="eFrom" placeholder="出發站 (From)" class="text-sm">
-                <div class="transfer-arrow"><i class="fas fa-arrow-down"></i></div>
+                <div class="transfer-arrow"><i class="fas fa-arrow-right"></i></div>
                 <input id="eTo" placeholder="抵達站 (To)" class="text-sm">
             </div>
 
@@ -509,7 +535,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v65.4_cloud');
+            const localSaved = localStorage.getItem('trip_v65.5_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             // V57 Safety Init
@@ -538,7 +564,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v65.4_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v65.5_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -587,7 +613,7 @@
             document.getElementById('shopImgContainer').classList.add('show'); 
         });
 
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v65.4_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v65.5_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -627,6 +653,7 @@
                     
                     // V65.3: Dual-Station Display for Transfer
                     if (evt.transIcon === 'transfer') {
+                        // Render any pending transport group before transfer
                         if (transportGroup.length > 0) {
                             html += `<div class="timeline-group">`;
                             transportGroup.forEach((tEvt, idx) => {
@@ -680,6 +707,7 @@
                     } else if (evt.type === 'transport') {
                         transportGroup.push({ ...evt, eIdx, nav, icon });
                     } else {
+                        // Render accumulated transport group first
                         if (transportGroup.length > 0) {
                             html += `<div class="timeline-group">`;
                             transportGroup.forEach((tEvt, idx) => {
@@ -699,6 +727,7 @@
                             transportGroup = []; // Reset
                         }
 
+                        // Render Standard Card
                         html += `
                         <div class="timeline-event" onclick="editEvent(${eIdx})">
                             <div class="timeline-dot"></div>
@@ -718,6 +747,7 @@
                     }
                 });
 
+                // Render remaining transport if any at the end
                 if (transportGroup.length > 0) {
                     html += `<div class="timeline-group">`;
                     transportGroup.forEach((tEvt, idx) => {
@@ -839,7 +869,7 @@
                 const from = document.getElementById('eFrom').value;
                 const to = document.getElementById('eTo').value;
                 if(from && to) finalTitle = `${from}|${to}`;
-                else if (from) finalTitle = from; 
+                else if (from) finalTitle = from; // Fallback
             }
 
             const evt = { 
@@ -951,18 +981,21 @@
             </div>
 
             <div class="converter-card">
-                <div class="converter-section" style="border-right:1px solid #eee;">
-                    <input type="number" id="convJpy" placeholder="0" oninput="calcTwd(this.value)" class="converter-input-box" inputmode="decimal">
-                    <span style="font-size:0.8rem; color:#999; font-weight:bold; margin-top:5px;">${t.convJpy}</span>
-                </div>
-                <div style="display:flex; flex-direction:column; align-items:center;">
-                    <div style="font-size:0.7rem; color:#999; font-weight:bold;">${t.rateLabel}</div>
+                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                    <div style="font-weight:bold; color:var(--primary); font-size:0.9rem;">${t.rateLabel}</div>
                     <input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center w-16 bg-gray-50 border border-gray-200 rounded p-1 font-bold text-gray-500 my-1">
-                    <i class="fas fa-arrow-right text-gray-300"></i>
                 </div>
-                <div class="converter-section" style="padding-left:10px;">
-                    <div id="convTwd" style="font-weight:900; font-size:1.4rem; color:var(--accent); min-height:30px; display:flex; align-items:center; justify-content:center;">0</div>
-                    <span style="font-size:0.8rem; color:#999; font-weight:bold; margin-top:5px;">${t.convTwd}</span>
+                
+                <div style="width:100%; padding: 10px 0; border-bottom:1px solid #eee;">
+                    <input type="number" id="convJpy" placeholder="0" oninput="calcTwd(this.value)" class="converter-input-box" inputmode="decimal">
+                    <div style="font-size:0.8rem; color:#999; font-weight:bold; text-align:center; margin-top:5px;">${t.convJpy}</div>
+                </div>
+                
+                <div style="color:#ccc; font-size:1.2rem; margin: 5px 0;"><i class="fas fa-arrow-down"></i></div>
+                
+                <div style="width:100%;">
+                    <div id="convTwd" style="font-weight:900; font-size:1.8rem; color:var(--accent); text-align:center;">0</div>
+                    <div style="font-size:0.8rem; color:#999; font-weight:bold; text-align:center; margin-top:5px;">${t.convTwd}</div>
                 </div>
             </div>
 
@@ -1029,14 +1062,22 @@
         }
         function delBudget(id) { if(confirm("Delete?")) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); } }
         function updateRate(val) { const r = parseFloat(val); if(!isNaN(r)) { data.config.rate = r; save(); } }
-        function calcTwd(val) { const jpy = parseFloat(val); const r = data.config.rate || 0.22; document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : parseFloat((jpy * r).toFixed(3)).toLocaleString(); }
+        
+        // V62.1 Fix: 3 Decimal Places
+        function calcTwd(val) { 
+            const jpy = parseFloat(val); 
+            const r = data.config.rate || 0.22; 
+            const result = jpy * r;
+            // Show up to 3 decimal places if needed, remove trailing zeros
+            document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : parseFloat(result.toFixed(3)).toLocaleString(); 
+        }
         
         let editHotelIdx = null;
         function renderInfo(box) {
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V64.1 (Transport Fix)</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V65.5 (Final Polish)</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
