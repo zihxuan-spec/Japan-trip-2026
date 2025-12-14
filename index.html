@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V65.1</title>
+    <title>Japan Trip V65.2</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -276,37 +276,37 @@
         .t-time { font-size: 0.75rem; font-weight: bold; color: var(--primary); margin-right: 8px; min-width: 45px; }
         .t-title { font-size: 0.9rem; font-weight: bold; color: var(--text-main); }
         
-        /* V65.1 Fixed Transfer Node (Aligned Left) */
+        /* V65.2 Fixed Transfer Node (Inset & Staggered) */
         .timeline-transfer-node {
+            display: flex; align-items: center;
+            margin: 20px 0 20px 10px; /* Staggered indentation */
             position: relative;
-            margin: 20px 0;
-            display: flex;
-            align-items: flex-start;
         }
-        .transfer-icon-wrapper {
-            position: absolute;
-            left: -29px; /* Hit the vertical line */
-            top: 5px;
-            width: 24px; height: 24px;
-            background: var(--bg-body);
-            border: 2px solid var(--accent); /* Special color */
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--accent); font-size: 11px;
-            z-index: 5;
-            box-shadow: 0 0 0 3px var(--bg-body);
+        .transfer-dot-hollow {
+            position: absolute; left: -36px; top: 50%; transform: translateY(-50%);
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #fff; border: 2px solid var(--line-color);
+            z-index: 2;
         }
-        .transfer-content {
+        .transfer-card {
             background: var(--input-bg);
             border: 1px solid var(--border);
             border-left: 4px solid var(--accent);
             border-radius: 8px;
-            padding: 10px 15px;
-            width: 100%;
+            padding: 8px 12px;
+            display: flex; align-items: center;
+            width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         }
-        .transfer-time { font-size: 0.75rem; font-weight: bold; color: var(--accent); margin-bottom: 2px; }
-        .transfer-title { font-size: 1rem; font-weight: bold; color: var(--text-main); }
-        .transfer-note { font-size: 0.8rem; color: var(--text-sub); margin-top: 2px; }
+        .transfer-icon-box {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--accent); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; margin-right: 10px; flex-shrink: 0;
+        }
+        .transfer-info { flex: 1; }
+        .transfer-time { font-size: 0.7rem; font-weight: bold; color: var(--accent); margin-bottom: 2px; }
+        .transfer-title { font-size: 0.95rem; font-weight: bold; color: var(--text-main); }
+        .transfer-note { font-size: 0.75rem; color: var(--text-sub); }
 
         .edit-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 20px; }
         .edit-grid input { margin-bottom: 0 !important; }
@@ -497,7 +497,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v65.1_cloud');
+            const localSaved = localStorage.getItem('trip_v65.2_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
             // V57 Safety Init
@@ -526,7 +526,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v65.1_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v65.2_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -575,7 +575,7 @@
             document.getElementById('shopImgContainer').classList.add('show'); 
         });
 
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v65.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v65.2_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -637,11 +637,14 @@
 
                         html += `
                         <div class="timeline-transfer-node" onclick="editEvent(${eIdx})">
-                            <div class="transfer-icon-wrapper"><i class="fas fa-exchange-alt"></i></div>
-                            <div class="transfer-content">
-                                <div class="transfer-time">${evt.time}</div>
-                                <div class="transfer-title">${evt.title}</div>
-                                <div class="transfer-note">${evt.desc}</div>
+                            <div class="transfer-dot-hollow"></div>
+                            <div class="transfer-card">
+                                <div class="transfer-icon-box"><i class="fas fa-exchange-alt"></i></div>
+                                <div class="transfer-info">
+                                    <div class="transfer-time">${evt.time}</div>
+                                    <div class="transfer-title">${evt.title}</div>
+                                    <div class="transfer-note">${evt.desc}</div>
+                                </div>
                             </div>
                         </div>`;
                     } else if (evt.type === 'transport') {
@@ -976,7 +979,7 @@
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V64.2 (Merged Transport)</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V65.2 (Inset Transfer)</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
