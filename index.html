@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V65.5</title>
+    <title>Japan Trip V66.0</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -34,7 +34,7 @@
             font-size: 17px; line-height: 1.75; letter-spacing: 0.06em; -webkit-tap-highlight-color: transparent;
             padding-bottom: 140px; min-height: 100vh; overflow-x: hidden;
             transition: background-color 0.5s, color 0.5s;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232E4B71' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         body.has-custom-bg { background-image: none; background-size: cover; background-position: center; background-attachment: fixed; }
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); z-index: -1; pointer-events: none; transition: 0.3s; }
@@ -169,7 +169,6 @@
         .total-amount { font-family: "Zen Old Mincho", serif; font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 2px; }
         .total-sub { font-size: 0.9rem; opacity: 0.9; margin-bottom: 10px; }
         
-        /* V63.4 FIXED Converter Layout (Vertical Stack for Mobile) */
         .converter-card {
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; 
             padding: 20px; margin-bottom: 25px;
@@ -177,9 +176,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
         
-        .converter-row {
-            width: 100%; display: flex; justify-content: space-between; align-items: center;
-        }
+        .converter-row { width: 100%; display: flex; justify-content: space-between; align-items: center; }
 
         .converter-input-box {
             background: transparent; border: none; border-bottom: 2px solid #e2e8f0; 
@@ -187,7 +184,6 @@
             color: var(--text-main); border-radius: 0; outline: none; transition: 0.3s;
         }
         .converter-input-box:focus { border-color: var(--primary); }
-
         .converter-input { padding: 4px 8px !important; margin-bottom: 0 !important; height: 32px !important; font-size: 14px !important; border-radius: 6px !important; width: auto !important; }
 
         .currency-caps { display: flex; gap: 8px; margin-bottom: 15px; justify-content: center; }
@@ -211,9 +207,7 @@
             font-weight: bold; cursor: pointer; display: flex; 
             align-items: center; justify-content: flex-end; gap: 5px; width: 140px;
         }
-        .mini-date input { 
-            position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer; 
-        }
+        .mini-date input { position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer; }
         
         .budget-item { display: flex; align-items: center; padding: 15px; background: var(--bg-card); border-bottom: 1px solid var(--border); transition: 0.2s; }
         .budget-item:last-child { border-bottom: none; }
@@ -226,13 +220,12 @@
         .budget-title { font-weight: bold; color: var(--text-main); font-size: 1rem; }
         .budget-amt { font-weight: 900; font-size: 1.1rem; color: var(--text-main); font-family: "Zen Old Mincho", serif; }
         
-        /* V62.1 Fix: Hotel Card Buttons */
         .info-card-del { position: absolute; top: 12px; right: 12px; color: #ccc; cursor: pointer; font-size: 16px; padding: 8px; z-index: 10; }
         .info-card-edit { position: absolute; top: 12px; right: 45px; color: #9ca3af; cursor: pointer; font-size: 14px; padding: 8px; z-index: 10; }
 
-        /* V64.2 Timeline Styles */
+        /* Timeline Styles */
         .timeline-container { position: relative; padding-left: 24px; }
-        /* Vertical Dotted Line for whole day */
+        /* Vertical Dotted Line */
         .timeline-container::before {
             content: ''; position: absolute; left: 6px; top: 10px; bottom: -20px;
             width: 2px; border-left: 2px dotted var(--line-color); z-index: 0;
@@ -247,7 +240,7 @@
             box-shadow: 0 0 0 2px rgba(46, 75, 113, 0.1);
         }
 
-        /* V64.2 Merged Transport Style */
+        /* Merged Transport Style */
         .timeline-group {
             position: relative; margin-bottom: 20px;
             background: #f8fafc; border-radius: 12px;
@@ -257,90 +250,61 @@
         body.dark-mode .timeline-group { background: #1e293b; border-color: #334155; }
 
         .timeline-transport-row {
-            display: flex; align-items: center; padding: 8px 0;
+            display: flex; align-items: flex-start; padding: 8px 0;
             position: relative;
         }
+        /* Connect the dots inside the group */
         .timeline-transport-row:not(:last-child)::after {
             content: ''; position: absolute; left: 15px; top: 32px; bottom: -10px;
             width: 2px; background: #cbd5e1; z-index: 0;
         }
+        
         .t-icon-box {
             width: 32px; height: 32px; border-radius: 50%;
             background: white; border: 1px solid #cbd5e1;
             display: flex; align-items: center; justify-content: center;
             font-size: 12px; color: var(--text-sub); z-index: 1;
-            margin-right: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-right: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0;
         }
         body.dark-mode .t-icon-box { background: #0f172a; border-color: #475569; }
         
-        .t-time { font-size: 0.75rem; font-weight: bold; color: var(--primary); margin-right: 8px; min-width: 45px; }
-        .t-title { font-size: 0.9rem; font-weight: bold; color: var(--text-main); }
+        .t-time { font-size: 0.75rem; font-weight: bold; color: var(--primary); margin-right: 8px; min-width: 45px; margin-top: 6px;}
+        .t-title { font-size: 0.9rem; font-weight: bold; color: var(--text-main); margin-top: 4px; }
         
-        /* V65.2 Fixed Transfer Node (Aligned Left) */
-        .timeline-transfer-node {
-            position: relative; margin: 25px 0 25px 5px; /* Aligned left, slightly indented */
-            display: flex; align-items: center;
-        }
-        /* The special icon on the timeline */
-        .transfer-timeline-icon {
-            position: absolute; left: -26px; /* Align with dotted line */
-            width: 20px; height: 20px;
-            background: var(--bg-body); color: var(--accent);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 10px; border: 2px solid var(--accent); z-index: 5;
-        }
-        /* The Card */
-        .transfer-card {
-            flex: 1; background: var(--input-bg); border: 1px solid var(--border);
-            border-left: 4px solid var(--accent); /* Accent border */
-            border-radius: 8px; padding: 10px 15px;
-            display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-        }
-        .transfer-info { display: flex; flex-direction: column; }
-        .transfer-time { font-size: 0.7rem; font-weight: bold; color: var(--accent); }
-        .transfer-station { font-size: 1rem; font-weight: bold; color: var(--text-main); }
-        .transfer-note { font-size: 0.8rem; color: var(--text-sub); margin-top: 2px; }
-
-        /* V65.5: Fixed Time Inputs Alignment */
-        .edit-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; /* Force 50% each */
-            gap: 15px; 
-            margin-bottom: 20px; 
-        }
-        .edit-grid input { 
-            margin-bottom: 0 !important; 
-            width: 100% !important; /* Ensure full width inside grid cell */
-        }
-        
-        /* V65.3 Dual Inputs for Transfer */
-        #transferInputs { 
-            display: none; 
-            background: rgba(0,0,0,0.03); /* V65.5: Subtle background to group */
-            border-radius: 12px;
-            padding: 10px;
-            grid-template-columns: 1fr 20px 1fr; 
-            gap: 5px; 
-            align-items: center; 
-            margin-bottom: 15px; 
-        }
-        #transferInputs input {
-            background: white; 
+        /* V66.0 New Integrated Transfer Style */
+        .transfer-inner-block {
+            background: var(--input-bg);
             border: 1px solid var(--border);
-            text-align: center;
-            font-weight: bold;
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-top: 4px;
+            width: 100%;
         }
-        body.dark-mode #transferInputs input { background: #2b2b36; }
+        .transfer-line {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.9rem; font-weight: bold; color: var(--text-main);
+        }
+        .transfer-arrow-visual {
+            text-align: center; color: var(--accent); font-size: 0.7rem; padding: 2px 0;
+        }
+        .transfer-time-sub {
+            font-size: 0.75rem; font-weight: bold; color: var(--primary);
+        }
+
+        .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .edit-grid input { margin-bottom: 0 !important; width: 100% !important; }
         
+        #transferInputs { 
+            display: none; background: rgba(0,0,0,0.03); border-radius: 12px;
+            padding: 10px; grid-template-columns: 1fr 20px 1fr; gap: 5px; 
+            align-items: center; margin-bottom: 15px; 
+        }
+        #transferInputs input { background: white; border: 1px solid var(--border); text-align: center; font-weight: bold; }
+        body.dark-mode #transferInputs input { background: #2b2b36; }
         #transferInputs.show { display: grid; }
         .transfer-arrow { color: #ccc; text-align: center; }
-        
-        /* V65.4: Padding fix for alignment */
-        .timeline-transport-row .text-xs {
-            padding-left: 0; /* Let flex handle alignment */
-            margin-left: 44px; /* Align with title (32px icon + 12px margin) */
-        }
+        .timeline-transport-row .text-xs { padding-left: 0; }
     </style>
 </head>
 <body class="default-bg">
@@ -535,10 +499,9 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v65.5_cloud');
+            const localSaved = localStorage.getItem('trip_v66.0_cloud');
             if(localSaved) { data = JSON.parse(localSaved); applySettings(); render(); updateLangUI(); }
             
-            // V57 Safety Init
             if(!data.shopping) data.shopping = [];
             if(!data.info) data.info = { hotels: [] };
 
@@ -551,7 +514,6 @@
                     const cloudData = doc.data();
                     console.log("Cloud update received");
                     data = cloudData;
-                    // V57 Safety Re-check
                     if(!data.shopping) data.shopping = [];
                     if(!data.info) data.info = { hotels: [] };
                     
@@ -564,7 +526,7 @@
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
         function saveLocal() { 
             try {
-                localStorage.setItem('trip_v65.5_cloud', JSON.stringify(data)); 
+                localStorage.setItem('trip_v66.0_cloud', JSON.stringify(data)); 
             } catch(e) {
                 if(e.name === 'QuotaExceededError') {
                     alert("手機儲存空間已滿！請刪除一些照片。\nStorage Full!");
@@ -613,7 +575,7 @@
             document.getElementById('shopImgContainer').classList.add('show'); 
         });
 
-        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v65.5_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
+        function resetAllData() { if(confirm("Clear All?")) { localStorage.removeItem('trip_v66.0_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); } }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -627,7 +589,7 @@
             return dateStr.includes(todayFormatted) && year === 2026;
         }
 
-        // V64.1: Timeline Schedule with Transport Icons
+        // V66.0: Integrated Transport Grouping
         function renderSchedule(box) {
             const t = i18n[data.config.lang];
             if(viewState.mode === 'list') {
@@ -642,90 +604,78 @@
                 
                 let html = `<div onclick="viewState.mode='list'; render()" class="back-btn mb-4 inline-flex items-center text-primary cursor-pointer font-bold"><i class="fas fa-arrow-left mr-2"></i></div><div class="flex items-end justify-between mb-6 border-l-4 border-[var(--primary)] pl-4"><div><h2 class="text-4xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</h2><p class="text-sm text-gray-500 font-bold">${day.date}</p></div><div class="text-xl font-bold jp-font">${day.loc}</div></div><a href="${mapUrl}" target="_blank" class="map-route-btn"><i class="fas fa-map-marked-alt"></i> ${t.viewMap}</a><div class="space-y-0 timeline-container">`;
                 
-                // V64.2: Group consecutive transports
                 let transportGroup = [];
                 
+                // Helper to render the group and clear it
+                const renderGroup = () => {
+                    if (transportGroup.length === 0) return '';
+                    let gHtml = `<div class="timeline-group">`;
+                    transportGroup.forEach(tEvt => {
+                        // V66.0: Check if it's a Transfer to render special visual
+                        if(tEvt.icon === 'exchange-alt') {
+                            // Transfer visual logic
+                            let display = '';
+                             if (tEvt.title.includes("|")) {
+                                const parts = tEvt.title.split("|");
+                                const fromStation = parts[0];
+                                const toStation = parts[1];
+                                const endTime = tEvt.endTime ? tEvt.endTime : "";
+                                display = `
+                                <div class="transfer-inner-block">
+                                    <div class="transfer-line">
+                                        <span>${fromStation}</span>
+                                        <span class="transfer-time-sub">${tEvt.time}</span>
+                                    </div>
+                                    <div class="transfer-arrow-visual">⬇</div>
+                                    <div class="transfer-line">
+                                        <span>${toStation}</span>
+                                        <span class="transfer-time-sub" style="opacity:0.8">${endTime}</span>
+                                    </div>
+                                    <div class="text-xs text-gray-400 mt-1">${tEvt.desc}</div>
+                                </div>`;
+                            } else {
+                                display = `<div class="transfer-inner-block"><div class="font-bold text-sm">${tEvt.title}</div><div class="text-xs text-gray-400">${tEvt.desc}</div></div>`;
+                            }
+
+                            gHtml += `
+                            <div class="timeline-transport-row" onclick="editEvent(${tEvt.eIdx})">
+                                <div class="t-icon-box" style="color:var(--accent); border-color:var(--accent);"><i class="fas fa-exchange-alt"></i></div>
+                                <div style="flex:1;">
+                                    ${display}
+                                </div>
+                            </div>`;
+                        } else {
+                            // Standard Transport
+                            gHtml += `
+                            <div class="timeline-transport-row" onclick="editEvent(${tEvt.eIdx})">
+                                <div class="t-icon-box"><i class="fas fa-${tEvt.icon}"></i></div>
+                                <div style="flex:1">
+                                    <div class="flex items-center">
+                                        <span class="t-time">${tEvt.time}</span>
+                                        <span class="t-title">${tEvt.title} ${tEvt.nav}</span>
+                                    </div>
+                                    <div class="text-xs text-gray-400 pl-1 ml-[44px]">${tEvt.desc}</div>
+                                </div>
+                            </div>`;
+                        }
+                    });
+                    gHtml += `</div>`;
+                    transportGroup = [];
+                    return gHtml;
+                };
+
                 day.events.forEach((evt, eIdx) => { 
                     const img = evt.img ? `<img src="${evt.img}" class="w-full h-48 object-cover rounded-lg mb-3">` : ''; 
                     const nav = evt.map ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(evt.map)}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] border border-[var(--primary)] text-[var(--primary)] px-2 py-0.5 rounded font-bold ml-2">NAV</a>` : ''; 
                     const iconMap = { 'train': 'train', 'bus': 'bus', 'taxi': 'taxi', 'walking': 'walking', 'transfer': 'exchange-alt' };
                     const icon = iconMap[evt.transIcon] || 'arrow-down';
                     
-                    // V65.3: Dual-Station Display for Transfer
-                    if (evt.transIcon === 'transfer') {
-                        // Render any pending transport group before transfer
-                        if (transportGroup.length > 0) {
-                            html += `<div class="timeline-group">`;
-                            transportGroup.forEach((tEvt, idx) => {
-                                html += `
-                                <div class="timeline-transport-row" onclick="editEvent(${tEvt.eIdx})">
-                                    <div class="t-icon-box"><i class="fas fa-${tEvt.icon}"></i></div>
-                                    <div style="flex:1">
-                                        <div class="flex items-center">
-                                            <span class="t-time">${tEvt.time}</span>
-                                            <span class="t-title">${tEvt.title} ${tEvt.nav}</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400 pl-1 ${tEvt.icon!=='transfer'?'ml-[44px]':''}">${tEvt.desc}</div> </div>
-                                </div>`;
-                            });
-                            html += `</div>`;
-                            transportGroup = [];
-                        }
-
-                        // V65.3: Parse Transfer Data
-                        let displayTitle = evt.title;
-                        if (evt.title.includes("|")) {
-                            const parts = evt.title.split("|");
-                            const fromStation = parts[0];
-                            const toStation = parts[1];
-                            const endTime = evt.endTime ? evt.endTime : "+? min"; // V65.4: Arrival Time
-
-                            displayTitle = `
-                            <div class="flex flex-col w-full">
-                                <div class="flex justify-between w-full items-center">
-                                    <span class="text-[0.95rem] font-bold text-[var(--text-main)]">${fromStation}</span>
-                                    <span class="text-xs font-bold text-[var(--primary)]">${evt.time}</span>
-                                </div>
-                                <div class="text-center text-gray-300 text-xs my-1"><i class="fas fa-arrow-down"></i></div>
-                                <div class="flex justify-between w-full items-center">
-                                    <span class="text-[0.95rem] font-bold text-[var(--text-main)]">${toStation}</span>
-                                    <span class="text-xs font-bold text-[var(--primary)]" style="opacity:0.8">${endTime}</span>
-                                </div>
-                            </div>`;
-                        }
-
-                        html += `
-                        <div class="timeline-transfer-node" onclick="editEvent(${eIdx})">
-                            <div class="transfer-timeline-icon"><i class="fas fa-exchange-alt"></i></div>
-                            <div class="transfer-card">
-                                <div class="transfer-info w-full">
-                                    ${displayTitle}
-                                    <div class="transfer-note">${evt.desc}</div>
-                                </div>
-                            </div>
-                        </div>`;
-                    } else if (evt.type === 'transport') {
+                    // V66.0 Logic: Group if it's Transport OR Transfer
+                    if (evt.type === 'transport' || evt.transIcon === 'transfer') {
                         transportGroup.push({ ...evt, eIdx, nav, icon });
                     } else {
-                        // Render accumulated transport group first
-                        if (transportGroup.length > 0) {
-                            html += `<div class="timeline-group">`;
-                            transportGroup.forEach((tEvt, idx) => {
-                                html += `
-                                <div class="timeline-transport-row" onclick="editEvent(${tEvt.eIdx})">
-                                    <div class="t-icon-box"><i class="fas fa-${tEvt.icon}"></i></div>
-                                    <div style="flex:1">
-                                        <div class="flex items-center">
-                                            <span class="t-time">${tEvt.time}</span>
-                                            <span class="t-title">${tEvt.title} ${tEvt.nav}</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400 pl-1 ${tEvt.icon!=='transfer'?'ml-[44px]':''}">${tEvt.desc}</div>
-                                    </div>
-                                </div>`;
-                            });
-                            html += `</div>`;
-                            transportGroup = []; // Reset
-                        }
+                        // Render any accumulated group first
+                        html += renderGroup();
 
                         // Render Standard Card
                         html += `
@@ -747,24 +697,8 @@
                     }
                 });
 
-                // Render remaining transport if any at the end
-                if (transportGroup.length > 0) {
-                    html += `<div class="timeline-group">`;
-                    transportGroup.forEach((tEvt, idx) => {
-                        html += `
-                        <div class="timeline-transport-row" onclick="editEvent(${tEvt.eIdx})">
-                            <div class="t-icon-box"><i class="fas fa-${tEvt.icon}"></i></div>
-                            <div style="flex:1">
-                                <div class="flex items-center">
-                                    <span class="t-time">${tEvt.time}</span>
-                                    <span class="t-title">${tEvt.title} ${tEvt.nav}</span>
-                                </div>
-                                <div class="text-xs text-gray-400 pl-1 ${tEvt.icon!=='transfer'?'ml-[44px]':''}">${tEvt.desc}</div>
-                            </div>
-                        </div>`;
-                    });
-                    html += `</div>`;
-                }
+                // Render remaining group at the end
+                html += renderGroup();
                 
                 html += `<div onclick="newEvent()" class="text-center py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 cursor-pointer font-bold bg-white/30 text-sm hover:bg-white transition mt-8" style="margin-left:-24px;">${t.addEvent}</div></div>`; box.innerHTML = html;
             }
@@ -778,29 +712,23 @@
         function editEvent(idx) { editIdx = idx; fillModal('editModal', data.itinerary[viewState.dayIdx].events[idx]); } 
         function newEvent() { editIdx = null; fillModal('editModal', {time:"", title:"", desc:"", map:"", img:"", transIcon:'train'}); } 
         
-        // V64.1 Transport Icon Setters
         function setType(type) { 
             document.getElementById('eType').value = type; 
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); 
             document.getElementById('btn-' + type).classList.add('active'); 
             
-            // Show sub-selector only for transport
-            if(type === 'transport') {
-                document.getElementById('transportSubSelector').classList.add('show');
-            } else {
-                document.getElementById('transportSubSelector').classList.remove('show');
-            }
+            if(type === 'transport') document.getElementById('transportSubSelector').classList.add('show');
+            else document.getElementById('transportSubSelector').classList.remove('show');
         }
         function setTransIcon(icon) {
             document.getElementById('eTransIcon').value = icon;
             document.querySelectorAll('.trans-btn').forEach(b => b.classList.remove('active'));
             event.currentTarget.classList.add('active');
 
-            // V65.3: Toggle Dual Input for Transfer
             if(icon === 'transfer') {
                 document.getElementById('transferInputs').classList.add('show');
                 document.getElementById('eTitle').style.display = 'none'; 
-                document.getElementById('eTimeEndContainer').style.display = 'block'; // V65.4 Show End Time
+                document.getElementById('eTimeEndContainer').style.display = 'block';
             } else {
                 document.getElementById('transferInputs').classList.remove('show');
                 document.getElementById('eTitle').style.display = 'block';
@@ -812,11 +740,10 @@
             document.getElementById(id).classList.add('active'); 
             if(id === 'editModal') { 
                 document.getElementById('eTime').value = obj.time; 
-                document.getElementById('eTimeEnd').value = obj.endTime || ""; // V65.4 Load End Time
+                document.getElementById('eTimeEnd').value = obj.endTime || ""; 
                 document.getElementById('eDesc').value = obj.desc; 
                 document.getElementById('eMap').value = obj.map||""; 
                 
-                // Handle Transfer Title Splitting
                 if(obj.title && obj.title.includes("|")) {
                      const parts = obj.title.split("|");
                      document.getElementById('eFrom').value = parts[0];
@@ -830,7 +757,6 @@
 
                 setType(obj.type || 'sightseeing'); 
                 
-                // Set Transport Icon state
                 if(obj.type === 'transport') {
                     setTransIcon(obj.transIcon || 'train'); 
                     const icon = obj.transIcon || 'train';
@@ -864,18 +790,17 @@
             const hasImg = document.getElementById('previewImg').classList.contains('show');
             let finalTitle = document.getElementById('eTitle').value;
             
-            // V65.3: Combine Dual Inputs if Transfer is selected
             if (document.getElementById('eTransIcon').value === 'transfer') {
                 const from = document.getElementById('eFrom').value;
                 const to = document.getElementById('eTo').value;
                 if(from && to) finalTitle = `${from}|${to}`;
-                else if (from) finalTitle = from; // Fallback
+                else if (from) finalTitle = from; 
             }
 
             const evt = { 
                 id: Date.now(), 
                 time: document.getElementById('eTime').value, 
-                endTime: document.getElementById('eTimeEnd').value, // V65.4 Save End Time
+                endTime: document.getElementById('eTimeEnd').value,
                 title: finalTitle, 
                 type: document.getElementById('eType').value, 
                 transIcon: document.getElementById('eTransIcon').value, 
@@ -1060,12 +985,10 @@
         function delBudget(id) { if(confirm("Delete?")) { data.budget = data.budget.filter(b=>b.id!==id); save(); render(); } }
         function updateRate(val) { const r = parseFloat(val); if(!isNaN(r)) { data.config.rate = r; save(); } }
         
-        // V62.1 Fix: 3 Decimal Places
         function calcTwd(val) { 
             const jpy = parseFloat(val); 
             const r = data.config.rate || 0.22; 
             const result = jpy * r;
-            // Show up to 3 decimal places if needed, remove trailing zeros
             document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : parseFloat(result.toFixed(3)).toLocaleString(); 
         }
         
@@ -1074,7 +997,7 @@
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V65.5 (Final Polish)</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V66.0</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
