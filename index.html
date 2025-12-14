@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V69.0</title>
+    <title>Japan Trip V69.1</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -430,12 +430,13 @@
         .confirm-cancel { background: var(--input-bg); color: var(--text-sub); }
         .confirm-ok { background: #ef4444; color: white; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
 
-        /* FAB Style */
+        /* V69.1: FAB Style - Raised Position */
         .fab-btn {
-            position: fixed; bottom: 100px; right: 25px;
+            position: fixed; bottom: 130px; /* V69.1: Moved up from 100px */
+            right: 25px;
             width: 56px; height: 56px; border-radius: 50%;
             background: var(--primary); color: white;
-            box-shadow: 0 4px 15px rgba(46, 75, 113, 0.4);
+            box-shadow: 0 8px 20px rgba(46, 75, 113, 0.3); /* Enhanced shadow */
             display: flex; align-items: center; justify-content: center;
             font-size: 24px; z-index: 90; transition: transform 0.2s;
             cursor: pointer;
@@ -461,22 +462,23 @@
         body.dark-mode .pill-transport { background: #1e293b; color: #cbd5e1; border-color: #334155; }
         body.dark-mode .pill-hotel { background: #581c87; color: #e9d5ff; border-color: #6b21a8; }
         
-        /* V69.0: Swipe to Delete Styles */
+        /* V69.1: Swipe to Delete Styles (Hide Red by default) */
         .swipe-container {
             display: flex;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* IE 10+ */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
-        .swipe-container::-webkit-scrollbar { 
-            display: none; /* Chrome/Safari */
-        }
+        .swipe-container::-webkit-scrollbar { display: none; }
+        
         .swipe-content {
             min-width: 100%;
             scroll-snap-align: start;
-            background: transparent; /* Allows transparency */
+            background: transparent;
+            /* No margin-right to hide red area */
         }
+        
         .swipe-action-delete {
             min-width: 80px;
             scroll-snap-align: end;
@@ -486,9 +488,10 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            margin-bottom: 15px; /* Matches card margin */
-            border-radius: 0 12px 12px 0; /* Rounded right corners */
-            margin-left: -12px; /* Pull closer to card */
+            margin-bottom: 15px; 
+            border-radius: 0 12px 12px 0;
+            /* V69.1: Ensure it's hidden initially */
+            margin-left: -1px; 
         }
     </style>
 </head>
@@ -663,14 +666,14 @@
         const firebaseConfig = { apiKey: "AIzaSyCZ6-Io1jzxTLz4gzNW_Nf9er5As217erk", authDomain: "japan-fb8df.firebaseapp.com", projectId: "japan-fb8df", storageBucket: "japan-fb8df.firebasestorage.app", messagingSenderId: "395174393492", appId: "1:395174393492:web:118d202e6387787a1f2681", measurementId: "G-F1Y2PGN2R5" };
         firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); const TRIP_DOC_ID = "trip_data_2026"; 
 
-        // V69.0: Haptic Feedback Function
+        // Haptic Feedback Function
         function haptic(type) {
             if(!navigator.vibrate) return;
-            if(type === 'light') navigator.vibrate(5); // Very subtle
-            if(type === 'medium') navigator.vibrate(15); // Noticeable tap
-            if(type === 'heavy') navigator.vibrate(30); // Heavy thud
-            if(type === 'success') navigator.vibrate([10, 30, 10]); // Da-da
-            if(type === 'error') navigator.vibrate([50, 30, 50, 30, 50]); // Buzz-buzz
+            if(type === 'light') navigator.vibrate(5); 
+            if(type === 'medium') navigator.vibrate(15); 
+            if(type === 'heavy') navigator.vibrate(30); 
+            if(type === 'success') navigator.vibrate([10, 30, 10]); 
+            if(type === 'error') navigator.vibrate([50, 30, 50, 30, 50]); 
         }
 
         const i18n = {
@@ -681,7 +684,7 @@
                 editTitle: '編輯行程', upload: '上傳照片', tSight: '觀光', tFood: '美食', tTrans: '交通', tHotel: '住宿',
                 phTime: '時間', phTitle: '行程標題 (必填)', phDesc: '備註 / 詳細說明...', phMap: '貼上 Google Maps 連結或地點',
                 btnDel: '刪除', btnSave: '儲存變更', btnCancel: '取消',
-                shopTitle: '新增購物清單', shopUpload: '商品照片', phShopName: '商品名稱', phShopName: '商品名稱', phShopNote: '備註', btnAddShop: '加入清單',
+                shopTitle: '新增購物清單', shopUpload: '商品照片', phShopName: '商品名稱', phShopNote: '備註', btnAddShop: '加入清單',
                 sDrug: '藥妝', sSnack: '零食', sWear: '服飾', sGift: '雜貨', tabToBuy: '未完成', tabBought: '已完成',
                 totalSpent: '總花費', converter: '匯率換算', newExp: '新增支出', phItem: '項目', phAmt: '金額', btnAddExp: '記帳',
                 flights: '航班資訊', hotels: '住宿資訊', noInfo: '行程中未找到資訊。',
@@ -735,7 +738,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 2500);
             
-            const localSaved = localStorage.getItem('trip_v69.0_cloud');
+            const localSaved = localStorage.getItem('trip_v69.1_cloud');
             if(localSaved) { 
                 data = JSON.parse(localSaved); 
                 const todayIdx = data.itinerary.findIndex(d => isToday(d.date));
@@ -763,7 +766,7 @@
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { try { localStorage.setItem('trip_v69.0_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
+        function saveLocal() { try { localStorage.setItem('trip_v69.1_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
         function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
         
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
@@ -781,7 +784,7 @@
         document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); document.getElementById('editImgContainer').classList.add('show'); });
         document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('shopPreview').src = url; document.getElementById('shopPreview').classList.add('show'); document.getElementById('shopImgContainer').classList.add('show'); });
 
-        function resetAllData() { openConfirm("Clear All Data?", () => { haptic('error'); localStorage.removeItem('trip_v69.0_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); }); }
+        function resetAllData() { openConfirm("Clear All Data?", () => { haptic('error'); localStorage.removeItem('trip_v69.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); }); }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -1177,7 +1180,7 @@
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V69.0</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V69.1</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
