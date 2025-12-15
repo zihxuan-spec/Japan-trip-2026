@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V70.2</title>
+    <title>Japan Trip V70.3</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -90,10 +90,8 @@
         }
         body.dark-mode .modal-handle { background: #334155; }
 
-        /* V70.2 Fix: List Item Card spacing */
         .list-item-card { display: flex; align-items: center; justify-content: space-between; padding: 20px; margin-bottom: 20px; cursor: pointer; }
         .list-item-card:active { transform: scale(0.98); }
-        
         .img-box { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; display: none; }
         .img-box.show { display: block; }
         .img-container { position: relative; display: none; }
@@ -431,14 +429,14 @@
         .confirm-cancel { background: var(--input-bg); color: var(--text-sub); }
         .confirm-ok { background: #ef4444; color: white; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
 
-        /* V70.2 FAB Style Fix: Adjusted position to avoid overlay */
+        /* V70.3 FAB Style Fix: Adjusted position to AVOID nav bar */
         .fab-btn {
             position: fixed; 
-            bottom: calc(env(safe-area-inset-bottom) + 90px); /* Dynamic safe area */
+            bottom: calc(140px + env(safe-area-inset-bottom)); /* Increased height for safety */
             right: 25px;
             width: 56px; height: 56px; border-radius: 50%;
             background: var(--primary); color: white;
-            box-shadow: 0 8px 20px rgba(46, 75, 113, 0.3); /* Enhanced shadow */
+            box-shadow: 0 8px 20px rgba(46, 75, 113, 0.3); 
             display: flex; align-items: center; justify-content: center;
             font-size: 24px; z-index: 90; transition: transform 0.2s;
             cursor: pointer;
@@ -747,7 +745,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 1500);
             
-            const localSaved = localStorage.getItem('trip_v70.2_cloud');
+            const localSaved = localStorage.getItem('trip_v70.3_cloud');
             if(localSaved) { 
                 data = JSON.parse(localSaved); 
                 const todayIdx = data.itinerary.findIndex(d => isToday(d.date));
@@ -775,7 +773,7 @@
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { try { localStorage.setItem('trip_v70.2_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
+        function saveLocal() { try { localStorage.setItem('trip_v70.3_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
         function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
         
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
@@ -793,7 +791,7 @@
         document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); document.getElementById('editImgContainer').classList.add('show'); });
         document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('shopPreview').src = url; document.getElementById('shopPreview').classList.add('show'); document.getElementById('shopImgContainer').classList.add('show'); });
 
-        function resetAllData() { openConfirm("Clear All Data?", () => { haptic('error'); localStorage.removeItem('trip_v70.2_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); }); }
+        function resetAllData() { openConfirm("Clear All Data?", () => { haptic('error'); localStorage.removeItem('trip_v70.3_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); }); }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -1225,7 +1223,7 @@
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V70.2</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V70.3</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
