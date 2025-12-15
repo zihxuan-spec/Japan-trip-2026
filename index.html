@@ -7,13 +7,15 @@
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
-    <script src="https://cdn.tailwindcss.com" crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;600;700;900&family=Noto+Serif+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js" crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js" crossorigin="anonymous"></script>
-<style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+
+    <style>
         :root {
             --primary: #2E4B71; --accent: #C85554; --text-main: #333333; --text-sub: #666666; --bg-body: #F9F8F6;
             --bg-card: rgba(255, 255, 255, 0.92); --bg-nav: rgba(46, 75, 113, 0.95); --nav-text: #94a3b8; --nav-active: #ffffff;
@@ -544,7 +546,7 @@
                 <div class="flex items-center mt-2">
                     <p id="appSubtitle" class="text-xs tracking-[0.2em] uppercase font-sans font-bold" style="color:var(--text-sub)">2026.02.19 - 02.24</p>
                     <div id="dbStatus" class="status-dot loading" title="Status"></div>
-                    <span id="status-text">連線中</span>
+                    <span id="status-text">Connecting</span>
                 </div>
             </div>
             <div class="flex gap-3">
@@ -687,33 +689,7 @@
     </div>
 
     <script>
-        window.onerror = function (msg, url, line, col, error) {
-    const errDiv = document.getElementById('error-log');
-    if (!errDiv) return false;
-
-    // Safari often hides cross-origin script errors as just "Script error."
-    if (msg === 'Script error.') {
-        errDiv.style.display = 'block';
-        errDiv.innerHTML = '⚠️ 錯誤：Script error（Safari 無法顯示細節；通常是外部 CDN 腳本被擋、載入失敗，或跨網域限制）';
-        console.warn('Script error (details hidden).', url);
-        return false;
-    }
-
-    const detail = (error && error.stack) ? error.stack : `${msg} @ ${url}:${line}:${col}`;
-    errDiv.style.display = 'block';
-    errDiv.innerHTML = `⚠️ 錯誤：${detail}`;
-    console.error(error || msg);
-    return false;
-};
-
-window.onunhandledrejection = function (e) {
-    const errDiv = document.getElementById('error-log');
-    if (!errDiv) return;
-    errDiv.style.display = 'block';
-    const reason = e && e.reason ? e.reason : e;
-    errDiv.innerHTML = `⚠️ Promise 錯誤：${(reason && reason.stack) ? reason.stack : reason}`;
-    console.error(e);
-};
+        window.onerror = function(msg, url, line, col, error) { const errDiv = document.getElementById('error-log'); if(errDiv) { errDiv.style.display = 'block'; errDiv.innerHTML = `⚠️ Error: ${msg}`; } console.error(error); return false; };
         window.openShopModal = function() { try { const modal = document.getElementById('shopModal'); if(modal) { modal.classList.add('active'); document.getElementById('sName').value=""; document.getElementById('sNote').value=""; document.getElementById('shopPreview').src = ""; document.getElementById('shopImgContainer').classList.remove('show'); if(window.setShopType) window.setShopType('drug'); } } catch(e) { console.error(e); } };
 
         const firebaseConfig = { apiKey: "AIzaSyCZ6-Io1jzxTLz4gzNW_Nf9er5As217erk", authDomain: "japan-fb8df.firebaseapp.com", projectId: "japan-fb8df", storageBucket: "japan-fb8df.firebasestorage.app", messagingSenderId: "395174393492", appId: "1:395174393492:web:118d202e6387787a1f2681", measurementId: "G-F1Y2PGN2R5" };
@@ -1093,26 +1069,11 @@ function saveToCloudMerged(candidate) {
 
     applySettings(); render(); updateLangUI();
 
-    db.collection("trips").doc(TRIP_DOC_ID).onSnapshot(
-    { includeMetadataChanges: true },
-    (doc) => {
+    db.collection("trips").doc(TRIP_DOC_ID).onSnapshot((doc) => {
         const statusDot = document.getElementById('dbStatus');
-        const txt = document.getElementById('status-text');
-
-        const online = !doc.metadata.fromCache;
-        const syncing = doc.metadata.hasPendingWrites;
-
-        if (statusDot) {
-            // online + pending writes => show as "loading" (amber); fully online => green
-            statusDot.className = 'status-dot ' + (online ? (syncing ? 'loading' : 'online') : 'loading');
-        }
-
-        if (txt) {
-            txt.textContent = syncing ? '同步中…' : (online ? '已連線' : '離線');
-            txt.style.color = syncing ? '#f59e0b' : (online ? '#22c55e' : '#f59e0b');
-            txt.classList.add('show');
-            setTimeout(() => txt.classList.remove('show'), 3000);
-        }
+        if(statusDot) statusDot.className = 'status-dot online'; 
+        const txt = document.getElementById('status-text'); 
+        if(txt) { txt.classList.add('show'); setTimeout(()=>txt.classList.remove('show'), 3000); }
 
         if (doc.exists) {
             const remote = ensureSchema(doc.data());
@@ -1139,20 +1100,11 @@ function saveToCloudMerged(candidate) {
             // first-time cloud doc
             scheduleCloudPush(data);
         }
-    
-    },
-    (error) => {
-        console.error(error);
-        const dot = document.getElementById('dbStatus');
-        const txt = document.getElementById('status-text');
-        if (dot) dot.className = 'status-dot error';
-        if (txt) {
-            txt.textContent = '錯誤';
-            txt.style.color = '#ef4444';
-            txt.classList.add('show');
-        }
-    }
-);
+    }, (error) => { 
+        console.error(error); 
+        const dot = document.getElementById('dbStatus'); 
+        if(dot) dot.className = 'status-dot error'; 
+    });
 }
 
         function save() { 
