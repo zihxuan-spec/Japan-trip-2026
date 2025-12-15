@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V71.0</title>
+    <title>Japan Trip V71.1</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -429,7 +429,7 @@
         .confirm-cancel { background: var(--input-bg); color: var(--text-sub); }
         .confirm-ok { background: #ef4444; color: white; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
 
-        /* V70.2 FAB Style Fix: Adjusted position to avoid overlay */
+        /* V70.3 FAB Style Fix: Adjusted position to AVOID nav bar */
         .fab-btn {
             position: fixed; 
             bottom: calc(140px + env(safe-area-inset-bottom)); /* Increased height for safety */
@@ -461,28 +461,6 @@
         body.dark-mode .pill-food { background: #7c2d12; color: #fed7aa; border-color: #9a3412; }
         body.dark-mode .pill-transport { background: #1e293b; color: #cbd5e1; border-color: #334155; }
         body.dark-mode .pill-hotel { background: #581c87; color: #e9d5ff; border-color: #6b21a8; }
-        
-        /* V70.2: Countdown Hero Card Styles */
-        .hero-card {
-            background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 15px 35px rgba(46, 75, 113, 0.25);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .hero-card::before {
-            content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px;
-            background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(40px);
-        }
-        .hero-title { font-size: 0.8rem; letter-spacing: 0.1em; opacity: 0.8; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
-        .hero-count-row { display: flex; align-items: baseline; justify-content: center; gap: 5px; margin-bottom: 5px; }
-        .hero-num { font-family: "Zen Old Mincho", serif; font-size: 3rem; font-weight: 900; line-height: 1; }
-        .hero-label { font-size: 1rem; font-weight: bold; opacity: 0.9; }
-        .hero-sub { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; }
         
         /* V70.2 Redesigned Swipe to Delete - Stable Implementation */
         .swipe-container {
@@ -522,6 +500,28 @@
             flex-shrink: 0;
             /* Logic: Initially off-screen right */
         }
+        
+        /* Hero Card Styles */
+        .hero-card {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 15px 35px rgba(46, 75, 113, 0.25);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-card::before {
+            content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px;
+            background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(40px);
+        }
+        .hero-title { font-size: 0.8rem; letter-spacing: 0.1em; opacity: 0.8; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        .hero-count-row { display: flex; align-items: baseline; justify-content: center; gap: 5px; margin-bottom: 5px; }
+        .hero-num { font-family: "Zen Old Mincho", serif; font-size: 3rem; font-weight: 900; line-height: 1; }
+        .hero-label { font-size: 1rem; font-weight: bold; opacity: 0.9; }
+        .hero-sub { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; }
     </style>
 </head>
 <body class="default-bg">
@@ -575,8 +575,8 @@
 
     <div id="confirmModal" class="confirm-modal-overlay">
         <div class="confirm-card">
-            <div class="confirm-title">確認刪除？</div>
-            <div class="confirm-msg">此動作無法復原。</div>
+            <div class="confirm-title" id="confirmTitle">確認刪除？</div>
+            <div class="confirm-msg" id="confirmMsg">此動作無法復原。</div>
             <div class="confirm-actions">
                 <div class="confirm-btn confirm-cancel" onclick="closeConfirm()">取消</div>
                 <div class="confirm-btn confirm-ok" id="confirmOkBtn">刪除</div>
@@ -713,7 +713,7 @@
                 editTitle: '編輯行程', upload: '上傳照片', tSight: '觀光', tFood: '美食', tTrans: '交通', tHotel: '住宿',
                 phTime: '時間', phTitle: '行程標題 (必填)', phDesc: '備註 / 詳細說明...', phMap: '貼上 Google Maps 連結或地點',
                 btnDel: '刪除', btnSave: '儲存變更', btnCancel: '取消',
-                shopTitle: '新增購物清單', shopUpload: '商品照片', phShopName: '商品名稱', phShopName: '商品名稱', phShopNote: '備註', btnAddShop: '加入清單',
+                shopTitle: '新增購物清單', shopUpload: '商品照片', phShopName: '商品名稱', phShopNote: '備註', btnAddShop: '加入清單',
                 sDrug: '藥妝', sSnack: '零食', sWear: '服飾', sGift: '雜貨', tabToBuy: '未完成', tabBought: '已完成',
                 totalSpent: '總花費', converter: '匯率換算', newExp: '新增支出', phItem: '項目', phAmt: '金額', btnAddExp: '記帳',
                 flights: '航班資訊', hotels: '住宿資訊', noInfo: '行程中未找到資訊。',
@@ -722,7 +722,13 @@
                 addr: '地址', tel: '電話', pnr: '訂位代號', ticket: '票號', copied: '已複製', noInfo: '尚未新增資訊',
                 outbound: '去程', inbound: '回程', addHotel: '＋ 新增住宿',
                 simMode: '模擬旅程中 (On/Off)', man: '👦 Dylan', woman: '👧 Alyshia', balance: '結算', owes: '應給', paid: '已付',
-                rateLabel: '匯率', convJpy: '日幣', convTwd: '台幣'
+                rateLabel: '匯率', convJpy: '日幣', convTwd: '台幣',
+                heroCountTitle: '距離東京之旅還有', heroDays: '天', heroReady: '準備好了嗎！🇯🇵',
+                heroCurrTitle: '目前狀態', heroHaveFun: '旅途愉快！', heroEnjoy: '享受日本之旅吧 🎌',
+                catSight: '觀光', catFood: '美食', catTrans: '交通', catHotel: '住宿',
+                emptyList: '清單是空的', confirmTitle: '確認刪除？', confirmMsg: '此動作無法復原。',
+                phFrom: '出發站 (例如：A14 人形町)', phFromNote: '備註：路線/月台',
+                phTo: '抵達站 (例如：H12 八丁堀)', phToNote: '備註：出口/轉乘資訊'
             },
             'en': {
                 navSched: 'Schedule', navShop: 'Shopping', navBudget: 'Budget', navInfo: 'Info',
@@ -739,7 +745,13 @@
                 addr: 'Address', tel: 'Tel', pnr: 'PNR', ticket: 'Ticket No.', copied: 'Copied', noInfo: 'No info added.',
                 outbound: 'Outbound', inbound: 'Inbound', addHotel: '＋ Add Hotel',
                 simMode: 'Simulate Trip (On/Off)', man: '👦 Man', woman: '👧 Woman', balance: 'Balance', owes: 'owes', paid: 'paid',
-                rateLabel: 'Rate', convJpy: 'JPY', convTwd: 'TWD'
+                rateLabel: 'Rate', convJpy: 'JPY', convTwd: 'TWD',
+                heroCountTitle: 'COUNTDOWN TO TOKYO', heroDays: 'DAYS', heroReady: 'Get Ready! 🇯🇵',
+                heroCurrTitle: 'CURRENT STATUS', heroHaveFun: 'HAVE FUN!', heroEnjoy: 'Enjoy your trip in Japan 🎌',
+                catSight: 'Sightseeing', catFood: 'Food', catTrans: 'Transport', catHotel: 'Hotel',
+                emptyList: 'Empty List', confirmTitle: 'Delete?', confirmMsg: 'This action cannot be undone.',
+                phFrom: 'From (e.g. Tokyo Sta.)', phFromNote: 'Note: Line/Platform',
+                phTo: 'To (e.g. Maihama Sta.)', phToNote: 'Note: Exit/Transfer Info'
             }
         };
 
@@ -767,7 +779,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 1500);
             
-            const localSaved = localStorage.getItem('trip_v70.2_cloud');
+            const localSaved = localStorage.getItem('trip_v71.1_cloud');
             if(localSaved) { 
                 data = JSON.parse(localSaved); 
                 const todayIdx = data.itinerary.findIndex(d => isToday(d.date));
@@ -795,11 +807,46 @@
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { try { localStorage.setItem('trip_v70.2_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
+        function saveLocal() { try { localStorage.setItem('trip_v71.1_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
         function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
         
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
-        function updateLangUI() { const t = i18n[data.config.lang]; const safeSet = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; }; const safePlace = (id, text) => { const el = document.getElementById(id); if(el) el.placeholder = text; }; safeSet('txt-nav-schedule', t.navSched); safeSet('txt-nav-shopping', t.navShop); safeSet('txt-nav-budget', t.navBudget); safeSet('txt-nav-info', t.navInfo); safeSet('txt-dark', t.dark); safeSet('txt-bg', t.bg); safeSet('txt-lang', t.lang); safeSet('txt-reset', t.reset); safeSet('txt-edit-title', t.editAppTitle); safeSet('txt-modal-edit-title', t.editTitle); safeSet('txt-upload-label', t.upload); safeSet('txt-type-sightseeing', t.tSight); safeSet('txt-type-food', t.tFood); safeSet('txt-type-transport', t.tTrans); safeSet('txt-type-hotel', t.tHotel); safeSet('btn-delete', t.btnDel); safeSet('btn-save', t.btnSave); safeSet('btn-cancel-edit', t.btnCancel); safePlace('eTime', t.phTime); safePlace('eTitle', t.phTitle); safePlace('eDesc', t.phDesc); safePlace('eMap', t.phMap); safeSet('txt-modal-shop-title', t.shopTitle); safeSet('txt-shop-upload-label', t.shopUpload); safePlace('sName', t.phShopName); safePlace('sNote', t.phShopNote); safeSet('btn-add-shop', t.btnAddShop); safeSet('btn-cancel-shop', t.btnCancel); safeSet('txt-shop-drug', t.sDrug); safeSet('txt-shop-snack', t.sSnack); safeSet('txt-shop-wear', t.sWear); safeSet('txt-shop-gift', t.sGift); safeSet('txt-export', t.export); safeSet('txt-import', t.import); safeSet('pay-man', t.man); safeSet('pay-woman', t.woman); }
+        
+        function updateLangUI() { 
+            const t = i18n[data.config.lang]; 
+            const safeSet = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; }; 
+            const safePlace = (id, text) => { const el = document.getElementById(id); if(el) el.placeholder = text; }; 
+            
+            safeSet('txt-nav-schedule', t.navSched); safeSet('txt-nav-shopping', t.navShop); 
+            safeSet('txt-nav-budget', t.navBudget); safeSet('txt-nav-info', t.navInfo); 
+            safeSet('txt-dark', t.dark); safeSet('txt-bg', t.bg); safeSet('txt-lang', t.lang); safeSet('txt-reset', t.reset); 
+            safeSet('txt-edit-title', t.editAppTitle); safeSet('txt-modal-edit-title', t.editTitle); 
+            safeSet('txt-upload-label', t.upload); safeSet('txt-type-sightseeing', t.tSight); 
+            safeSet('txt-type-food', t.tFood); safeSet('txt-type-transport', t.tTrans); safeSet('txt-type-hotel', t.tHotel); 
+            safeSet('btn-delete', t.btnDel); safeSet('btn-save', t.btnSave); safeSet('btn-cancel-edit', t.btnCancel); 
+            safePlace('eTime', t.phTime); safePlace('eTitle', t.phTitle); safePlace('eDesc', t.phDesc); safePlace('eMap', t.phMap); 
+            safeSet('txt-modal-shop-title', t.shopTitle); safeSet('txt-shop-upload-label', t.shopUpload); 
+            safePlace('sName', t.phShopName); safePlace('sNote', t.phShopNote); 
+            safeSet('btn-add-shop', t.btnAddShop); safeSet('btn-cancel-shop', t.btnCancel); 
+            safeSet('txt-shop-drug', t.sDrug); safeSet('txt-shop-snack', t.sSnack); 
+            safeSet('txt-shop-wear', t.sWear); safeSet('txt-shop-gift', t.sGift); 
+            safeSet('txt-export', t.export); safeSet('txt-import', t.import); 
+            safeSet('pay-man', t.man); safeSet('pay-woman', t.woman);
+            
+            // V71.1: Update dynamic placeholders
+            safePlace('eFrom', t.phFrom); safePlace('eFromNote', t.phFromNote);
+            safePlace('eTo', t.phTo); safePlace('eToNote', t.phToNote);
+            
+            // V71.1: Update Confirm Modal
+            const confirmTitle = document.getElementById('confirmTitle');
+            if(confirmTitle) confirmTitle.innerText = t.confirmTitle;
+            const confirmMsg = document.getElementById('confirmMsg');
+            if(confirmMsg) confirmMsg.innerText = t.confirmMsg;
+            const confirmCancel = document.querySelector('.confirm-cancel');
+            if(confirmCancel) confirmCancel.innerText = t.btnCancel;
+            const confirmOk = document.querySelector('.confirm-ok');
+            if(confirmOk) confirmOk.innerText = t.btnDel;
+        }
 
         function toggleSettings() { document.getElementById('settingsMenu').classList.toggle('show'); }
         document.addEventListener('click', (e) => { if(!e.target.closest('.btn-circle') && !e.target.closest('.settings-menu')) document.getElementById('settingsMenu').classList.remove('show'); });
@@ -813,7 +860,7 @@
         document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); document.getElementById('editImgContainer').classList.add('show'); });
         document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('shopPreview').src = url; document.getElementById('shopPreview').classList.add('show'); document.getElementById('shopImgContainer').classList.add('show'); });
 
-        function resetAllData() { openConfirm("Clear All Data?", () => { haptic('error'); localStorage.removeItem('trip_v70.2_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); }); }
+        function resetAllData() { openConfirm("Clear All Data?", () => { haptic('error'); localStorage.removeItem('trip_v71.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); }); }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -864,8 +911,9 @@
             return dateStr.includes(todayFormatted) && year === 2026;
         }
 
-        // V70.2: Hero Card Logic
+        // V71.1: Hero Card Logic with i18n
         function getHeroCardHTML() {
+            const t = i18n[data.config.lang];
             const now = new Date();
             const start = new Date("2026-02-19T00:00:00");
             const diff = start - now;
@@ -874,15 +922,15 @@
             if(days > 0) {
                 return `
                 <div class="hero-card">
-                    <div class="hero-title">COUNTDOWN TO TOKYO</div>
+                    <div class="hero-title">${t.heroCountTitle}</div>
                     <div class="hero-count-row">
                         <span class="hero-num">${days}</span>
-                        <span class="hero-label">DAYS</span>
+                        <span class="hero-label">${t.heroDays}</span>
                     </div>
-                    <div class="hero-sub">Get Ready! 🇯🇵</div>
+                    <div class="hero-sub">${t.heroReady}</div>
                 </div>`;
             } else if (days > -6) {
-                return `<div class="hero-card" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);"><div class="hero-title">CURRENT STATUS</div><div class="hero-num" style="font-size:2rem">HAVE FUN!</div><div class="hero-sub">Enjoy your trip in Japan 🎌</div></div>`;
+                return `<div class="hero-card" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);"><div class="hero-title">${t.heroCurrTitle}</div><div class="hero-num" style="font-size:2rem">${t.heroHaveFun}</div><div class="hero-sub">${t.heroEnjoy}</div></div>`;
             } else {
                 return ``;
             }
@@ -892,7 +940,9 @@
             let html = '';
             data.itinerary.forEach((day, idx) => {
                 const isActive = idx === viewState.expandedDayIdx;
-                html += `<div class="day-nav-pill ${isActive ? 'active' : ''}" onclick="switchDay(${idx})">Day ${day.day}</div>`;
+                // V71.1: Dynamic Day Label
+                const dayLabel = data.config.lang === 'zh-TW' ? `第 ${day.day} 天` : `Day ${day.day}`;
+                html += `<div class="day-nav-pill ${isActive ? 'active' : ''}" onclick="switchDay(${idx})">${dayLabel}</div>`;
             });
             container.innerHTML = html;
         }
@@ -913,15 +963,17 @@
         function formatTextWithBadges(text) { if (!text) return ""; return text.replace(/([A-Z]{1,2})\s?(\d{1,2})/g, (match, code, num) => { const color = LINE_COLORS[code] || '#999'; const textColor = (code === 'H' || code === 'Y' || code === 'JB') ? 'color:#333' : 'color:white'; const shapeClass = code.length > 1 ? 'station-badge' : 'station-badge station-badge-circle'; return `<span class="${shapeClass}" style="background:${color}; ${textColor}">${code}${num}</span>`; }); }
         function getLineColorFromText(text) { if (!text) return 'var(--accent)'; const match = text.match(/([A-Z]{1,2})\s?\d{1,2}/); if (match && LINE_COLORS[match[1]]) return LINE_COLORS[match[1]]; return 'var(--accent)'; }
 
+        // V71.1: Category Pill Generator using i18n
         function getCategoryPill(type) {
+            const t = i18n[data.config.lang];
             const map = {
-                'sightseeing': { icon: 'camera', text: '觀光', class: 'pill-sightseeing' },
-                'food': { icon: 'utensils', text: '美食', class: 'pill-food' },
-                'transport': { icon: 'train', text: '交通', class: 'pill-transport' },
-                'hotel': { icon: 'bed', text: '住宿', class: 'pill-hotel' }
+                'sightseeing': { icon: 'camera', text: t.catSight, class: 'pill-sightseeing' },
+                'food': { icon: 'utensils', text: t.catFood, class: 'pill-food' },
+                'transport': { icon: 'train', text: t.catTrans, class: 'pill-transport' },
+                'hotel': { icon: 'bed', text: t.catHotel, class: 'pill-hotel' }
             };
-            const t = map[type] || map['sightseeing'];
-            return `<div class="cat-pill ${t.class}"><i class="fas fa-${t.icon}"></i> ${t.text}</div>`;
+            const c = map[type] || map['sightseeing'];
+            return `<div class="cat-pill ${c.class}"><i class="fas fa-${c.icon}"></i> ${c.text}</div>`;
         }
 
         function renderSchedule(box, append = false) {
@@ -933,6 +985,7 @@
                     const isExpanded = idx === viewState.expandedDayIdx;
                     const wIconMap = { 'sunny': 'sun text-yellow-500', 'cloudy': 'cloud text-gray-400', 'rainy': 'umbrella text-blue-400', 'snowy': 'snowflake text-cyan-400' };
                     const wIcon = wIconMap[day.weather || 'sunny'];
+                    const dayLabel = data.config.lang === 'zh-TW' ? `第 ${day.day} 天` : `Day ${day.day}`;
                     
                     html += `<div id="day-anchor-${idx}"></div>`; 
 
@@ -940,14 +993,14 @@
                         html += `
                         <div class="glass-card summary-card mb-4" onclick="switchDay(${idx})">
                             <div class="flex items-center gap-3">
-                                <div class="summary-date">Day ${day.day}</div>
+                                <div class="summary-date">${dayLabel}</div>
                                 <div class="summary-info">${day.date} · ${day.loc}</div>
                             </div>
-                            <div class="text-xs text-gray-400"><i class="fas fa-${wIcon}"></i> ${day.events.length} Events</div>
+                            <div class="text-xs text-gray-400"><i class="fas fa-${wIcon}"></i> ${day.events.length}</div>
                         </div>`;
                     } else {
                         const highlightClass = isToday(day.date) ? 'highlight-card' : '';
-                        html += `<div class="glass-card list-item-card ${highlightClass} mb-6" onclick="openDay(${idx})"><div><div class="flex items-center gap-2"><div class="text-3xl font-black jp-font" style="color:var(--primary)">${t.day} ${day.day}</div><button class="weather-btn" onclick="event.stopPropagation(); toggleWeather(${idx})"><i class="fas fa-${wIcon} weather-icon"></i></button></div><div class="text-xs text-gray-500 font-bold tracking-wider">${day.date}</div></div><div class="text-right"><div class="text-base font-bold jp-font mb-1 editable-location" onclick="event.stopPropagation(); editLoc(${idx})">${day.loc} <i class="fas fa-pen text-[10px] text-gray-300"></i></div><div class="view-btn">${t.view} <i class="fas fa-chevron-right"></i></div></div></div>`;
+                        html += `<div class="glass-card list-item-card ${highlightClass} mb-6" onclick="openDay(${idx})"><div><div class="flex items-center gap-2"><div class="text-3xl font-black jp-font" style="color:var(--primary)">${dayLabel}</div><button class="weather-btn" onclick="event.stopPropagation(); toggleWeather(${idx})"><i class="fas fa-${wIcon} weather-icon"></i></button></div><div class="text-xs text-gray-500 font-bold tracking-wider">${day.date}</div></div><div class="text-right"><div class="text-base font-bold jp-font mb-1 editable-location" onclick="event.stopPropagation(); editLoc(${idx})">${day.loc} <i class="fas fa-pen text-[10px] text-gray-300"></i></div><div class="view-btn">${t.view} <i class="fas fa-chevron-right"></i></div></div></div>`;
                     }
                 }); 
                 html += `<div style="height: 100px;"></div>`; 
@@ -1019,7 +1072,7 @@
         function saveEvent() { haptic('success'); const hasImg = document.getElementById('previewImg').classList.contains('show'); const isTransfer = document.getElementById('eType').value === 'transport' && document.getElementById('eTransIcon').value === 'transfer'; let finalTitle, finalTime, finalEndTime, finalDesc, depNote, arrNote; if (isTransfer) { const from = document.getElementById('eFrom').value; const to = document.getElementById('eTo').value; finalTitle = (from && to) ? `${from}|${to}` : from; finalTime = document.getElementById('eTransTimeDep').value; finalEndTime = document.getElementById('eTransTimeArr').value; depNote = document.getElementById('eFromNote').value; arrNote = document.getElementById('eToNote').value; finalDesc = ""; } else { finalTitle = document.getElementById('eTitle').value; finalTime = document.getElementById('eTime').value; finalEndTime = document.getElementById('eTimeEnd').value; finalDesc = document.getElementById('eDesc').value; depNote = ""; arrNote = ""; } const evt = { id: Date.now(), time: finalTime, endTime: finalEndTime, title: finalTitle, depNote: depNote, arrNote: arrNote, type: document.getElementById('eType').value, transIcon: document.getElementById('eTransIcon').value, desc: finalDesc, map: document.getElementById('eMap').value, img: hasImg ? document.getElementById('previewImg').src : "" }; if(!evt.title) return; const events = data.itinerary[viewState.dayIdx].events; if(editIdx !== null) { events[editIdx] = { ...events[editIdx], ...evt, id: events[editIdx].id }; } else events.push(evt); events.sort((a,b) => (a.time || "00:00").localeCompare(b.time || "00:00")); save(); closeModal('editModal'); render(); }
         function delEvent() { 
             if(editIdx!==null) {
-                openConfirm("確定要刪除此行程嗎？", () => {
+                openConfirm(i18n[data.config.lang].confirmDelEvent, () => {
                     data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render();
                 });
             }
@@ -1030,7 +1083,7 @@
         function saveShopItem() { if(!data.shopping) data.shopping = []; const item = { id: Date.now(), name: document.getElementById('sName').value, note: document.getElementById('sNote').value, type: document.getElementById('sType').value, checked: false, img: document.getElementById('shopPreview').classList.contains('show') ? document.getElementById('shopPreview').src : "" }; if(item.name) { data.shopping.push(item); save(); closeModal('shopModal'); render(); } }
         function toggleShop(idx) { haptic('light'); const item = data.shopping[idx]; if (item) { item.checked = !item.checked; save(); render(); } }
         function delShop(idx) { 
-            openConfirm("刪除此購物項目？", () => {
+            openConfirm(i18n[data.config.lang].confirmDelShop, () => {
                 data.shopping.splice(idx,1); save(); render();
             });
         }
@@ -1069,7 +1122,7 @@
             const filteredList = data.shopping.filter(item => isToBuy ? !item.checked : item.checked);
             
             if(filteredList.length === 0) { 
-                html += `<div class="text-center text-gray-400 py-10">Empty List</div>`; 
+                html += `<div class="text-center text-gray-400 py-10">${t.emptyList}</div>`; 
             } else {
                 const types = { 'drug': {label: t.sDrug, icon: 'pills'}, 'snack': {label: t.sSnack, icon: 'cookie-bite'}, 'wear': {label: t.sWear, icon: 'tshirt'}, 'gift': {label: t.sGift, icon: 'gift'} };
                 const typeKeys = ['drug', 'snack', 'wear', 'gift'];
@@ -1255,7 +1308,7 @@
             if(item && amt) { data.budget.push({id:Date.now(), item, amt, payer, currency: currentCurrency, date}); save(); render(); } 
         }
         function delBudget(id) { 
-            openConfirm("刪除此筆記帳？", () => {
+            openConfirm(i18n[data.config.lang].confirmDelBudget, () => {
                 data.budget = data.budget.filter(b=>b.id!==id); save(); render();
             });
         }
@@ -1273,7 +1326,7 @@
             document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
             let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
             const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V70.2</div>`; box.innerHTML = html;
+            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V71.1</div>`; box.innerHTML = html;
         }
 
         function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
@@ -1288,7 +1341,11 @@
                 save(); closeModal('hotelModal'); render(); 
             } 
         }
-        function delHotel(idx) { if(confirm("Delete Hotel?")) { data.info.hotels.splice(idx, 1); save(); render(); } }
+        function delHotel(idx) { 
+            openConfirm(i18n[data.config.lang].confirmDelHotel, () => {
+                data.info.hotels.splice(idx, 1); save(); render();
+            });
+        }
         function editFlight(type) { document.getElementById('flightModal').classList.add('active'); const f = (type === 'out') ? (data.info.flightOut || {}) : (data.info.flightIn || {}); document.getElementById('fType').value = type; document.getElementById('fCode').value = f.code || ''; document.getElementById('fPnr').value = f.pnr || ''; document.getElementById('fTicket').value = f.ticket || ''; }
         function saveFlight() { const type = document.getElementById('fType').value; const f = { code: document.getElementById('fCode').value, pnr: document.getElementById('fPnr').value, ticket: document.getElementById('fTicket').value }; if(!data.info) data.info = {}; if(type === 'out') data.info.flightOut = f; else data.info.flightIn = f; save(); closeModal('flightModal'); render(); }
         function copyToClip(str) { if(!str) return; navigator.clipboard.writeText(str).then(() => alert('Copied!')); }
