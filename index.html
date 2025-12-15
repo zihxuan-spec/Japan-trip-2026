@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Japan Trip V71.1</title>
+    <title>Japan Trip V72.0</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -318,6 +318,18 @@
         .transfer-station { font-size: 0.95rem; font-weight: bold; color: var(--text-main); display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
         .transfer-note-sub { font-size: 0.7rem; color: #94a3b8; font-weight: normal; margin-top: -2px; }
         
+        /* V72.0: Button in transfer block */
+        .transfer-btn-row {
+            margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+            display: flex; justify-content: center;
+        }
+        .route-link-btn {
+            background: #e0f2fe; color: #0284c7; padding: 4px 12px; border-radius: 12px;
+            font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;
+            text-decoration: none;
+        }
+        body.dark-mode .route-link-btn { background: #075985; color: #bae6fd; }
+
         .transfer-arrow-row {
             padding-left: 45px; color: #cbd5e1; font-size: 0.7rem; margin: -2px 0 4px 0; display: flex; align-items: center;
         }
@@ -462,6 +474,28 @@
         body.dark-mode .pill-transport { background: #1e293b; color: #cbd5e1; border-color: #334155; }
         body.dark-mode .pill-hotel { background: #581c87; color: #e9d5ff; border-color: #6b21a8; }
         
+        /* Hero Card Styles */
+        .hero-card {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 15px 35px rgba(46, 75, 113, 0.25);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-card::before {
+            content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px;
+            background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(40px);
+        }
+        .hero-title { font-size: 0.8rem; letter-spacing: 0.1em; opacity: 0.8; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        .hero-count-row { display: flex; align-items: baseline; justify-content: center; gap: 5px; margin-bottom: 5px; }
+        .hero-num { font-family: "Zen Old Mincho", serif; font-size: 3rem; font-weight: 900; line-height: 1; }
+        .hero-label { font-size: 1rem; font-weight: bold; opacity: 0.9; }
+        .hero-sub { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; }
+        
         /* V70.2 Redesigned Swipe to Delete - Stable Implementation */
         .swipe-container {
             display: flex;
@@ -501,27 +535,14 @@
             /* Logic: Initially off-screen right */
         }
         
-        /* Hero Card Styles */
-        .hero-card {
-            background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 15px 35px rgba(46, 75, 113, 0.25);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .hero-card::before {
-            content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px;
-            background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(40px);
-        }
-        .hero-title { font-size: 0.8rem; letter-spacing: 0.1em; opacity: 0.8; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
-        .hero-count-row { display: flex; align-items: baseline; justify-content: center; gap: 5px; margin-bottom: 5px; }
-        .hero-num { font-family: "Zen Old Mincho", serif; font-size: 3rem; font-weight: 900; line-height: 1; }
-        .hero-label { font-size: 1rem; font-weight: bold; opacity: 0.9; }
-        .hero-sub { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; }
+        /* V72.0 Search Styles */
+        .search-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .search-result-item { padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+        .search-result-item:hover { background: rgba(0,0,0,0.03); }
+        .search-res-title { font-weight: bold; color: var(--text-main); font-size: 1rem; }
+        .search-res-sub { font-size: 0.8rem; color: var(--text-sub); margin-top: 2px; }
+        .search-res-tag { display: inline-block; background: var(--input-bg); color: var(--text-sub); font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); margin-right: 5px; }
+
     </style>
 </head>
 <body class="default-bg">
@@ -550,6 +571,7 @@
                 </div>
             </div>
             <div class="flex gap-3">
+                <button onclick="haptic('light'); openSearch()" class="btn-circle"><i class="fas fa-search"></i></button>
                 <button id="viewToggleBtn" onclick="haptic('light'); toggleShopView()" class="btn-circle hidden"><i class="fas fa-th-large"></i></button>
                 <button onclick="haptic('light'); toggleSettings()" class="btn-circle"><i class="fas fa-cog"></i></button>
             </div>
@@ -581,6 +603,19 @@
                 <div class="confirm-btn confirm-cancel" onclick="closeConfirm()">取消</div>
                 <div class="confirm-btn confirm-ok" id="confirmOkBtn">刪除</div>
             </div>
+        </div>
+    </div>
+
+    <div id="searchModal" class="modal-overlay">
+        <div class="modal-content" style="height:80vh;">
+            <div class="modal-handle"></div>
+            <div class="search-modal-header">
+                <h3 class="text-xl font-bold">搜尋</h3>
+                <span class="text-sm text-gray-400 cursor-pointer" onclick="closeModal('searchModal')">關閉</span>
+            </div>
+            <input id="searchInput" placeholder="輸入關鍵字..." class="mb-4" oninput="handleSearch(this.value)">
+            <div id="searchResults">
+                </div>
         </div>
     </div>
 
@@ -713,7 +748,7 @@
                 editTitle: '編輯行程', upload: '上傳照片', tSight: '觀光', tFood: '美食', tTrans: '交通', tHotel: '住宿',
                 phTime: '時間', phTitle: '行程標題 (必填)', phDesc: '備註 / 詳細說明...', phMap: '貼上 Google Maps 連結或地點',
                 btnDel: '刪除', btnSave: '儲存變更', btnCancel: '取消',
-                shopTitle: '新增購物清單', shopUpload: '商品照片', phShopName: '商品名稱', phShopNote: '備註', btnAddShop: '加入清單',
+                shopTitle: '新增購物清單', shopUpload: '商品照片', phShopName: '商品名稱', phShopName: '商品名稱', phShopNote: '備註', btnAddShop: '加入清單',
                 sDrug: '藥妝', sSnack: '零食', sWear: '服飾', sGift: '雜貨', tabToBuy: '未完成', tabBought: '已完成',
                 totalSpent: '總花費', converter: '匯率換算', newExp: '新增支出', phItem: '項目', phAmt: '金額', btnAddExp: '記帳',
                 flights: '航班資訊', hotels: '住宿資訊', noInfo: '行程中未找到資訊。',
@@ -779,7 +814,7 @@
         function init() {
             setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 1000); } }, 1500);
             
-            const localSaved = localStorage.getItem('trip_v71.1_cloud');
+            const localSaved = localStorage.getItem('trip_v72.0_cloud');
             if(localSaved) { 
                 data = JSON.parse(localSaved); 
                 const todayIdx = data.itinerary.findIndex(d => isToday(d.date));
@@ -807,7 +842,7 @@
         }
 
         function save() { data.updatedAt = Date.now(); saveLocal(); saveToCloud(); }
-        function saveLocal() { try { localStorage.setItem('trip_v71.1_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
+        function saveLocal() { try { localStorage.setItem('trip_v72.0_cloud', JSON.stringify(data)); } catch(e) { if(e.name === 'QuotaExceededError') { alert("Storage Full!"); } } }
         function saveToCloud() { db.collection("trips").doc(TRIP_DOC_ID).set(data).catch(err=>console.error(err)); }
         
         function applySettings() { document.body.classList.toggle('dark-mode', data.config.darkMode); document.body.classList.toggle('default-bg', !data.config.bg); document.body.classList.toggle('has-custom-bg', !!data.config.bg); if(data.config.bg) document.body.style.backgroundImage = `url(${data.config.bg})`; else document.body.style.backgroundImage = ""; document.getElementById('appTitleMain').innerText = data.config.title; document.getElementById('appSubtitle').innerText = data.config.subtitle; }
@@ -833,11 +868,9 @@
             safeSet('txt-export', t.export); safeSet('txt-import', t.import); 
             safeSet('pay-man', t.man); safeSet('pay-woman', t.woman);
             
-            // V71.1: Update dynamic placeholders
             safePlace('eFrom', t.phFrom); safePlace('eFromNote', t.phFromNote);
             safePlace('eTo', t.phTo); safePlace('eToNote', t.phToNote);
             
-            // V71.1: Update Confirm Modal
             const confirmTitle = document.getElementById('confirmTitle');
             if(confirmTitle) confirmTitle.innerText = t.confirmTitle;
             const confirmMsg = document.getElementById('confirmMsg');
@@ -860,7 +893,7 @@
         document.getElementById('editImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('previewImg').src=url; document.getElementById('previewImg').classList.add('show'); document.getElementById('editImgContainer').classList.add('show'); });
         document.getElementById('shopImg').onchange = (e) => handleImgUpload(e.target.files[0], url => { document.getElementById('shopPreview').src = url; document.getElementById('shopPreview').classList.add('show'); document.getElementById('shopImgContainer').classList.add('show'); });
 
-        function resetAllData() { openConfirm("Clear All Data?", () => { haptic('error'); localStorage.removeItem('trip_v71.1_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); }); }
+        function resetAllData() { openConfirm("Clear All Data?", () => { haptic('error'); localStorage.removeItem('trip_v72.0_cloud'); db.collection("trips").doc(TRIP_DOC_ID).delete(); location.reload(); }); }
         function exportData() { const blob = new Blob([JSON.stringify(data)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `trip_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); alert("Backup Downloaded"); }
         function importData() { document.getElementById('importInput').click(); }
         document.getElementById('importInput').onchange = (e) => { const reader = new FileReader(); reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); save(); applySettings(); render(); updateLangUI(); alert("Restored"); } catch(err) { alert("Error"); } }; reader.readAsText(e.target.files[0]); };
@@ -1025,8 +1058,20 @@
                             const durationStr = getDuration(tEvt.time, endTime);
                             const fromFormatted = formatTextWithBadges(fromStation); const toFormatted = formatTextWithBadges(toStation);
                             const fromColor = getLineColorFromText(fromStation); const toColor = getLineColorFromText(toStation);
+                            
+                            // V72.0: Smart Deep Link Logic
+                            // Construct Google Maps direction URL
+                            const mapLink = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(fromStation)}&destination=${encodeURIComponent(toStation)}&travelmode=transit`;
 
-                            let display = `<div class="transfer-inner-block" style="border-left-color:${fromColor}"><div class="transfer-row"><div class="transfer-time-col" style="color:${fromColor}">${tEvt.time}</div><div class="transfer-info-col"><div class="transfer-station">${fromFormatted}</div>${fromNote ? `<div class="transfer-note-sub">${fromNote}</div>` : ''}</div></div><div class="transfer-arrow-row"><i class="fas fa-arrow-down"></i>${durationStr ? `<span class="duration-pill">${durationStr}</span>` : ''}</div><div class="transfer-row"><div class="transfer-time-col" style="color:${toColor}; opacity:0.8">${endTime}</div><div class="transfer-info-col"><div class="transfer-station">${toFormatted}</div>${toNote ? `<div class="transfer-note-sub">${toNote}</div>` : ''}</div></div>${tEvt.desc ? `<div class="text-xs text-gray-400 mt-2 pt-2 border-t border-gray-100">${tEvt.desc}</div>` : ''}</div>`;
+                            let display = `<div class="transfer-inner-block" style="border-left-color:${fromColor}"><div class="transfer-row"><div class="transfer-time-col" style="color:${fromColor}">${tEvt.time}</div><div class="transfer-info-col"><div class="transfer-station">${fromFormatted}</div>${fromNote ? `<div class="transfer-note-sub">${fromNote}</div>` : ''}</div></div><div class="transfer-arrow-row"><i class="fas fa-arrow-down"></i>${durationStr ? `<span class="duration-pill">${durationStr}</span>` : ''}</div><div class="transfer-row"><div class="transfer-time-col" style="color:${toColor}; opacity:0.8">${endTime}</div><div class="transfer-info-col"><div class="transfer-station">${toFormatted}</div>${toNote ? `<div class="transfer-note-sub">${toNote}</div>` : ''}</div></div>${tEvt.desc ? `<div class="text-xs text-gray-400 mt-2 pt-2 border-t border-gray-100">${tEvt.desc}</div>` : ''}
+                            
+                            <div class="transfer-btn-row">
+                                <a href="${mapLink}" target="_blank" class="route-link-btn" onclick="event.stopPropagation()">
+                                    <i class="fas fa-route"></i> 查路線
+                                </a>
+                            </div>
+                            
+                            </div>`;
                             gHtml += `<div class="timeline-transport-row" onclick="editEvent(${tEvt.eIdx})"><div class="t-icon-box" style="color:var(--accent); border-color:var(--accent);"><i class="fas fa-exchange-alt"></i></div><div style="flex:1;">${display}</div></div>`;
                         } else {
                             const formattedTitle = formatTextWithBadges(tEvt.title);
@@ -1072,7 +1117,7 @@
         function saveEvent() { haptic('success'); const hasImg = document.getElementById('previewImg').classList.contains('show'); const isTransfer = document.getElementById('eType').value === 'transport' && document.getElementById('eTransIcon').value === 'transfer'; let finalTitle, finalTime, finalEndTime, finalDesc, depNote, arrNote; if (isTransfer) { const from = document.getElementById('eFrom').value; const to = document.getElementById('eTo').value; finalTitle = (from && to) ? `${from}|${to}` : from; finalTime = document.getElementById('eTransTimeDep').value; finalEndTime = document.getElementById('eTransTimeArr').value; depNote = document.getElementById('eFromNote').value; arrNote = document.getElementById('eToNote').value; finalDesc = ""; } else { finalTitle = document.getElementById('eTitle').value; finalTime = document.getElementById('eTime').value; finalEndTime = document.getElementById('eTimeEnd').value; finalDesc = document.getElementById('eDesc').value; depNote = ""; arrNote = ""; } const evt = { id: Date.now(), time: finalTime, endTime: finalEndTime, title: finalTitle, depNote: depNote, arrNote: arrNote, type: document.getElementById('eType').value, transIcon: document.getElementById('eTransIcon').value, desc: finalDesc, map: document.getElementById('eMap').value, img: hasImg ? document.getElementById('previewImg').src : "" }; if(!evt.title) return; const events = data.itinerary[viewState.dayIdx].events; if(editIdx !== null) { events[editIdx] = { ...events[editIdx], ...evt, id: events[editIdx].id }; } else events.push(evt); events.sort((a,b) => (a.time || "00:00").localeCompare(b.time || "00:00")); save(); closeModal('editModal'); render(); }
         function delEvent() { 
             if(editIdx!==null) {
-                openConfirm(i18n[data.config.lang].confirmDelEvent, () => {
+                openConfirm(i18n[data.config.lang].confirmMsg, () => {
                     data.itinerary[viewState.dayIdx].events.splice(editIdx,1); save(); closeModal('editModal'); render();
                 });
             }
@@ -1083,7 +1128,7 @@
         function saveShopItem() { if(!data.shopping) data.shopping = []; const item = { id: Date.now(), name: document.getElementById('sName').value, note: document.getElementById('sNote').value, type: document.getElementById('sType').value, checked: false, img: document.getElementById('shopPreview').classList.contains('show') ? document.getElementById('shopPreview').src : "" }; if(item.name) { data.shopping.push(item); save(); closeModal('shopModal'); render(); } }
         function toggleShop(idx) { haptic('light'); const item = data.shopping[idx]; if (item) { item.checked = !item.checked; save(); render(); } }
         function delShop(idx) { 
-            openConfirm(i18n[data.config.lang].confirmDelShop, () => {
+            openConfirm(i18n[data.config.lang].confirmMsg, () => {
                 data.shopping.splice(idx,1); save(); render();
             });
         }
@@ -1105,251 +1150,58 @@
             closeConfirm();
         };
 
-        // V70.2: Fixed renderShopping Logic - Distinct Grid vs List
-        function renderShopping(box) { 
-            const t = i18n[data.config.lang]; const isToBuy = viewState.shopTab === 'tobuy';
-            
-            // Toggle view button icon
-            setTimeout(() => { 
-                const btn = document.getElementById('viewToggleBtn'); 
-                if(btn) { 
-                    btn.classList.remove('hidden'); 
-                    btn.innerHTML = viewState.shopMode === 'list' ? '<i class="fas fa-th-large"></i>' : '<i class="fas fa-bars"></i>'; 
-                } 
-            }, 50);
+        // V72.0: Search Functions
+        function openSearch() {
+            document.getElementById('searchModal').classList.add('active');
+            setTimeout(() => document.getElementById('searchInput').focus(), 100);
+        }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-            let html = `<div class="shop-tabs"><div class="shop-tab ${isToBuy ? 'active' : ''}" onclick="switchShopTab('tobuy')">${t.tabToBuy}</div><div class="shop-tab ${!isToBuy ? 'active' : ''}" onclick="switchShopTab('bought')">${t.tabBought}</div></div><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold jp-font text-[var(--primary)]">${t.navShop}</h2><button onclick="window.openShopModal()" class="text-sm bg-[var(--primary)] text-white px-3 py-1 rounded shadow">＋</button></div>`;
-            const filteredList = data.shopping.filter(item => isToBuy ? !item.checked : item.checked);
+        function handleSearch(query) {
+            const resultsDiv = document.getElementById('searchResults');
+            if (!query.trim()) { resultsDiv.innerHTML = ''; return; }
             
-            if(filteredList.length === 0) { 
-                html += `<div class="text-center text-gray-400 py-10">${t.emptyList}</div>`; 
-            } else {
-                const types = { 'drug': {label: t.sDrug, icon: 'pills'}, 'snack': {label: t.sSnack, icon: 'cookie-bite'}, 'wear': {label: t.sWear, icon: 'tshirt'}, 'gift': {label: t.sGift, icon: 'gift'} };
-                const typeKeys = ['drug', 'snack', 'wear', 'gift'];
-                
-                typeKeys.forEach(typeKey => {
-                    const itemsOfType = filteredList.filter(i => (i.type === typeKey) || (!i.type && typeKey === 'drug'));
-                    if (itemsOfType.length > 0) {
-                        html += `<div class="text-xs font-bold text-gray-400 mt-4 mb-3 pl-2 tracking-widest uppercase border-b border-gray-100 pb-1"><i class="fas fa-${types[typeKey].icon} mr-1"></i> ${types[typeKey].label}</div>`;
-                        
-                        if (viewState.shopMode === 'grid') {
-                            // GRID MODE: Simple Card Layout (No Swipe)
-                            html += `<div class="shop-grid">`;
-                            itemsOfType.forEach(item => {
-                                const originalIdx = data.shopping.findIndex(i => i.id === item.id);
-                                const imgDisplay = item.img ? item.img : 'https://placehold.co/300x300/eee/999?text=No+Img';
-                                html += `
-                                <div class="shop-grid-item">
-                                    <img src="${imgDisplay}" class="shop-grid-img" onclick="openLightbox('${imgDisplay}')">
-                                    <div class="shop-grid-check" onclick="toggleShop(${originalIdx})">
-                                        <i class="fas fa-${isToBuy ? 'circle' : 'check-circle'} text-${isToBuy?'gray-300':'green-500'}"></i>
-                                    </div>
-                                    <div class="shop-grid-info">
-                                        <div class="font-bold text-sm truncate">${item.name}</div>
-                                        <div class="text-xs text-gray-500 truncate">${item.note}</div>
-                                    </div>
-                                </div>`;
-                            });
-                            html += `</div>`;
-                        } else {
-                            // LIST MODE: Swipe to Delete Structure
-                            html += `<div class="space-y-3">`; 
-                            itemsOfType.forEach(item => { 
-                                const originalIdx = data.shopping.findIndex(i => i.id === item.id); const checkClass = item.checked ? 'checked' : ''; 
-                                const hasImg = item.img && item.img.length > 100;
-                                const img = hasImg ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded mr-3 border border-gray-200" onclick="openLightbox('${item.img}')">` : ''; 
-                                
-                                html += `
-                                <div class="swipe-container">
-                                    <div class="swipe-content">
-                                        <div class="glass-card p-3 flex items-center justify-between ${checkClass}">
-                                            <div class="flex items-center flex-1" onclick="toggleShop(${originalIdx})">
-                                                <div class="custom-checkbox mr-3 flex-shrink-0"><i class="fas fa-check text-xs"></i></div>
-                                                ${img}
-                                                <div>
-                                                    <div class="font-bold item-name text-lg">${item.name}</div>
-                                                    <div class="text-xs text-gray-500">${item.note}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="swipe-action-delete" onclick="delShop(${originalIdx})">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </div>
-                                </div>`; 
-                            }); 
-                            html += `</div>`; 
-                        }
+            const q = query.toLowerCase();
+            let html = '';
+            
+            // Search Itinerary
+            data.itinerary.forEach((day, dIdx) => {
+                day.events.forEach((evt, eIdx) => {
+                    if ((evt.title && evt.title.toLowerCase().includes(q)) || (evt.desc && evt.desc.toLowerCase().includes(q)) || (evt.depNote && evt.depNote.toLowerCase().includes(q))) {
+                        html += `
+                        <div class="search-result-item" onclick="jumpToEvent(${dIdx})">
+                            <div class="search-res-title"><span class="search-res-tag">Day ${day.day}</span> ${evt.title}</div>
+                            <div class="search-res-sub">${evt.desc || ''}</div>
+                        </div>`;
                     }
                 });
-            } 
-            box.innerHTML = html; 
+            });
+            
+            // Search Shopping
+            data.shopping.forEach(item => {
+                if (item.name.toLowerCase().includes(q)) {
+                    html += `
+                    <div class="search-result-item" onclick="jumpToShop()">
+                        <div class="search-res-title"><span class="search-res-tag">購物</span> ${item.name}</div>
+                    </div>`;
+                }
+            });
+
+            resultsDiv.innerHTML = html || '<div class="p-4 text-center text-gray-400">No results found</div>';
         }
 
-        function switchShopTab(tab) {
-            haptic('light');
-            viewState.shopTab = tab;
+        function jumpToEvent(dayIdx) {
+            closeModal('searchModal');
+            switchTab('schedule');
+            viewState.mode = 'detail';
+            viewState.dayIdx = dayIdx;
             render();
         }
-
-        let touchStartX = 0; window.touchStart = function(e) { touchStartX = e.changedTouches[0].screenX; }
-        window.touchEnd = function(e, el) { if(touchStartX - e.changedTouches[0].screenX > 50) el.parentElement.classList.add('swiped-left'); else el.parentElement.classList.remove('swiped-left'); }
-        function openLightbox(src) { document.getElementById('lightbox').classList.add('active'); document.getElementById('lightbox-img').src = src; }
-        function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
-
-        let currentCurrency = 'JPY'; 
-        function renderBudget(box) { 
-            document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; 
-            const stats = {}; 
-            data.budget.forEach(b => { 
-                const c = b.currency || 'JPY'; 
-                if(!stats[c]) stats[c] = { total: 0, man: 0, woman: 0 }; 
-                stats[c].total += b.amt; 
-                if(b.payer === 'man') stats[c].man += b.amt; else if(b.payer === 'woman') stats[c].woman += b.amt; else { stats[c].man += b.amt/2; stats[c].woman += b.amt/2; } 
-            });
-
-            let totalHTML = ''; let summaryHTML = '';
-            for(const [c, s] of Object.entries(stats)) {
-                totalHTML += `<div class="total-amount">${c} ${s.total.toLocaleString()}</div>`;
-                const diff = (s.man - s.woman) / 2;
-                if(diff !== 0) {
-                    const txt = diff > 0 ? `${t.woman} → ${t.man}: ${c} ${Math.abs(diff).toLocaleString()}` : `${t.man} → ${t.woman}: ${c} ${Math.abs(diff).toLocaleString()}`;
-                    summaryHTML += `<div class="total-sub">${txt}</div>`;
-                }
-            }
-            if(totalHTML === '') totalHTML = '<div class="total-amount">¥0</div>';
-            
-            const rate = data.config.rate; 
-            
-            let html = `
-            <div class="total-card">
-                <div class="total-label">${t.totalSpent}</div>
-                ${totalHTML}
-                <div style="margin-top:15px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.2)">
-                    ${summaryHTML || '<div class="total-sub">All Clear</div>'}
-                </div>
-            </div>
-
-            <div class="converter-card">
-                <div class="converter-section" style="border-right:1px solid #eee;">
-                    <input type="number" id="convJpy" placeholder="0" oninput="calcTwd(this.value)" class="converter-input-box" inputmode="decimal">
-                    <span style="font-size:0.8rem; color:#999; font-weight:bold; margin-top:5px;">${t.convJpy}</span>
-                </div>
-                <div style="display:flex; flex-direction:column; align-items:center;">
-                    <div style="font-size:0.7rem; color:#999; font-weight:bold;">${t.rateLabel}</div>
-                    <input type="number" value="${rate}" onchange="updateRate(this.value)" class="converter-input text-center w-16 bg-gray-50 border border-gray-200 rounded p-1 font-bold text-gray-500 my-1">
-                    <i class="fas fa-arrow-right text-gray-300"></i>
-                </div>
-                <div class="converter-section" style="padding-left:10px;">
-                    <div id="convTwd" style="font-weight:900; font-size:1.4rem; color:var(--accent); min-height:30px; display:flex; align-items:center; justify-content:center;">0</div>
-                    <span style="font-size:0.8rem; color:#999; font-weight:bold; margin-top:5px;">${t.convTwd}</span>
-                </div>
-            </div>
-
-            <div class="glass-card p-6 mb-20" style="background:var(--modal-bg)">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="text-sm font-bold text-gray-400 tracking-widest uppercase">${t.newExp}</div>
-                    
-                    <div class="mini-date" onclick="document.getElementById('bDate').showPicker()">
-                        <span id="dateDisplay">${new Date().toISOString().split('T')[0]}</span> 
-                        <i class="fas fa-calendar-alt text-gray-400"></i>
-                        <input type="date" id="bDate" onchange="document.getElementById('dateDisplay').innerText=this.value">
-                    </div>
-                </div>
-
-                <div class="currency-caps">
-                    <div class="curr-cap ${currentCurrency==='JPY'?'active':''}" onclick="setCurr('JPY')">JPY</div>
-                    <div class="curr-cap ${currentCurrency==='TWD'?'active':''}" onclick="setCurr('TWD')">TWD</div>
-                    <div class="curr-cap ${currentCurrency==='USD'?'active':''}" onclick="setCurr('USD')">USD</div>
-                </div>
-
-                <div class="mb-6 text-center border-b border-gray-100 pb-2">
-                    <input type="number" id="bAmt" placeholder="0" class="calc-input" inputmode="decimal">
-                </div>
-
-                <div class="payer-toggle mb-5">
-                    <div class="payer-btn active" id="pay-man" onclick="setPayer('man')">${t.man}</div>
-                    <div class="payer-btn" id="pay-woman" onclick="setPayer('woman')">${t.woman}</div>
-                </div>
-                <input type="hidden" id="bPayer" value="man">
-
-                <div class="relative mb-6">
-                    <input id="bItem" placeholder="${t.phItem}" style="width:100%; padding:12px; border:1px solid #eee; border-radius:12px; background:var(--input-bg);">
-                </div>
-                
-                <button onclick="addBudget()" class="btn-primary py-3 text-lg shadow-lg hover:opacity-90 active:scale-95 transition" style="border-radius:30px">
-                    <i class="fas fa-plus mr-2"></i> ${t.btnAddExp}
-                </button>
-            </div>
-            
-            <div class="space-y-3 pb-20">
-                ${data.budget.slice().reverse().map((b,i) => `
-                <div class="budget-item">
-                    <div class="budget-avatar">${b.payer==='man'?'👦':'👧'}</div>
-                    <div class="budget-info">
-                        <div class="budget-title">${b.item}</div>
-                        <div class="budget-date">${b.date || ''}</div>
-                    </div>
-                    <div class="budget-amt ${b.payer==='man'?'text-blue-500':'text-pink-500'}">${b.currency||'JPY'} ${b.amt.toLocaleString()}</div>
-                    <div class="text-gray-300 ml-3 cursor-pointer" onclick="delBudget(${b.id})"><i class="fas fa-times"></i></div>
-                </div>`).join('')}
-            </div>`; 
-            
-            box.innerHTML = html; 
-            setTimeout(() => { 
-                const d = document.getElementById('bDate'); if(d) d.value = new Date().toISOString().split('T')[0];
-            }, 100);
-        }
-        function setPayer(p) { document.getElementById('bPayer').value = p; document.querySelectorAll('.payer-btn').forEach(b=>b.classList.remove('active')); document.getElementById('pay-'+p).classList.add('active'); }
-        function setCurr(c) { currentCurrency = c; renderBudget(document.getElementById('app-content')); } 
-
-        function addBudget() { 
-            const item = document.getElementById('bItem').value; const amt = parseFloat(document.getElementById('bAmt').value); const payer = document.getElementById('bPayer').value; const date = document.getElementById('bDate').value;
-            if(item && amt) { data.budget.push({id:Date.now(), item, amt, payer, currency: currentCurrency, date}); save(); render(); } 
-        }
-        function delBudget(id) { 
-            openConfirm(i18n[data.config.lang].confirmDelBudget, () => {
-                data.budget = data.budget.filter(b=>b.id!==id); save(); render();
-            });
-        }
-        function updateRate(val) { const r = parseFloat(val); if(!isNaN(r)) { data.config.rate = r; save(); } }
-        
-        function calcTwd(val) { 
-            const jpy = parseFloat(val); 
-            const r = data.config.rate || 0.22; 
-            const result = jpy * r;
-            document.getElementById('convTwd').innerText = isNaN(jpy) ? "0" : parseFloat(result.toFixed(3)).toLocaleString(); 
-        }
-        
-        let editHotelIdx = null;
-        function renderInfo(box) {
-            document.getElementById('viewToggleBtn').classList.add('hidden'); const t = i18n[data.config.lang]; const info = data.info || { hotels: [], flightOut: {}, flightIn: {} };
-            let hotelsHtml = ''; (info.hotels || []).forEach((h, idx) => { hotelsHtml += `<div class="mb-6 pb-4 border-b border-gray-100 last:border-0 relative"><div class="flex justify-between items-start mb-3"><div class="info-label">HOTEL NAME</div><div class="flex gap-3"><span class="text-xs text-gray-400 cursor-pointer underline hover:text-blue-500" onclick="editHotel(${idx})">Edit</span><span class="text-xs text-red-300 cursor-pointer underline hover:text-red-500" onclick="delHotel(${idx})">Delete</span></div></div><div class="info-val">${h.name} <span class="copy-btn" onclick="copyToClip('${h.name}')"><i class="far fa-copy"></i></span></div><div class="mb-3"><div class="info-label">${t.addr}</div><div class="info-val text-sm">${h.addr} <span class="copy-btn" onclick="copyToClip('${h.addr}')"><i class="far fa-copy"></i></span></div></div><div><div class="info-label">${t.tel}</div><div class="info-val">${h.tel}</div></div></div>`; });
-            const fOut = info.flightOut || {}; const fIn = info.flightIn || {};
-            let html = `<h2 class="text-2xl font-bold jp-font text-[var(--primary)] mb-6 text-center">${t.infoTitle}</h2><div class="info-card"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-hotel mr-2"></i>${t.entryCard}</h3></div>${hotelsHtml}<div onclick="addHotel()" class="text-center text-sm text-blue-500 font-bold cursor-pointer mt-2 border-t pt-3 border-dashed border-gray-200">${t.addHotel}</div></div><div class="info-card" style="border-left-color: var(--accent);"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-departure mr-2"></i>${t.outbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('out')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fOut.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-[var(--accent)]">${fOut.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fOut.ticket || '-'}</div></div></div><div class="info-card" style="border-left-color: #10b981;"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg"><i class="fas fa-plane-arrival mr-2"></i>${t.inbound}</h3><span class="text-xs text-gray-400 cursor-pointer underline" onclick="editFlight('in')">Edit</span></div><div class="grid grid-cols-2 gap-4 mb-4"><div><div class="info-label">FLIGHT</div><div class="info-val">${fIn.code || '-'}</div></div><div><div class="info-label">${t.pnr}</div><div class="info-val text-xl text-green-600">${fIn.pnr || '-'}</div></div></div><div><div class="info-label">${t.ticket}</div><div class="info-val font-mono">${fIn.ticket || '-'}</div></div></div><div class="text-center text-xs text-gray-400 mt-10 font-bold tracking-widest">JAPAN TRIP V71.1</div>`; box.innerHTML = html;
+        function jumpToShop() {
+            closeModal('searchModal');
+            switchTab('shopping');
         }
 
-        function addHotel() { editHotelIdx = null; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = ""; document.getElementById('hAddr').value = ""; document.getElementById('hTel').value = ""; }
-        function editHotel(idx) { editHotelIdx = idx; const h = data.info.hotels[idx]; document.getElementById('hotelModal').classList.add('active'); document.getElementById('hName').value = h.name; document.getElementById('hAddr').value = h.addr; document.getElementById('hTel').value = h.tel; }
-        
-        function saveHotel() { 
-            const h = { name: document.getElementById('hName').value, addr: document.getElementById('hAddr').value, tel: document.getElementById('hTel').value }; 
-            if(h.name) { 
-                if(!data.info) data.info = { hotels: [] }; if(!data.info.hotels) data.info.hotels = []; 
-                if(editHotelIdx !== null) data.info.hotels[editHotelIdx] = h;
-                else data.info.hotels.push(h); 
-                save(); closeModal('hotelModal'); render(); 
-            } 
-        }
-        function delHotel(idx) { 
-            openConfirm(i18n[data.config.lang].confirmDelHotel, () => {
-                data.info.hotels.splice(idx, 1); save(); render();
-            });
-        }
-        function editFlight(type) { document.getElementById('flightModal').classList.add('active'); const f = (type === 'out') ? (data.info.flightOut || {}) : (data.info.flightIn || {}); document.getElementById('fType').value = type; document.getElementById('fCode').value = f.code || ''; document.getElementById('fPnr').value = f.pnr || ''; document.getElementById('fTicket').value = f.ticket || ''; }
-        function saveFlight() { const type = document.getElementById('fType').value; const f = { code: document.getElementById('fCode').value, pnr: document.getElementById('fPnr').value, ticket: document.getElementById('fTicket').value }; if(!data.info) data.info = {}; if(type === 'out') data.info.flightOut = f; else data.info.flightIn = f; save(); closeModal('flightModal'); render(); }
-        function copyToClip(str) { if(!str) return; navigator.clipboard.writeText(str).then(() => alert('Copied!')); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         let tx=0; document.addEventListener('touchstart',e=>tx=e.changedTouches[0].clientX); document.addEventListener('touchend',e=>{if(viewState.mode==='detail' && tx<60 && e.changedTouches[0].clientX>tx+80) {viewState.mode='list'; render();}});
         init();
     </script>
